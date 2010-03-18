@@ -33,7 +33,7 @@ Scenario.nrofHostGroups = 6
 
 # common settings for all groups
 Group.movementModel = ShortestPathMapBasedMovement
-Group.router = PassiveRouter
+Group.router = FuzzySprayRouter
 Group.bufferSize = 5M
 Group.transmitRange = 10
 # transmit speed of 2 Mbps = 250kBps

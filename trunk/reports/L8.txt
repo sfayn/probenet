@@ -1,0 +1,20 @@
+Message stats for scenario FuzzySprayAndWait
+sim_time: 43000.1000
+created: 1454
+started: 51628
+relayed: 24153
+aborted: 27474
+dropped: 16914
+removed: 7168
+delivered: 707
+delivery_prob: 0.4862
+response_prob: 0.0000
+overhead_ratio: 33.1627
+latency_avg: 4676.8182
+latency_med: 3020.4000
+hopcount_avg: 3.7214
+hopcount_med: 3
+buffertime_avg: 1292.5220
+buffertime_med: 887.1000
+rtt_avg: NaN
+rtt_med: NaN

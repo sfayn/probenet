@@ -10,7 +10,6 @@ import core.Message;
 import core.MessageListener;
 import core.DTN2Manager;
 
-
 import fi.tkk.netlab.dtn.ecla.*; // External Convergence Layer Adapter package
 
 /**
