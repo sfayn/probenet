@@ -1,5 +1,0 @@
-Scenario.name = FuzzySprayAndWait
-Group.router = FuzzySprayRouter
-SprayAndWaitRouter.nrofCopies = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12; 13; 14; 15; 16; 17; 18; 19; 20; 21; 22; 23; 24; 25; 26; 27; 28; 29; 30;]
-Report.output=[reports/L1.txt; reports/L2.txt;reports/L3.txt; reports/L4.txt;reports/L5.txt; reports/L6.txt;reports/L7.txt; reports/L8.txt;reports/L9.txt; reports/L10.txt;reports/L11.txt; reports/L12.txt;reports/L13.txt; reports/L14.txt;reports/L15.txt; reports/L16.txt;reports/L17.txt; reports/L18.txt;reports/L19.txt; reports/L20.txt;reports/L21.txt; reports/L22.txt;reports/L23.txt; reports/L24.txt;reports/L25.txt; reports/L26.txt;reports/L27.txt; reports/L28.txt;reports/L29.txt; reports/L30.txt;]
-SprayAndWaitRouter.binaryMode = true
