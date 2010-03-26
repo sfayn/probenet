@@ -1,7 +1,7 @@
-Scenario.name = FuzzySprayAndWait
+Scenario.name = FuzzySpray
 Group.router = FuzzySprayRouter
-Group.bufferSize=   			[30M ; 40M; 40M ; 30M; 30M ; 40M; 40M ; 30M]
-Group.transmitSpeed=			[4M;  3M; 4M;  3M; 3M;  4M; 3M;  4M]
-FuzzySprayRouter.nrofCopies =   [50; 200;   200;   50;  200;  50;  50;   200;]
-FuzzySprayRouter.binaryMode = true
-Report.output=reports/SW-B%%Group.bufferSize%%L%%FuzzySprayRouter.nrofCopies%%S%%Group.transmitSpeed%%.txt
+Group.bufferSize=   			[10M ; 10M; 40M ; 30M; 30M ; 40M; 40M ; 30M]
+Group.transmitSpeed=			[2M;  2M; 4M;  3M; 3M;  4M; 3M;  4M]
+FuzzySprayRouter.ftcmax=[10;10]
+FuzzySprayRouter.msmax=[500000;75000]
+Report.output=reports/FSW-B%%Group.bufferSize%%S%%Group.transmitSpeed%%F%%FuzzySprayRouter.ftcmax%%M%%FuzzySprayRouter.msmax%%.txt
