@@ -37,6 +37,7 @@ public class SprayAndWaitRouter extends ActiveRouter {
 		Settings snwSettings = new Settings(SPRAYANDWAIT_NS);
 		
 		initialNrofCopies = snwSettings.getInt(NROF_COPIES);
+                System.out.println(initialNrofCopies);
 		isBinary = snwSettings.getBoolean( BINARY_MODE);
 	}
 	
