@@ -21,7 +21,9 @@ public class FuzzySprayAndWaitTest extends AbstractRouterTest
 	private static final int NROF_COPIES = 10;
 	private static final int MSMAX = 10;
 	private static final int FTCMAX = 10;
-	
+	private static final String file="reports/logger.txt";
+
+
 	@Override
 	protected void setUp() throws Exception {
 		ts.putSetting(MessageRouter.B_SIZE_S, ""+BUFFER_SIZE);
@@ -32,7 +34,7 @@ public class FuzzySprayAndWaitTest extends AbstractRouterTest
 		//ts.putSetting(FuzzySprayRouter.FUZZYSPRAY_NS + "."+ FuzzySprayRouter.MSMAX, "" + NROF_COPIES);
 		ts.putSetting(FuzzySprayRouter.FUZZYSPRAY_NS + "."+ FuzzySprayRouter.MSMAX, "" + MSMAX);
 		ts.putSetting(FuzzySprayRouter.FUZZYSPRAY_NS + "."+ FuzzySprayRouter.FTCMAX, "" + FTCMAX);
-		//ts.putSetting(FuzzySprayRouter.FUZZYSPRAY_NS + "."+ FuzzySprayRouter., "true");
+		ts.putSetting(FuzzySprayRouter.FUZZYSPRAY_NS + "."+ FuzzySprayRouter.FILENAME, file);
 		setRouterProto(new FuzzySprayRouter(ts));
 		super.setUp();
 		
