@@ -4,6 +4,7 @@
  */
 package routing;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collection;
@@ -14,10 +15,17 @@ import core.DTNHost;
 import core.Message;
 import core.Settings;
 import core.Tuple;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
-import sun.security.action.GetIntegerAction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+//import sun.security.action.GetIntegerAction;
 
 /**
  * Implementation of Spray and wait router as depicted in
@@ -31,6 +39,8 @@ public class FuzzySprayRouter extends ActiveRouter {
        public static final String FTCMAX = "ftcmax";
       /** identifier for the msmax setting ({@value})*/
        public static final String MSMAX = "msmax";
+	   /** identifier for the logger file setting ({@value})*/
+       public static final String FILENAME = "filename";
 
 	/** SprayAndWait router's settings name space ({@value})*/
 	public static final String FUZZYSPRAY_NS = "FuzzySprayRouter";
@@ -42,8 +52,11 @@ public class FuzzySprayRouter extends ActiveRouter {
 
         protected static int FTCmax;
         protected static int MSmax;
+		protected static File file;
+		//protected static FileOutputStream filestream;
+		protected static FileWriter logger;
 
-	public FuzzySprayRouter(Settings s) {
+	public FuzzySprayRouter(Settings s) throws IOException {
 		super(s);
 		Settings snwSettings = new Settings(FUZZYSPRAY_NS);
 
@@ -51,6 +64,18 @@ public class FuzzySprayRouter extends ActiveRouter {
         FTCmax=snwSettings.getInt(FTCMAX);
         MSmax=snwSettings.getInt(MSMAX);
         ackedMessageIds = new HashSet<String>();
+		file= new File(snwSettings.getSetting(FILENAME));
+		if (!file.exists())
+			file.createNewFile();
+		else
+		{
+			file.delete();
+			file.createNewFile();
+		}
+		file.setWritable(true);
+		//FileOutputStream filestream=new FileOutputStream(file);
+		logger =new FileWriter(file);
+		
 	}
 
 	/**
@@ -60,8 +85,8 @@ public class FuzzySprayRouter extends ActiveRouter {
 	protected FuzzySprayRouter(FuzzySprayRouter r) {
 		super(r);
 	
-        this.FTCmax=r.FTCmax;
-        this.MSmax=r.MSmax;
+        //this.FTCmax=r.FTCmax;
+        //this.MSmax=r.MSmax;
         ackedMessageIds = new HashSet<String>();
 	}
 
@@ -175,7 +200,13 @@ public class FuzzySprayRouter extends ActiveRouter {
 		/* sort the message-connection tuples according to the criteria
 		 * defined in FTCComparator */
 		Collections.sort(messages,new FTCComparator());
-                System.out.println("number of messages: "+messages.size());
+		try {
+			logger.write("number of messages: " + messages.size()+"\n");
+			logger.flush();
+		} catch (IOException ex) {
+			Logger.getLogger(FuzzySprayRouter.class.getName()).log(Level.SEVERE, null, ex);
+		}
+              //System.out.println("number of messages: "+messages.size());
 		return tryMessagesForConnected(messages);
 	}
 
@@ -200,10 +231,19 @@ public class FuzzySprayRouter extends ActiveRouter {
 			String MS=null;
 			double BS=0;
 			double P;
-                        System.out.println("CDM:"+CDM);
-                        System.out.println("size:"+size);
-                        System.out.println("FTCMAX:"+FTCmax);
-                        System.out.println("MSMAX:"+MSmax);
+			try {
+				logger.write("CDM:"+CDM+"\n");
+				logger.write("size:"+size+"\n");
+				logger.write("FTCMAX:"+FTCmax+"\n");
+				logger.write("MSMAX:"+MSmax+"\n");
+				logger.flush();
+			} catch (IOException ex) {
+				Logger.getLogger(FuzzySprayRouter.class.getName()).log(Level.SEVERE, null, ex);
+			}
+                        //System.out.println("CDM:"+CDM);
+                        //System.out.println("size:"+size);
+                        //System.out.println("FTCMAX:"+FTCmax);
+                        //System.out.println("MSMAX:"+MSmax);
 			//FTC membership function
 			if (CDM < FTCmax/3) FTC = "low";
 			else if (CDM > (FTCmax*2)/3) FTC = "high";
@@ -229,7 +269,14 @@ public class FuzzySprayRouter extends ActiveRouter {
 
 			//Setting the priority of the message
 			P = 1-BS;
-                        System.out.println("Priority:"+P);
+			try {
+				logger.write("Priority:" + P + "\n");
+				logger.flush();
+			} catch (IOException ex) {
+				Logger.getLogger(FuzzySprayRouter.class.getName()).log(Level.SEVERE, null, ex);
+			}
+
+                        //System.out.println("Priority:"+P);
 
 			return P;
 		}

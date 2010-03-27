@@ -4,4 +4,5 @@ Group.bufferSize=   			[10M ; 10M; 40M ; 30M; 30M ; 40M; 40M ; 30M]
 Group.transmitSpeed=			[2M;  2M; 4M;  3M; 3M;  4M; 3M;  4M]
 FuzzySprayRouter.ftcmax=[10;10]
 FuzzySprayRouter.msmax=[500000;75000]
+FuzzySprayRouter.filename =reports/logger.txt
 Report.output=reports/FSW-B%%Group.bufferSize%%S%%Group.transmitSpeed%%F%%FuzzySprayRouter.ftcmax%%M%%FuzzySprayRouter.msmax%%.txt
