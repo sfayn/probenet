@@ -14,6 +14,7 @@ import core.Connection;
 import core.DTNHost;
 import core.Message;
 import core.Settings;
+import core.SimClock;
 import core.Tuple;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -104,6 +105,13 @@ public class FuzzySprayRouter extends ActiveRouter {
 			this.ackedMessageIds.add(id);
 		}
                 msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
+				try {
+					FTCComparator r=new FTCComparator();
+					logger.write("Message " + msg.getId() +(msg.getTo()==getHost()?" reached " : " relayed_to ")+getHost().toString()+ " at "+SimClock.getTime()+ " of_priority "+r.getPriority(msg)+"\n");
+					logger.flush();
+				} catch (IOException ex) {
+					Logger.getLogger(FuzzySprayRouter.class.getName()).log(Level.SEVERE, null, ex);
+				}
 		return msg;
 	}
 
@@ -115,6 +123,12 @@ public class FuzzySprayRouter extends ActiveRouter {
 		msg.setTtl(this.msgTtl);
                 msg.addProperty(FTC_PROPERTY, (Integer)1);
 		addToMessages(msg, true);
+		try {
+			logger.write("Message " + msg.getId() + " created_at "+getHost().toString()+ " at "+SimClock.getTime()+"\n");
+			logger.flush();
+		} catch (IOException ex) {
+			Logger.getLogger(FuzzySprayRouter.class.getName()).log(Level.SEVERE, null, ex);
+		}
 		return true;
 	}
 
@@ -201,7 +215,7 @@ public class FuzzySprayRouter extends ActiveRouter {
 		 * defined in FTCComparator */
 		Collections.sort(messages,new FTCComparator());
 		try {
-			logger.write("number of messages: " + messages.size()+"\n");
+			logger.write("number_of_messages_at " +getHost().toString() +" "+ messages.size()+"\n");
 			logger.flush();
 		} catch (IOException ex) {
 			Logger.getLogger(FuzzySprayRouter.class.getName()).log(Level.SEVERE, null, ex);
@@ -231,7 +245,7 @@ public class FuzzySprayRouter extends ActiveRouter {
 			String MS=null;
 			double BS=0;
 			double P;
-			try {
+			/*try {
 				logger.write("CDM:"+CDM+"\n");
 				logger.write("size:"+size+"\n");
 				logger.write("FTCMAX:"+FTCmax+"\n");
@@ -239,7 +253,7 @@ public class FuzzySprayRouter extends ActiveRouter {
 				logger.flush();
 			} catch (IOException ex) {
 				Logger.getLogger(FuzzySprayRouter.class.getName()).log(Level.SEVERE, null, ex);
-			}
+			}*/
                         //System.out.println("CDM:"+CDM);
                         //System.out.println("size:"+size);
                         //System.out.println("FTCMAX:"+FTCmax);
@@ -269,23 +283,25 @@ public class FuzzySprayRouter extends ActiveRouter {
 
 			//Setting the priority of the message
 			P = 1-BS;
-			try {
+			/*try {
 				logger.write("Priority:" + P + "\n");
 				logger.flush();
 			} catch (IOException ex) {
 				Logger.getLogger(FuzzySprayRouter.class.getName()).log(Level.SEVERE, null, ex);
-			}
+			}*/
 
                         //System.out.println("Priority:"+P);
 
 			return P;
 		}
-
+		public double getPriority(Message m)
+		{
+			return compute_fuzzy((Integer)m.getProperty(FTC_PROPERTY),(Integer)m.getSize());
+		}
 		public int compare(Tuple<Message, Connection> t1, Tuple<Message, Connection> t2) {
                    // System.out.println("Size:"+(Integer)t1.getKey().getSize());
                   //  System.out.println("FTC:"+(Integer)t1.getKey().getProperty(FTC_PROPERTY));
-            return (int)(10.0*compute_fuzzy((Integer)t1.getKey().getProperty(FTC_PROPERTY),(Integer)t1.getKey().getSize())
-					-compute_fuzzy((Integer)t2.getKey().getProperty(FTC_PROPERTY),(Integer)t2.getKey().getSize()));
+            return (int)(10.0*(getPriority(t1.getKey())-getPriority(t2.getKey())));
 
         }
 
