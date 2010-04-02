@@ -171,16 +171,16 @@ public class FuzzySprayReport extends MessageStatsReport {
 			total_nodes+=num[j];
 			if (getScenarioName().equals("FuzzySprayRouter"))
 			{
-				write(" for priority =["+format(j/(double)len) + "," +format((j+1)/(double)len)+"], average latency="
-					+format(sum_average_latency[j]/(double)num[j])+", av_copies="+format(sum_in_network[j]/(double)num[j])
-					+", av_dropped="+format(sum_dropped[j]/(double)num[j])+", av_removed="+format(sum_removed[j]/(double)num[j])
-					+", not reached = "+not_reach[j]+" from "+(not_reach[j]+num[j]));
+				write(" for priority ["+format(j/(double)len) + "," +format((j+1)/(double)len)+"] average latency "
+					+format(sum_average_latency[j]/(double)num[j])+" av_copies "+format(sum_in_network[j]/(double)num[j])
+					+" av_dropped "+format(sum_dropped[j]/(double)num[j])+" av_removed "+format(sum_removed[j]/(double)num[j])
+					+" not reached "+not_reach[j]+" from "+(not_reach[j]+num[j]));
 			}
 		}
-		write("\naverage number of messages per node="+format(sum_message_count/(double)num_of_nodes)+"\n"+
-				"\naverage copies/message= "+format(in_net/(double)total_nodes)+
-				"\naverage dropped/message= "+format(dropped/(double)total_nodes)+
-				"\naverage removed/message= "+format(removed/(double)total_nodes)+"\n");
+		write("\naverage number of messages per node "+format(sum_message_count/(double)num_of_nodes)+"\n"+
+				"\naverage copies/message "+format(in_net/(double)total_nodes)+
+				"\naverage dropped/message "+format(dropped/(double)total_nodes)+
+				"\naverage removed/message "+format(removed/(double)total_nodes)+"\n");
 		/*write("--------------Details------------------------\n");
 		for (int i=1;i<messages.size();i++)
 		{
