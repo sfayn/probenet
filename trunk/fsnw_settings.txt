@@ -1,7 +1,0 @@
-Scenario.name = FuzzySpray
-Group.router = FuzzySprayRouter
-FuzzySprayRouter.ftcmax=10
-FuzzySprayRouter.msmax=100000
-Report.report1 = FuzzySprayReport
-Report.output=reports/FSW_B%%Group.bufferSize%%_S%%Group.transmitSpeed%%_F%%FuzzySprayRouter.ftcmax%%_M%%FuzzySprayRouter.msmax%%.txt
-
