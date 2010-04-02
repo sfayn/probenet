@@ -16,16 +16,14 @@ import core.Message;
 import core.Settings;
 import core.SimClock;
 import core.Tuple;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import report.FuzzySprayReport;
 //import sun.security.action.GetIntegerAction;
 
 /**
@@ -41,7 +39,7 @@ public class FuzzySprayRouter extends ActiveRouter {
       /** identifier for the msmax setting ({@value})*/
        public static final String MSMAX = "msmax";
 	   /** identifier for the logger file setting ({@value})*/
-       public static final String FILENAME = "filename";
+       //public static final String FILENAME = "filename";
 
 	/** SprayAndWait router's settings name space ({@value})*/
 	public static final String FUZZYSPRAY_NS = "FuzzySprayRouter";
@@ -53,9 +51,8 @@ public class FuzzySprayRouter extends ActiveRouter {
 
         protected static int FTCmax;
         protected static int MSmax;
-		protected static File file;
-		//protected static FileOutputStream filestream;
-		protected static FileWriter logger;
+		/*protected static File file;
+		protected static FileWriter logger;*/
 
 	public FuzzySprayRouter(Settings s) throws IOException {
 		super(s);
@@ -65,7 +62,7 @@ public class FuzzySprayRouter extends ActiveRouter {
         FTCmax=snwSettings.getInt(FTCMAX);
         MSmax=snwSettings.getInt(MSMAX);
         ackedMessageIds = new HashSet<String>();
-		file= new File(snwSettings.getSetting(FILENAME));
+		/*file= new File(snwSettings.getSetting(FILENAME));
 		if (!file.exists())
 			file.createNewFile();
 		else
@@ -74,9 +71,8 @@ public class FuzzySprayRouter extends ActiveRouter {
 			file.createNewFile();
 		}
 		file.setWritable(true);
-		//FileOutputStream filestream=new FileOutputStream(file);
 		logger =new FileWriter(file);
-		
+		*/
 	}
 
 	/**
@@ -105,13 +101,13 @@ public class FuzzySprayRouter extends ActiveRouter {
 			this.ackedMessageIds.add(id);
 		}
                 msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
-				try {
+				/*try {
 					FTCComparator r=new FTCComparator();
 					logger.write("Message " + msg.getId() +(msg.getTo()==getHost()?" reached " : " relayed_to ")+getHost().toString()+ " at "+SimClock.getTime()+ " of_priority "+r.getPriority(msg)+"\n");
 					logger.flush();
 				} catch (IOException ex) {
 					Logger.getLogger(FuzzySprayRouter.class.getName()).log(Level.SEVERE, null, ex);
-				}
+				}*/
 		return msg;
 	}
 
@@ -123,12 +119,12 @@ public class FuzzySprayRouter extends ActiveRouter {
 		msg.setTtl(this.msgTtl);
                 msg.addProperty(FTC_PROPERTY, (Integer)1);
 		addToMessages(msg, true);
-		try {
+		/*try {
 			logger.write("Message " + msg.getId() + " created_at "+getHost().toString()+ " at "+SimClock.getTime()+"\n");
 			logger.flush();
 		} catch (IOException ex) {
 			Logger.getLogger(FuzzySprayRouter.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		}*/
 		return true;
 	}
 
@@ -214,22 +210,25 @@ public class FuzzySprayRouter extends ActiveRouter {
 		/* sort the message-connection tuples according to the criteria
 		 * defined in FTCComparator */
 		Collections.sort(messages,new FTCComparator());
-		try {
+
+		if (mListeners.get(0) instanceof FuzzySprayReport)
+			((FuzzySprayReport)mListeners.get(0)).bufferSize(getHost(), messages.size());
+		/*try {
 			logger.write("number_of_messages_at " +getHost().toString() +" "+ messages.size()+"\n");
 			logger.flush();
 		} catch (IOException ex) {
 			Logger.getLogger(FuzzySprayRouter.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		}*/
               //System.out.println("number of messages: "+messages.size());
 		return tryMessagesForConnected(messages);
 	}
 
-    protected class FTCComparator implements Comparator<Tuple<Message, Connection> > {
+    public static class FTCComparator implements Comparator<Tuple<Message, Connection> > {
 
      //   /*static */int FTCmax=10; //setting the fuzzy membership function (FTC) range - Global constants
 	//	/*static */int MSmax=1000; //setting the fuzzy membership function (message size) range - Global constants
 
-		public/* static*/ double compute_fuzzy(int CDM, int size)
+		private static double compute_fuzzy(int CDM, int size)
 		{
 			double BS0 = 0;
 			double BS1 = 0.2;
@@ -294,7 +293,7 @@ public class FuzzySprayRouter extends ActiveRouter {
 
 			return P;
 		}
-		public double getPriority(Message m)
+		public static double getPriority(Message m)
 		{
 			return compute_fuzzy((Integer)m.getProperty(FTC_PROPERTY),(Integer)m.getSize());
 		}

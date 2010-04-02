@@ -47,6 +47,7 @@ public class logger_extractor {
 		{
 			return (finishing_time>starting_time);
 		}
+		@Override
 		public String toString()
 		{
 			return "hop_count: "+hop_count+ (reached()?" latency: "+latency():" did_not_reach")+ " average_priority: "+average_priority();

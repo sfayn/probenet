@@ -65,7 +65,7 @@ public abstract class MessageRouter {
 	/** Receive return value for unspecified reason */
 	public static final int DENIED_UNSPECIFIED = -999;
 	
-	private List<MessageListener> mListeners;
+	protected List<MessageListener> mListeners;
 	/** The messages being transferred with msgID_hostName keys */
 	private HashMap<String, Message> incomingMessages;
 	/** The messages this router is carrying */

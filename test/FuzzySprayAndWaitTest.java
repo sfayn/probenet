@@ -2,7 +2,6 @@ package test;
 
 import routing.FuzzySprayRouter;
 import routing.MessageRouter;
-import core.DTNHost;
 import core.Message;
 import core.SimScenario;
 import org.junit.internal.RealSystem;
@@ -21,7 +20,7 @@ public class FuzzySprayAndWaitTest extends AbstractRouterTest
 	private static final int NROF_COPIES = 10;
 	private static final int MSMAX = 10;
 	private static final int FTCMAX = 10;
-	private static final String file="reports/logger.txt";
+	//private static final String filename="reports/logger_test.txt";
 
 
 	@Override
@@ -34,7 +33,7 @@ public class FuzzySprayAndWaitTest extends AbstractRouterTest
 		//ts.putSetting(FuzzySprayRouter.FUZZYSPRAY_NS + "."+ FuzzySprayRouter.MSMAX, "" + NROF_COPIES);
 		ts.putSetting(FuzzySprayRouter.FUZZYSPRAY_NS + "."+ FuzzySprayRouter.MSMAX, "" + MSMAX);
 		ts.putSetting(FuzzySprayRouter.FUZZYSPRAY_NS + "."+ FuzzySprayRouter.FTCMAX, "" + FTCMAX);
-		ts.putSetting(FuzzySprayRouter.FUZZYSPRAY_NS + "."+ FuzzySprayRouter.FILENAME, file);
+		//ts.putSetting(FuzzySprayRouter.FUZZYSPRAY_NS + "."+ FuzzySprayRouter.FILENAME, filename);
 		setRouterProto(new FuzzySprayRouter(ts));
 		super.setUp();
 		
