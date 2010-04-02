@@ -212,7 +212,7 @@ public class FuzzySprayRouter extends ActiveRouter {
 		Collections.sort(messages,new FTCComparator());
 
 		if (mListeners.get(0) instanceof FuzzySprayReport)
-			((FuzzySprayReport)mListeners.get(0)).bufferSize(getHost(), messages.size());
+			((FuzzySprayReport)mListeners.get(0)).bufferSize(getHost(), msgCollection.size());
 		/*try {
 			logger.write("number_of_messages_at " +getHost().toString() +" "+ messages.size()+"\n");
 			logger.flush();

@@ -11,6 +11,7 @@ import core.Connection;
 import core.DTNHost;
 import core.Message;
 import core.Settings;
+import report.FuzzySprayReport;
 
 /**
  * Implementation of Spray and wait router as depicted in 
@@ -124,7 +125,8 @@ public class SprayAndWaitRouter extends ActiveRouter {
 				list.add(m);
 			}
 		}
-		
+		if (mListeners.get(0) instanceof FuzzySprayReport)
+			((FuzzySprayReport)mListeners.get(0)).bufferSize(getHost(), getMessageCollection().size());
 		return list;
 	}
 	
