@@ -110,7 +110,7 @@ public class FuzzySprayReport extends MessageStatsReport {
 		message_info info=messages.get(i);
 		info.hop_count++;
 		info.copies_in_network++;
-		info.priorities.add(FuzzySprayRouter.FTCComparator.getPriority(m));
+		info.priorities.add(from.getRouter() instanceof FuzzySprayRouter?FuzzySprayRouter.FTCComparator.getPriority(m):0.6);
 		messages.set(i,info);
 
 		if (finalTarget) {
@@ -121,7 +121,7 @@ public class FuzzySprayReport extends MessageStatsReport {
 
 @Override
 	public void done() {
-		write("----Division of Stats according to priority for " + getScenarioName());
+		write("---------Additional Stats for " + getScenarioName()+"--------");
 		double [] sum_average_latency=new double[10];
 		int [] sum_in_network=new int[10];
 		int [] sum_dropped=new int[10];
@@ -144,17 +144,19 @@ public class FuzzySprayReport extends MessageStatsReport {
 			{
 				double av=m.average_priority();
 				if (av>j/(double)len && av<=(j+1)/(double)len)
+				{
 					if (m.reached())
 					{
 						sum_average_latency[j]+=m.latency();
-						sum_in_network[j]+=m.copies_in_network;
-						sum_dropped[j]+=m.dropped_copies;
-						sum_removed[j]+=m.removed_copies;
 						num[j]++;
 						break;
 					}
 					else
 						not_reach[j]++;
+					sum_in_network[j]+=m.copies_in_network;
+					sum_dropped[j]+=m.dropped_copies;
+					sum_removed[j]+=m.removed_copies;
+				}
 			}
 
 		}
@@ -167,10 +169,13 @@ public class FuzzySprayReport extends MessageStatsReport {
 			removed+=sum_removed[j];
 			in_net+=sum_in_network[j];
 			total_nodes+=num[j];
-			write(" for priority =["+format(j/(double)len) + "," +format((j+1)/(double)len)+"], average latency="
-				+format(sum_average_latency[j]/(double)num[j])+", av_copies="+format(sum_in_network[j]/(double)num[j])
-				+", av_dropped="+format(sum_dropped[j]/(double)num[j])+", av_removed="+format(sum_removed[j]/(double)num[j])
-				+", not reached = "+not_reach[j]+" from "+(not_reach[j]+num[j]));
+			if (getScenarioName().equals("FuzzySprayRouter"))
+			{
+				write(" for priority =["+format(j/(double)len) + "," +format((j+1)/(double)len)+"], average latency="
+					+format(sum_average_latency[j]/(double)num[j])+", av_copies="+format(sum_in_network[j]/(double)num[j])
+					+", av_dropped="+format(sum_dropped[j]/(double)num[j])+", av_removed="+format(sum_removed[j]/(double)num[j])
+					+", not reached = "+not_reach[j]+" from "+(not_reach[j]+num[j]));
+			}
 		}
 		write("\naverage number of messages per node="+format(sum_message_count/(double)num_of_nodes)+"\n"+
 				"\naverage copies/message= "+format(in_net/(double)total_nodes)+
