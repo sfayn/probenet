@@ -1,5 +1,5 @@
 Scenario.name = SprayAndWait
 Group.router = SprayAndWaitRouter
-SprayAndWaitRouter.nrofCopies =   [10; 100;10; 100;  200;  50;  50;   200;]
+SprayAndWaitRouter.nrofCopies =   10
 SprayAndWaitRouter.binaryMode = true
 Report.output=reports/SW-B%%Group.bufferSize%%L%%SprayAndWaitRouter.nrofCopies%%S%%Group.transmitSpeed%%.txt
