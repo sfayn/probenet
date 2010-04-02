@@ -71,9 +71,7 @@ public class FuzzySprayReport extends MessageStatsReport {
 		if (isWarmupID(m.getId())) {
 			return;
 		}
-		message_info info;
-		//assert (Integer.parseInt(m.getId().substring(1))<messages.size());
-		info=messages.get(Integer.parseInt(m.getId().substring(1)));
+		message_info info=messages.get(Integer.parseInt(m.getId().substring(1)));
 		if (dropped) {
 				info.dropped_copies++;
 		}
@@ -126,13 +124,13 @@ public class FuzzySprayReport extends MessageStatsReport {
 		int [] sum_in_network=new int[10];
 		int [] sum_dropped=new int[10];
 		int [] sum_removed=new int[10];
-		int [] num=new int[10];
+		int [] num_reached=new int[10];
 		int [] not_reach=new int[10];
 		int len=sum_average_latency.length;
 		for (int j=0;j<len;j++)
 		{
 			sum_average_latency[j]=0;
-			num[j]=0;
+			num_reached[j]=0;
 			not_reach[j]=0;
 			sum_in_network[j]=0;
 			sum_dropped[j]=0;
@@ -148,7 +146,7 @@ public class FuzzySprayReport extends MessageStatsReport {
 					if (m.reached())
 					{
 						sum_average_latency[j]+=m.latency();
-						num[j]++;
+						num_reached[j]++;
 						break;
 					}
 					else
@@ -162,25 +160,27 @@ public class FuzzySprayReport extends MessageStatsReport {
 		}
 		int dropped=0,removed=0;
 		int in_net=0;
-		int total_nodes=0;
+		int /*total_reached=0,*/total=0;
 		for (int j=0;j<len;j++)
 		{
 			dropped+=sum_dropped[j];
 			removed+=sum_removed[j];
 			in_net+=sum_in_network[j];
-			total_nodes+=num[j];
+			//total_reached+=num_reached[j];
+			total+=num_reached[j]+not_reach[j];
+			assert(total==messages.size());
 			if (getScenarioName().equals("FuzzySprayRouter"))
 			{
 				write(" for priority ["+format(j/(double)len) + "," +format((j+1)/(double)len)+"] average latency "
-					+format(sum_average_latency[j]/(double)num[j])+" av_copies "+format(sum_in_network[j]/(double)num[j])
-					+" av_dropped "+format(sum_dropped[j]/(double)num[j])+" av_removed "+format(sum_removed[j]/(double)num[j])
-					+" not reached "+not_reach[j]+" from "+(not_reach[j]+num[j]));
+					+format(sum_average_latency[j]/(double)num_reached[j])+" av_copies "+format(sum_in_network[j]/(double)(num_reached[j]+not_reach[j]))
+					+" av_dropped "+format(sum_dropped[j]/(double)(num_reached[j]+not_reach[j]))+" av_removed "+format(sum_removed[j]/(double)(num_reached[j]+not_reach[j]))
+					+" not reached "+not_reach[j]+" from "+(not_reach[j]+num_reached[j]));
 			}
 		}
 		write("\naverage number of messages per node "+format(sum_message_count/(double)num_of_nodes)+"\n"+
-				"\naverage copies/message "+format(in_net/(double)total_nodes)+
-				"\naverage dropped/message "+format(dropped/(double)total_nodes)+
-				"\naverage removed/message "+format(removed/(double)total_nodes)+"\n");
+				"\naverage copies/message "+format(in_net/(double)total)+
+				"\naverage dropped/message "+format(dropped/(double)total)+
+				"\naverage removed/message "+format(removed/(double)total)+"\n");
 		/*write("--------------Details------------------------\n");
 		for (int i=1;i<messages.size();i++)
 		{
