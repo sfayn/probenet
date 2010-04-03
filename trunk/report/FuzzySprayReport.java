@@ -71,13 +71,15 @@ public class FuzzySprayReport extends MessageStatsReport {
 		if (isWarmupID(m.getId())) {
 			return;
 		}
-		message_info info=messages.get(Integer.parseInt(m.getId().substring(1)));
+		int i=Integer.parseInt(m.getId().substring(1));
+		message_info info=messages.get(i);
 		if (dropped) {
-				info.dropped_copies++;
+			info.dropped_copies++;
 		}
 		else {
 			info.removed_copies++;
 		}
+		messages.set(i,info);
 	}
 
 	@Override
@@ -109,75 +111,89 @@ public class FuzzySprayReport extends MessageStatsReport {
 		info.hop_count++;
 		info.copies_in_network++;
 		info.priorities.add(from.getRouter() instanceof FuzzySprayRouter?FuzzySprayRouter.FTCComparator.getPriority(m):0.6);
-		messages.set(i,info);
 
 		if (finalTarget) {
 				info.finishing_time=getSimTime();
-				messages.set(i,info);
 		}
+		messages.set(i,info);
 	}
 
 @Override
 	public void done() {
 		write("---------Additional Stats for " + getScenarioName()+"--------");
-		double [] sum_average_latency=new double[10];
-		int [] sum_in_network=new int[10];
-		int [] sum_dropped=new int[10];
-		int [] sum_removed=new int[10];
-		int [] num_reached=new int[10];
-		int [] not_reach=new int[10];
-		int len=sum_average_latency.length;
-		for (int j=0;j<len;j++)
+		int len=10;
+		double [] sum_average_latency=new double[len+1];
+		int [] sum_in_network=new int[len+1];
+		int [] sum_dropped=new int[len+1];
+		int [] sum_removed=new int[len+1];
+		int [] num_reached=new int[len+1];
+		int [] not_reach=new int[len+1];
+		for (int j=0;j<len+1;j++)
 		{
 			sum_average_latency[j]=0;
 			num_reached[j]=0;
 			not_reach[j]=0;
 			sum_in_network[j]=0;
+			sum_removed[j]=0;
 			sum_dropped[j]=0;
 		}
 		for (int i=1;i<messages.size();i++)
 		{
 			message_info m=messages.get(i);
+			double av=m.average_priority();
 			for (int j=0;j<len;j++)
 			{
-				double av=m.average_priority();
-				if (av>j/(double)len && av<=(j+1)/(double)len)
+				if (av>j/(double)len && av<=(j+1)/(double)len )
 				{
+					sum_in_network[j]+=m.copies_in_network;
+					sum_dropped[j]+=m.dropped_copies;
+					sum_removed[j]+=m.removed_copies;
 					if (m.reached())
 					{
 						sum_average_latency[j]+=m.latency();
 						num_reached[j]++;
-						break;
 					}
 					else
 						not_reach[j]++;
-					sum_in_network[j]+=m.copies_in_network;
-					sum_dropped[j]+=m.dropped_copies;
-					sum_removed[j]+=m.removed_copies;
+					break;
 				}
+			}
+			if (Double.isNaN(av))
+			{
+				int j=len;
+				sum_in_network[j]+=m.copies_in_network;
+				sum_dropped[j]+=m.dropped_copies;
+				sum_removed[j]+=m.removed_copies;
+				if (m.reached())
+				{
+					sum_average_latency[j]+=m.latency();
+					num_reached[j]++;
+				}
+				else
+					not_reach[j]++;
 			}
 
 		}
 		int dropped=0,removed=0;
 		int in_net=0;
 		int /*total_reached=0,*/total=0;
-		for (int j=0;j<len;j++)
+		for (int j=0;j<len+1;j++)
 		{
 			dropped+=sum_dropped[j];
 			removed+=sum_removed[j];
 			in_net+=sum_in_network[j];
 			//total_reached+=num_reached[j];
 			total+=num_reached[j]+not_reach[j];
-			assert(total==messages.size());
-			if (getScenarioName().equals("FuzzySprayRouter"))
+			if (getScenarioName().equals("FuzzySpray"))
 			{
-				write(" for priority ["+format(j/(double)len) + "," +format((j+1)/(double)len)+"] average latency "
+				write(" for priority ["+(j!=len?format(j/(double)len) + "," +format((j+1)/(double)len):"NaN")+"] average latency "
 					+format(sum_average_latency[j]/(double)num_reached[j])+" av_copies "+format(sum_in_network[j]/(double)(num_reached[j]+not_reach[j]))
 					+" av_dropped "+format(sum_dropped[j]/(double)(num_reached[j]+not_reach[j]))+" av_removed "+format(sum_removed[j]/(double)(num_reached[j]+not_reach[j]))
 					+" not reached "+not_reach[j]+" from "+(not_reach[j]+num_reached[j]));
 			}
 		}
-		write("\naverage number of messages per node "+format(sum_message_count/(double)num_of_nodes)+"\n"+
+		assert(total==messages.size());
+		write(  "\naverage number of messages per node "+format(sum_message_count/(double)num_of_nodes)+"\n"+
 				"\naverage copies/message "+format(in_net/(double)total)+
 				"\naverage dropped/message "+format(dropped/(double)total)+
 				"\naverage removed/message "+format(removed/(double)total)+"\n");
