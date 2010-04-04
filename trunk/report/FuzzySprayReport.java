@@ -75,6 +75,7 @@ public class FuzzySprayReport extends MessageStatsReport {
 	public FuzzySprayReport() {
 		super();
 		messages.add(0,null);
+                //statistica.add(0,null);
 	}
 
 	@Override
@@ -109,6 +110,7 @@ public class FuzzySprayReport extends MessageStatsReport {
 
 	public void bufferSize(DTNHost host, int size)
 	{
+              //  System.out.println("Buffer");
 		sum_message_count+=size;
 		num_of_nodes++;
 	}
@@ -132,7 +134,7 @@ public class FuzzySprayReport extends MessageStatsReport {
 	}
 
         public void calculateStatistics(double time){
-                
+                System.out.println("entered stats");
                 double [] sum_average_latency=new double[priorities_count];
 		int [] sum_in_network=new int[priorities_count];
 		int [] sum_dropped=new int[priorities_count];
@@ -193,13 +195,15 @@ public class FuzzySprayReport extends MessageStatsReport {
 
 @Override
 	public void done() {
+                calculateStatistics(43200);//adjust to total simulation time
 		
                String output="";
+               System.out.println("size of stats: "+statistics.size());
 
                if (getScenarioName().equals("FuzzySpray"))
 
                {
-                       output=output.concat("---------Additional Stats--------");
+                       output=output.concat("---------Additional Stats--------\n");
                        output=output.concat("simulation_times ");
 
                         for (output_statistics os:statistics)
