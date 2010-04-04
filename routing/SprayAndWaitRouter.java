@@ -10,6 +10,7 @@ import java.util.List;
 import core.Connection;
 import core.DTNHost;
 import core.Message;
+import core.MessageListener;
 import core.Settings;
 import report.FuzzySprayReport;
 
@@ -125,8 +126,12 @@ public class SprayAndWaitRouter extends ActiveRouter {
 				list.add(m);
 			}
 		}
-		if (mListeners.get(0) instanceof FuzzySprayReport)
-			((FuzzySprayReport)mListeners.get(0)).bufferSize(getHost(), getMessageCollection().size());
+		for (MessageListener ml:mListeners)
+                {
+                    if (ml instanceof FuzzySprayRouter)
+                        ((FuzzySprayReport)ml).bufferSize(getHost(),  getMessageCollection().size());
+
+                }
 		return list;
 	}
 	
