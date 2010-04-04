@@ -52,8 +52,8 @@ public class FuzzySprayRouter extends ActiveRouter {
 
         protected static int FTCmax;
         protected static int MSmax;
-        private	int lastReportTime=0;
-        private int reportInterval=3600;
+        private	static double lastReportTime=0;
+        private double reportInterval=3600;
 
 	public FuzzySprayRouter(Settings s) throws IOException {
 		super(s);
@@ -111,15 +111,19 @@ public class FuzzySprayRouter extends ActiveRouter {
 	@Override
 	public void update() {
 		super.update();
+                double current_time=SimClock.getTime();
 
-                if(SimClock.getTime()-lastReportTime>=reportInterval)
+                if(current_time-lastReportTime>=reportInterval)
                 {
+                    lastReportTime=current_time;
+
                     for (MessageListener ml:mListeners)
                     {
-                        if (ml instanceof FuzzySprayRouter)
-                            ((FuzzySprayReport)ml).calculateStatistics(SimClock.getTime());
+                        if (ml instanceof FuzzySprayReport)
+                            ((FuzzySprayReport)ml).calculateStatistics(current_time);
 
                     }
+                    
                 }
 
 		if (!canStartTransfer() || isTransferring()) {
@@ -204,7 +208,7 @@ public class FuzzySprayRouter extends ActiveRouter {
 
                 for (MessageListener ml:mListeners)
                 {
-                    if (ml instanceof FuzzySprayRouter)
+                    if (ml instanceof FuzzySprayReport)
                         ((FuzzySprayReport)ml).bufferSize(getHost(),  msgCollection.size());
 
                 }
