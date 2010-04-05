@@ -134,7 +134,7 @@ public class FuzzySprayReport extends MessageStatsReport {
 	}
 
         public void calculateStatistics(double time){
-                System.out.println("entered stats");
+                //System.out.println("entered stats");
                 double [] sum_average_latency=new double[priorities_count];
 		int [] sum_in_network=new int[priorities_count];
 		int [] sum_dropped=new int[priorities_count];
