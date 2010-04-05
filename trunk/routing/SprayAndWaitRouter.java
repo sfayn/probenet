@@ -12,6 +12,7 @@ import core.DTNHost;
 import core.Message;
 import core.MessageListener;
 import core.Settings;
+import core.SimClock;
 import report.FuzzySprayReport;
 
 /**
@@ -33,6 +34,9 @@ public class SprayAndWaitRouter extends ActiveRouter {
 	
 	protected int initialNrofCopies;
 	protected boolean isBinary;
+
+        private	static double lastReportTime=0;
+        private double reportInterval=3600;
 
 	public SprayAndWaitRouter(Settings s) {
 		super(s);
@@ -91,6 +95,22 @@ public class SprayAndWaitRouter extends ActiveRouter {
 	@Override
 	public void update() {
 		super.update();
+
+                double current_time=SimClock.getTime();
+
+                if(current_time-lastReportTime>=reportInterval)
+                {
+                    lastReportTime=current_time;
+
+                    for (MessageListener ml:mListeners)
+                    {
+                        if (ml instanceof FuzzySprayReport)
+                            ((FuzzySprayReport)ml).calculateStatistics(current_time);
+
+                    }
+
+                }
+
 		if (!canStartTransfer() || isTransferring()) {
 			return; // nothing to transfer or is currently transferring 
 		}
@@ -128,7 +148,7 @@ public class SprayAndWaitRouter extends ActiveRouter {
 		}
 		for (MessageListener ml:mListeners)
                 {
-                    if (ml instanceof FuzzySprayRouter)
+                    if (ml instanceof FuzzySprayReport)
                         ((FuzzySprayReport)ml).bufferSize(getHost(),  getMessageCollection().size());
 
                 }

@@ -251,8 +251,9 @@ public class FuzzySprayReport extends MessageStatsReport {
                             }
                 }
        
-                write(output);
+                
 		output=output.concat("--------------Normal Stats-------------------\n");
+                write(output);
 		super.done();
 	}
 }
