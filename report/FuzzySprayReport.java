@@ -132,7 +132,8 @@ public class FuzzySprayReport extends MessageStatsReport {
 		}
 		messages.set(i,info);
 	}
-
+        
+        @Override        
         public void calculateStatistics(double time){
                 //System.out.println("entered stats");
                 double [] sum_average_latency=new double[priorities_count];
@@ -189,6 +190,7 @@ public class FuzzySprayReport extends MessageStatsReport {
 		}
 
                 statistics.add(statistics_instance);
+                super.calculateStatistics(time);
 
         }
 
@@ -198,7 +200,7 @@ public class FuzzySprayReport extends MessageStatsReport {
                 calculateStatistics(43200);//adjust to total simulation time
 		
                String output="";
-               System.out.println("size of stats: "+statistics.size());
+               //System.out.println("size of stats: "+statistics.size());
 
                if (getScenarioName().equals("FuzzySpray"))
 
