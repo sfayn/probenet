@@ -52,8 +52,6 @@ public class FuzzySprayRouter extends ActiveRouter {
 
         protected static int FTCmax;
         protected static int MSmax;
-        private	static double lastReportTime=0;
-        private double reportInterval=3600;
 
 	public FuzzySprayRouter(Settings s) throws IOException {
 		super(s);
@@ -113,9 +111,9 @@ public class FuzzySprayRouter extends ActiveRouter {
 		super.update();
                 double current_time=SimClock.getTime();
 
-                if(current_time-lastReportTime>=reportInterval)
+                if(current_time-FuzzySprayReport.lastReportTime>=FuzzySprayReport.reportInterval)
                 {
-                    lastReportTime=current_time;
+                    FuzzySprayReport.lastReportTime=current_time;
 
                     for (MessageListener ml:mListeners)
                     {
@@ -220,25 +218,26 @@ public class FuzzySprayRouter extends ActiveRouter {
     public static class FTCComparator implements Comparator<Tuple<Message, Connection> > {
 
   
-		private static double compute_fuzzy(int CDM, int size)
+		private static int compute_fuzzy(int CDM, int size)
 		{
-			double BS0 = 0;
-			double BS1 = 0.2;
-			double BS2 = 0.3;
-			double BS3 = 0.4;
-			double BS4 = 0.5;
-			double BS5 = 0.6;
-			double BS6 = 0.7;
-			double BS7 = 0.8;
-			double BS8 = 1;
+                       // System.out.println("CDM: "+CDM);
+			int BS0 = 0;
+			int BS1 = 2;
+			int BS2 = 3;
+			int BS3 = 4;
+			int BS4 = 5;
+			int BS5 = 6;
+			int BS6 = 7;
+			int BS7 = 8;
+			int BS8 = 10;
 
 			String FTC=null;
 			String MS=null;
-			double BS=0;
-			double P;
+			int BS=0;
+			int P;
 		
-			if (CDM < FTCmax/3) FTC = "low";
-			else if (CDM > (FTCmax*2)/3) FTC = "high";
+			if (CDM <= FTCmax/3) FTC = "low";
+			else if (CDM >= (FTCmax*2)/3) FTC = "high";
 			else FTC = "medium";
 
 			//Message size membership function
@@ -246,7 +245,8 @@ public class FuzzySprayRouter extends ActiveRouter {
 			else if (size > (MSmax*3)/4) MS = "large";
 			else MS = "medium";
 		
-
+                        //System.out.println("FTC: "+FTC);
+                        //System.out.println("MS: "+MS);
 			//Inference rules and Defuzzification using Center of Area (COA)
 			if (FTC.equals("low") && MS.equals("small")) BS = BS0;
 			else if (FTC.equals("low") && MS.equals("medium")) BS = BS1;
@@ -259,18 +259,18 @@ public class FuzzySprayRouter extends ActiveRouter {
 			else if (FTC.equals("high") && MS.equals("large")) BS = BS8;
 
 			//Setting the priority of the message
-			P = 1-BS;
+			P = 10-BS;
 		
-
+                       // System.out.println("P: "+P);
 			return P;
 		}
-		public static double getPriority(Message m)
+		public static int getPriority(Message m)
 		{
 			return compute_fuzzy((Integer)m.getProperty(FTC_PROPERTY),(Integer)m.getSize());
 		}
 		public int compare(Tuple<Message, Connection> t1, Tuple<Message, Connection> t2) {
                 
-            return (int)(10.0*(getPriority(t1.getKey())-getPriority(t2.getKey())));
+            return (getPriority(t1.getKey())-getPriority(t2.getKey()));
 
         }
 

@@ -35,9 +35,7 @@ public class SprayAndWaitRouter extends ActiveRouter {
 	protected int initialNrofCopies;
 	protected boolean isBinary;
 
-        private	static double lastReportTime=0;
-        private double reportInterval=3600;
-
+    
 	public SprayAndWaitRouter(Settings s) {
 		super(s);
 		Settings snwSettings = new Settings(SPRAYANDWAIT_NS);
@@ -98,9 +96,9 @@ public class SprayAndWaitRouter extends ActiveRouter {
 
                 double current_time=SimClock.getTime();
 
-                if(current_time-lastReportTime>=reportInterval)
+                if(current_time-FuzzySprayReport.lastReportTime>=FuzzySprayReport.reportInterval)
                 {
-                    lastReportTime=current_time;
+                    FuzzySprayReport.lastReportTime=current_time;
 
                     for (MessageListener ml:mListeners)
                     {

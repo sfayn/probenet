@@ -15,7 +15,10 @@ import routing.FuzzySprayRouter;
  *
  * @author Jad Makhlouta
  */
-public class FuzzySprayReport extends MessageStatsReport {
+public class FuzzySprayReport extends MessageStatsReportSpecial {
+
+        public static double lastReportTime=0;
+        public static double  reportInterval=3600;
 
 	private class message_info
 	{
@@ -53,7 +56,10 @@ public class FuzzySprayReport extends MessageStatsReport {
 		}
 
 	};
-        private int priorities_count=10;
+        private int priorities_count=9;
+        private int priorities_range=10;
+        private int[]priorities_array={0,2,3,4,5,6,7,8,10};
+
         private class output_statistics
         {
             
@@ -103,7 +109,7 @@ public class FuzzySprayReport extends MessageStatsReport {
 			return;
 		}
                 int messID=Integer.parseInt(m.getId().substring(1));
-                double priority=getScenarioName().equals("FuzzySpray")?FuzzySprayRouter.FTCComparator.getPriority(m):0.6;
+                double priority=getScenarioName().equals("FuzzySpray")?FuzzySprayRouter.FTCComparator.getPriority(m):6;
 		messages.add(messID,new message_info(getSimTime(),priority));
 
 	}
@@ -126,9 +132,12 @@ public class FuzzySprayReport extends MessageStatsReport {
 		message_info info=messages.get(i);
 		info.hop_count++;
 		info.copies_in_network++;
-
+                double priority=getScenarioName().equals("FuzzySpray")?FuzzySprayRouter.FTCComparator.getPriority(m):6;
+                info.priority=priority;
+                //System.out.println(priority);
 		if (finalTarget) {
 				info.finishing_time=getSimTime();
+
 		}
 		messages.set(i,info);
 	}
@@ -156,10 +165,15 @@ public class FuzzySprayReport extends MessageStatsReport {
                 for (int i=1;i<messages.size();i++)
 		{
 			message_info m=messages.get(i);
-			for (int j=0;j<priorities_count;j++)
+                        //System.out.println(m.priority);
+			//if (m.priority>0 && m.priority<2)
+
+
+                        for (int j=0;j<priorities_count;j++)
 			{
-				if (m.priority>j/(double)priorities_count && m.priority<=(j+1)/(double)priorities_count )
+				if (m.priority==priorities_array[j])
 				{
+                                        
 					sum_in_network[j]+=m.copies_in_network;
 					sum_dropped[j]+=m.dropped_copies;
 					sum_removed[j]+=m.removed_copies;
@@ -200,6 +214,7 @@ public class FuzzySprayReport extends MessageStatsReport {
                 calculateStatistics(43200);//adjust to total simulation time
 		
                String output="";
+         
                //System.out.println("size of stats: "+statistics.size());
 
                if (getScenarioName().equals("FuzzySpray"))
@@ -216,8 +231,14 @@ public class FuzzySprayReport extends MessageStatsReport {
 
                         for (int j=0;j<priorities_count;j++)
                         {
-                           
-                                output=output.concat ("P [ "+ format(j/(double)priorities_count)+" "+format((j+1)/(double)priorities_count)+" ] ");
+                                /*if (j==0)
+                                    output=output.concat ("P [ 0.0000 0.2000 ] ");
+                                else if (j==1 || j==8)
+                                    continue;
+                                else if (j==9)
+                                    output=output.concat ("P [ 0.8000 1.0000 ] ");
+                                else*/
+                                output=output.concat ("P "+ format(priorities_array[j]/(double)priorities_range)+" ");
 
                                 output=output.concat("av_latency ");
                                 for (output_statistics os:statistics)
@@ -256,6 +277,7 @@ public class FuzzySprayReport extends MessageStatsReport {
                 
 		output=output.concat("--------------Normal Stats-------------------\n");
                 write(output);
+                lastReportTime=0;
 		super.done();
 	}
 }
