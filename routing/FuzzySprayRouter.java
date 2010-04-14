@@ -17,13 +17,9 @@ import core.MessageListener;
 import core.Settings;
 import core.SimClock;
 import core.Tuple;
-import java.io.File;
-import java.io.FileWriter;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import report.FuzzySprayReport;
 //import sun.security.action.GetIntegerAction;
 
