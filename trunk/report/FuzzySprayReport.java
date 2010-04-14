@@ -9,6 +9,7 @@ import core.DTNHost;
 import core.Message;
 import java.util.LinkedList;
 import java.util.Vector;
+import routing.FuzzySprayAndWaitRouter;
 import routing.FuzzySprayRouter;
 
 /**
@@ -132,7 +133,7 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 		message_info info=messages.get(i);
 		info.hop_count++;
 		info.copies_in_network++;
-                double priority=getScenarioName().equals("FuzzySpray")?FuzzySprayRouter.FTCComparator.getPriority(m):6;
+                double priority=(from.getRouter() instanceof FuzzySprayAndWaitRouter ? FuzzySprayAndWaitRouter.FTCComparator.getPriority(m):(from.getRouter() instanceof FuzzySprayRouter?FuzzySprayRouter.FTCComparator.getPriority(m):0.6));
                 info.priority=priority;
                 //System.out.println(priority);
 		if (finalTarget) {
