@@ -1,0 +1,9 @@
+Scenario.name = FuzzySprayAndWait
+Group.router = FuzzySprayAndWaitRouter
+FuzzySprayAndWaitRouter.ftcmax=4
+FuzzySprayAndWaitRouter.msmax=100000
+FuzzySprayAndWaitRouter.nrofCopies=4
+FuzzySprayAndWaitRouter.binaryMode=true
+Report.output=reports/FSnW_B%%Group.bufferSize%%_L%%FuzzySprayAndWaitRouter.nrofCopies%%_S%%Group.transmitSpeed%%_F%%FuzzySprayAndWaitRouter.ftcmax%%_M%%FuzzySprayAndWaitRouter.msmax%%.txt
+Report.report1 = FuzzySprayReport
+
