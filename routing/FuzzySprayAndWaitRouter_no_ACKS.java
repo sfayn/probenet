@@ -49,6 +49,8 @@ public class FuzzySprayAndWaitRouter_no_ACKS extends ActiveRouter {
 		protected int initialNrofCopies;
 		protected boolean isBinary;
 
+                protected int bufferSizeBefore;
+                protected int bufferSizeAfter;
 	public FuzzySprayAndWaitRouter_no_ACKS(Settings s) throws IOException {
 		super(s);
 		Settings snwSettings = new Settings(FUZZYSPRAY_NS);
@@ -134,6 +136,7 @@ public class FuzzySprayAndWaitRouter_no_ACKS extends ActiveRouter {
 		if (!canStartTransfer() || isTransferring()) {
 			return; // nothing to transfer or is currently transferring
 		}
+                bufferSizeBefore=getMessageCollection().size();
 
 		/* try messages that could be delivered to final recipient */
 		if (exchangeDeliverableMessages() != null) {
@@ -229,10 +232,12 @@ public class FuzzySprayAndWaitRouter_no_ACKS extends ActiveRouter {
 			this.tryMessagesToConnections(msgCollection, getConnections());
 		}
 
+                bufferSizeAfter=getMessageCollection().size();
+
 				for (MessageListener ml:mListeners)
 				{
 					if (ml instanceof FuzzySprayReport)
-						((FuzzySprayReport)ml).bufferSize(getHost(),  msgCollection.size());
+						((FuzzySprayReport)ml).bufferSize(getHost(), bufferSizeBefore,bufferSizeAfter);
 
 				}
 
