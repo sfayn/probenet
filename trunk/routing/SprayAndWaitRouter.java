@@ -35,6 +35,9 @@ public class SprayAndWaitRouter extends ActiveRouter {
 	protected int initialNrofCopies;
 	protected boolean isBinary;
 
+        protected int bufferSizeBefore;
+        protected int bufferSizeAfter;
+
     
 	public SprayAndWaitRouter(Settings s) {
 		super(s);
@@ -112,6 +115,7 @@ public class SprayAndWaitRouter extends ActiveRouter {
 		if (!canStartTransfer() || isTransferring()) {
 			return; // nothing to transfer or is currently transferring 
 		}
+                bufferSizeBefore=getMessageCollection().size();
 
 		/* try messages that could be delivered to final recipient */
 		if (exchangeDeliverableMessages() != null) {
@@ -126,6 +130,16 @@ public class SprayAndWaitRouter extends ActiveRouter {
 			/* try to send those messages */
 			this.tryMessagesToConnections(copiesLeft, getConnections());
 		}
+
+                bufferSizeAfter=getMessageCollection().size();
+
+                for (MessageListener ml:mListeners)
+                {
+                    if (ml instanceof FuzzySprayReport)
+                        ((FuzzySprayReport)ml).bufferSize(getHost(), bufferSizeBefore,bufferSizeAfter);
+
+                }
+
 	}
 	
 	/**
@@ -144,12 +158,7 @@ public class SprayAndWaitRouter extends ActiveRouter {
 				list.add(m);
 			}
 		}
-		for (MessageListener ml:mListeners)
-                {
-                    if (ml instanceof FuzzySprayReport)
-                        ((FuzzySprayReport)ml).bufferSize(getHost(),  getMessageCollection().size());
 
-                }
 		return list;
 	}
 	
