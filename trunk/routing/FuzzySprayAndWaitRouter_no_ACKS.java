@@ -144,6 +144,7 @@ public class FuzzySprayAndWaitRouter_no_ACKS extends ActiveRouter {
 		}
 
 		tryOtherMessages();
+
 	}
 
 
@@ -185,7 +186,7 @@ public class FuzzySprayAndWaitRouter_no_ACKS extends ActiveRouter {
 
 	}
 
-    	/**
+    /**
 	 * Tries to send all other messages to all connected hosts ordered by
 	 * hop counts and their delivery probability
 	 * @return The return value of {@link #tryMessagesForConnected(List)}
