@@ -42,7 +42,7 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 		public static final String FUZZYSPRAY_NS = "FuzzySprayAndWaitRouter";
 
 		/** IDs of the messages that are known to have reached the final dst */
-        protected Set<String> ackedMessageIds;
+        //protected Set<String> ackedMessageIds;
 
         public static final String FTC_PROPERTY = FUZZYSPRAY_NS + "." + "ftc";
 		public static final String MSG_COUNT_PROPERTY = FUZZYSPRAY_NS + "." +"copies";
@@ -63,7 +63,7 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
         MSmax=snwSettings.getInt(MSMAX);
 		initialNrofCopies = snwSettings.getInt(NROF_COPIES);
 		isBinary = snwSettings.getBoolean( BINARY_MODE);
-        ackedMessageIds = new HashSet<String>();
+       // ackedMessageIds = new HashSet<String>();
 
 	}
 
@@ -76,7 +76,7 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 
         this.initialNrofCopies = r.initialNrofCopies;
 		this.isBinary = r.isBinary;
-        ackedMessageIds = new HashSet<String>();
+        //ackedMessageIds = new HashSet<String>();
 	}
 
 	@Override
@@ -101,9 +101,9 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 		}
 
 		/* was this node the final recipient of the message? */
-		if (isDeliveredMessage(msg)) {
+		/*if (isDeliveredMessage(msg)) {
 			this.ackedMessageIds.add(id);
-		}
+		}*/
                 msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
 				msg.updateProperty(MSG_COUNT_PROPERTY, nrofCopies);
 
@@ -185,10 +185,10 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
         msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
 
 		/* was the message delivered to the final recipient? */
-		if (msg.getTo() == con.getOtherNode(getHost())) {
+		/*if (msg.getTo() == con.getOtherNode(getHost())) {
 			this.ackedMessageIds.add(msg.getId()); // yes, add to ACKed messages
 			this.deleteMessage(msg.getId(), false); // delete from buffer
-		}
+		}*/
 
 
 
@@ -199,15 +199,15 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 	 * hop counts and their delivery probability
 	 * @return The return value of {@link #tryMessagesForConnected(List)}
 	 */
-	protected Tuple<Message, Connection> tryOtherMessages() {
-		List<Tuple<Message, Connection>> messages =
-			new ArrayList<Tuple<Message, Connection>>();
+	protected void/*Tuple<Message, Connection>*/ tryOtherMessages() {
+		/*List<Tuple<Message, Connection>> messages =
+			new ArrayList<Tuple<Message, Connection>>();*/
 
 		List<Message> msgCollection=getMessagesWithCopiesLeft();
 
 		/* for all connected hosts that are not transferring at the moment,
 		 * collect all the messages that could be sent */
-		for (Connection con : getConnections()) {
+		/*for (Connection con : getConnections()) {
 			DTNHost other = con.getOtherNode(getHost());
 			FuzzySprayAndWaitRouter othRouter = (FuzzySprayAndWaitRouter)other.getRouter();
 
@@ -216,8 +216,8 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 			}
 
 			for (Message m : msgCollection) {
-				/* skip messages that the other host has or that have
-				 * passed the other host */
+				/// skip messages that the other host has or that have
+				 //passed the other host
 				if (othRouter.hasMessage(m.getId()) ||
 						m.getHops().contains(other)) {
 					continue;
@@ -226,26 +226,30 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 			}
 
 
-		}
+		}*/
 
-		if (messages.size() == 0) {
+		/*if (messages.size() == 0) {
 			return null;
-		}
-
+		}*/
 
 		/* sort the message-connection tuples according to the criteria
 		 * defined in FTCComparator */
-		Collections.sort(messages,new FTCComparator());
+		Collections.sort(msgCollection,new FTCComparator1());
 
-                for (MessageListener ml:mListeners)
-                {
-                    if (ml instanceof FuzzySprayReport)
-                        ((FuzzySprayReport)ml).bufferSize(getHost(),  msgCollection.size());
+		if (msgCollection.size() > 0) {
+			/* try to send those messages */
+			this.tryMessagesToConnections(msgCollection, getConnections());
+		}
 
-                }
+				for (MessageListener ml:mListeners)
+				{
+					if (ml instanceof FuzzySprayReport)
+						((FuzzySprayReport)ml).bufferSize(getHost(),  msgCollection.size());
+
+				}
 
 
-		return tryMessagesForConnected(messages);
+		//return tryMessagesForConnected(messages);
 	}
 
 		/**
@@ -328,7 +332,69 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
         }
 
     }
-    @Override
+
+	public static class FTCComparator1 implements Comparator<Message > {
+
+
+		private static int compute_fuzzy(int CDM, int size)
+		{
+                       // System.out.println("CDM: "+CDM);
+			int BS0 = 0;
+			int BS1 = 2;
+			int BS2 = 3;
+			int BS3 = 4;
+			int BS4 = 5;
+			int BS5 = 6;
+			int BS6 = 7;
+			int BS7 = 8;
+			int BS8 = 10;
+
+			String FTC=null;
+			String MS=null;
+			int BS=0;
+			int P;
+
+			if (CDM <= FTCmax/3) FTC = "low";
+			else if (CDM >= (FTCmax*2)/3) FTC = "high";
+			else FTC = "medium";
+
+			//Message size membership function
+			if (size < MSmax/4) MS = "small";
+			else if (size > (MSmax*3)/4) MS = "large";
+			else MS = "medium";
+
+                        //System.out.println("FTC: "+FTC);
+                        //System.out.println("MS: "+MS);
+			//Inference rules and Defuzzification using Center of Area (COA)
+			if (FTC.equals("low") && MS.equals("small")) BS = BS0;
+			else if (FTC.equals("low") && MS.equals("medium")) BS = BS1;
+			else if (FTC.equals("low") && MS.equals("large")) BS = BS2;
+			else if (FTC.equals("medium") && MS.equals("small")) BS = BS3;
+			else if (FTC.equals("medium") && MS.equals("medium")) BS = BS4;
+			else if (FTC.equals("medium") && MS.equals("large")) BS = BS5;
+			else if (FTC.equals("high") && MS.equals("small")) BS = BS6;
+			else if (FTC.equals("high") && MS.equals("medium")) BS = BS7;
+			else if (FTC.equals("high") && MS.equals("large")) BS = BS8;
+
+			//Setting the priority of the message
+			P = 10-BS;
+
+                       // System.out.println("P: "+P);
+			return P;
+		}
+		public static int getPriority(Message m)
+		{
+			return compute_fuzzy((Integer)m.getProperty(FTC_PROPERTY),(Integer)m.getSize());
+		}
+
+		public int compare(Message m1, Message m2) {
+			return (getPriority(m2)-getPriority(m1));
+		}
+
+    }
+
+
+	/*@Override
 	public void changedConnection(Connection con) {
 		if (con.isUp()) { // new connection
 			if (con.isInitiator(getHost())) {
@@ -349,18 +415,18 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 				otherRouter.deleteAckedMessages();
 			}
 		}
-	}
+	}*/
 
     /**
 	 * Deletes the messages from the message buffer that are known to be ACKed
 	 */
-	protected void deleteAckedMessages() {
+	/*protected void deleteAckedMessages() {
 		for (String id : this.ackedMessageIds) {
 			if (this.hasMessage(id) && !isSending(id)) {
 				this.deleteMessage(id, false);
 			}
 		}
-	}
+	}*/
 
 	@Override
 	public FuzzySprayAndWaitRouter replicate() {

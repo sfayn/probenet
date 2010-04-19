@@ -217,8 +217,8 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
                String output="";
          
                //System.out.println("size of stats: "+statistics.size());
-
-               if (getScenarioName().equals("FuzzySpray"))
+			   output=output.concat("buffer average="+format(sum_message_count/(double)num_of_nodes)+"\n");
+               if (getScenarioName().contains("FuzzySpray"))
 
                {
                        output=output.concat("---------Additional Stats--------\n");
