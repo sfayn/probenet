@@ -77,7 +77,8 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
         Vector<output_statistics> statistics =new Vector <output_statistics>(100);//adjust to number of simulation hours
 
 	int num_of_nodes=0;
-	double sum_message_count=0;
+	double sum_buffer_before=0;
+        double sum_buffer_after=0;
 
 	public FuzzySprayReport() {
 		super();
@@ -115,10 +116,11 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 
 	}
 
-	public void bufferSize(DTNHost host, int size)
+	public void bufferSize(DTNHost host,int bufferSizeBefore, int bufferSizeAfter)
 	{
               //  System.out.println("Buffer");
-		sum_message_count+=size;
+		sum_buffer_before+=bufferSizeBefore;
+                sum_buffer_after+=bufferSizeAfter;
 		num_of_nodes++;
 	}
 
@@ -217,7 +219,8 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
                String output="";
          
                //System.out.println("size of stats: "+statistics.size());
-			   output=output.concat("buffer average="+format(sum_message_count/(double)num_of_nodes)+"\n");
+			   output=output.concat("buffer total average="+format(sum_buffer_before/(double)num_of_nodes)+"\n");
+                           output=output.concat("sent messages average="+format(sum_buffer_after/(double)num_of_nodes)+"\n");
                if (getScenarioName().contains("FuzzySpray"))
 
                {

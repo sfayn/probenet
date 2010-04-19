@@ -53,6 +53,8 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 
 		protected int initialNrofCopies;
 		protected boolean isBinary;
+                protected int bufferSizeBefore;
+                protected int bufferSizeAfter;
 
 	public FuzzySprayAndWaitRouter(Settings s) throws IOException {
 		super(s);
@@ -145,6 +147,7 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 		if (!canStartTransfer() || isTransferring()) {
 			return; // nothing to transfer or is currently transferring
 		}
+                bufferSizeBefore=getMessageCollection().size();
 
 		/* try messages that could be delivered to final recipient */
 		if (exchangeDeliverableMessages() != null) {
@@ -234,17 +237,19 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 
 		/* sort the message-connection tuples according to the criteria
 		 * defined in FTCComparator */
+
 		Collections.sort(msgCollection,new FTCComparator1());
 
 		if (msgCollection.size() > 0) {
 			/* try to send those messages */
 			this.tryMessagesToConnections(msgCollection, getConnections());
 		}
+                bufferSizeAfter=getMessageCollection().size();
 
 				for (MessageListener ml:mListeners)
 				{
 					if (ml instanceof FuzzySprayReport)
-						((FuzzySprayReport)ml).bufferSize(getHost(),  msgCollection.size());
+						((FuzzySprayReport)ml).bufferSize(getHost(), bufferSizeBefore,bufferSizeAfter);
 
 				}
 
