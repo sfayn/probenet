@@ -49,6 +49,9 @@ public class FuzzySprayRouter extends ActiveRouter {
         protected static int FTCmax;
         protected static int MSmax;
 
+        protected int bufferSizeBefore;
+        protected int bufferSizeAfter;
+
 	public FuzzySprayRouter(Settings s) throws IOException {
 		super(s);
 		Settings snwSettings = new Settings(FUZZYSPRAY_NS);
@@ -57,7 +60,7 @@ public class FuzzySprayRouter extends ActiveRouter {
         FTCmax=snwSettings.getInt(FTCMAX);
         MSmax=snwSettings.getInt(MSMAX);
         ackedMessageIds = new HashSet<String>();
-		
+
 	}
 
 	/**
@@ -123,6 +126,7 @@ public class FuzzySprayRouter extends ActiveRouter {
 		if (!canStartTransfer() || isTransferring()) {
 			return; // nothing to transfer or is currently transferring
 		}
+                bufferSizeBefore=getMessageCollection().size();
 
 		/* try messages that could be delivered to final recipient */
 		if (exchangeDeliverableMessages() != null) {
@@ -200,15 +204,17 @@ public class FuzzySprayRouter extends ActiveRouter {
 		 * defined in FTCComparator */
 		Collections.sort(messages,new FTCComparator());
 
-                for (MessageListener ml:mListeners)
+
+                Tuple<Message, Connection> t =tryMessagesForConnected(messages);
+                bufferSizeAfter=getMessageCollection().size();
+
+		for (MessageListener ml:mListeners)
                 {
                     if (ml instanceof FuzzySprayReport)
-                        ((FuzzySprayReport)ml).bufferSize(getHost(),  msgCollection.size());
+                        ((FuzzySprayReport)ml).bufferSize(getHost(),  bufferSizeBefore,bufferSizeAfter);
 
                 }
-
-		
-		return tryMessagesForConnected(messages);
+		return t;
 	}
 
     public static class FTCComparator implements Comparator<Tuple<Message, Connection> > {
