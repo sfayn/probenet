@@ -5,4 +5,4 @@ FuzzySprayAndWaitRouter_no_ACKS.msmax=100000
 FuzzySprayAndWaitRouter_no_ACKS.nrofCopies=4
 FuzzySprayAndWaitRouter_no_ACKS.binaryMode=true
 Report.output=reports/FSnWnA_B%%Group.bufferSize%%_L%%FuzzySprayAndWaitRouter_no_ACKS.nrofCopies%%_S%%Group.transmitSpeed%%_F%%FuzzySprayAndWaitRouter_no_ACKS.ftcmax%%_M%%FuzzySprayAndWaitRouter_no_ACKS.msmax%%.txt
-#Report.report1 = FuzzySprayReport
+Report.report1 = FuzzySprayReport
