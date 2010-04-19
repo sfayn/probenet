@@ -42,7 +42,7 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 		public static final String FUZZYSPRAY_NS = "FuzzySprayAndWaitRouter";
 
 		/** IDs of the messages that are known to have reached the final dst */
-        //protected Set<String> ackedMessageIds;
+        protected Set<String> ackedMessageIds;
 
         public static final String FTC_PROPERTY = FUZZYSPRAY_NS + "." + "ftc";
 		public static final String MSG_COUNT_PROPERTY = FUZZYSPRAY_NS + "." +"copies";
@@ -63,7 +63,7 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
         MSmax=snwSettings.getInt(MSMAX);
 		initialNrofCopies = snwSettings.getInt(NROF_COPIES);
 		isBinary = snwSettings.getBoolean( BINARY_MODE);
-       // ackedMessageIds = new HashSet<String>();
+        ackedMessageIds = new HashSet<String>();
 
 	}
 
@@ -76,7 +76,7 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 
         this.initialNrofCopies = r.initialNrofCopies;
 		this.isBinary = r.isBinary;
-        //ackedMessageIds = new HashSet<String>();
+        ackedMessageIds = new HashSet<String>();
 	}
 
 	@Override
@@ -101,9 +101,9 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 		}
 
 		/* was this node the final recipient of the message? */
-		/*if (isDeliveredMessage(msg)) {
+		if (isDeliveredMessage(msg)) {
 			this.ackedMessageIds.add(id);
-		}*/
+		}
                 msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
 				msg.updateProperty(MSG_COUNT_PROPERTY, nrofCopies);
 
@@ -185,10 +185,10 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
         msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
 
 		/* was the message delivered to the final recipient? */
-		/*if (msg.getTo() == con.getOtherNode(getHost())) {
+		if (msg.getTo() == con.getOtherNode(getHost())) {
 			this.ackedMessageIds.add(msg.getId()); // yes, add to ACKed messages
 			this.deleteMessage(msg.getId(), false); // delete from buffer
-		}*/
+		}
 
 
 
@@ -394,7 +394,7 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
     }
 
 
-	/*@Override
+	@Override
 	public void changedConnection(Connection con) {
 		if (con.isUp()) { // new connection
 			if (con.isInitiator(getHost())) {
@@ -415,18 +415,18 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 				otherRouter.deleteAckedMessages();
 			}
 		}
-	}*/
+	}
 
     /**
 	 * Deletes the messages from the message buffer that are known to be ACKed
 	 */
-	/*protected void deleteAckedMessages() {
+	protected void deleteAckedMessages() {
 		for (String id : this.ackedMessageIds) {
 			if (this.hasMessage(id) && !isSending(id)) {
 				this.deleteMessage(id, false);
 			}
 		}
-	}*/
+	}
 
 	@Override
 	public FuzzySprayAndWaitRouter replicate() {
