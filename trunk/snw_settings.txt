@@ -2,5 +2,5 @@ Scenario.name = SprayAndWait
 Group.router = SprayAndWaitRouter
 SprayAndWaitRouter.nrofCopies =   4
 SprayAndWaitRouter.binaryMode = true
-#Report.report1 = FuzzySprayReport
+Report.report1 = FuzzySprayReport
 Report.output=reports/SW-B%%Group.bufferSize%%L%%SprayAndWaitRouter.nrofCopies%%S%%Group.transmitSpeed%%.txt
