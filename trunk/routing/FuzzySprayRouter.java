@@ -126,7 +126,7 @@ public class FuzzySprayRouter extends ActiveRouter {
 		if (!canStartTransfer() || isTransferring()) {
 			return; // nothing to transfer or is currently transferring
 		}
-                bufferSizeBefore=getMessageCollection().size();
+                bufferSizeBefore=getNrofMessages();
 
 		/* try messages that could be delivered to final recipient */
 		if (exchangeDeliverableMessages() != null) {
@@ -134,6 +134,16 @@ public class FuzzySprayRouter extends ActiveRouter {
 		}
 
 		tryOtherMessages();
+
+                bufferSizeAfter=getNrofMessages();
+
+		for (MessageListener ml:mListeners)
+                {
+                    if (ml instanceof FuzzySprayReport)
+                        ((FuzzySprayReport)ml).bufferSize(getHost(),  bufferSizeBefore,bufferSizeAfter);
+
+                }
+           //     System.out.println(bufferSizeAfter -bufferSizeBefore);
 	}
 
 
@@ -156,12 +166,15 @@ public class FuzzySprayRouter extends ActiveRouter {
 
 
                 msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
-
 		/* was the message delivered to the final recipient? */
 		if (msg.getTo() == con.getOtherNode(getHost())) {
 			this.ackedMessageIds.add(msg.getId()); // yes, add to ACKed messages
 			this.deleteMessage(msg.getId(), false); // delete from buffer
+                 //       System.out.println("DD");
+
 		}
+           
+
 	}
 
     	/**
@@ -205,16 +218,9 @@ public class FuzzySprayRouter extends ActiveRouter {
 		Collections.sort(messages,new FTCComparator());
 
 
-                Tuple<Message, Connection> t =tryMessagesForConnected(messages);
-                bufferSizeAfter=getMessageCollection().size();
-
-		for (MessageListener ml:mListeners)
-                {
-                    if (ml instanceof FuzzySprayReport)
-                        ((FuzzySprayReport)ml).bufferSize(getHost(),  bufferSizeBefore,bufferSizeAfter);
-
-                }
-		return t;
+          
+     
+		return tryMessagesForConnected(messages);
 	}
 
     public static class FTCComparator implements Comparator<Tuple<Message, Connection> > {

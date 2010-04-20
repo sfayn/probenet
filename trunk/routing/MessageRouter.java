@@ -428,6 +428,7 @@ public abstract class MessageRouter {
 		for (MessageListener ml : this.mListeners) {
 			ml.messageTransferAborted(incoming, from, this.host);
 		}
+              //  System.out.println("ab");
 	}
 	
 	/**
@@ -451,10 +452,11 @@ public abstract class MessageRouter {
 	 * because it was delivered to final destination.  
 	 */
 	public void deleteMessage(String id, boolean drop) {
-		Message removed = removeFromMessages(id); 
+          //      int oldSize=getNrofMessages();
+                Message removed = removeFromMessages(id);
 		if (removed == null) throw new SimError("no message for id " +
 				id + " to remove at " + this.host);
-		
+		//System.out.println(oldSize-getNrofMessages());
 		for (MessageListener ml : this.mListeners) {
 			ml.messageDeleted(removed, this.host, drop);
 		}

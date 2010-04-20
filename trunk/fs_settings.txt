@@ -4,4 +4,4 @@ FuzzySprayRouter.ftcmax=4
 FuzzySprayRouter.msmax=100000
 Report.output=reports/FS_B%%Group.bufferSize%%_S%%Group.transmitSpeed%%_F%%FuzzySprayRouter.ftcmax%%_M%%FuzzySprayRouter.msmax%%.txt
 Report.report1 = FuzzySprayReport
-
+Group.deleteDelivered= true

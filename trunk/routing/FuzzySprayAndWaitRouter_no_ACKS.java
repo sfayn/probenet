@@ -145,6 +145,16 @@ public class FuzzySprayAndWaitRouter_no_ACKS extends ActiveRouter {
 
 		tryOtherMessages();
 
+                bufferSizeAfter=getMessageCollection().size();
+
+                    for (MessageListener ml:mListeners)
+                    {
+                            if (ml instanceof FuzzySprayReport)
+                                    ((FuzzySprayReport)ml).bufferSize(getHost(), bufferSizeBefore,bufferSizeAfter);
+
+                    }
+
+
 	}
 
 
@@ -186,7 +196,7 @@ public class FuzzySprayAndWaitRouter_no_ACKS extends ActiveRouter {
 
 	}
 
-    /**
+    	/**
 	 * Tries to send all other messages to all connected hosts ordered by
 	 * hop counts and their delivery probability
 	 * @return The return value of {@link #tryMessagesForConnected(List)}
@@ -233,16 +243,7 @@ public class FuzzySprayAndWaitRouter_no_ACKS extends ActiveRouter {
 			this.tryMessagesToConnections(msgCollection, getConnections());
 		}
 
-                bufferSizeAfter=getMessageCollection().size();
-
-				for (MessageListener ml:mListeners)
-				{
-					if (ml instanceof FuzzySprayReport)
-						((FuzzySprayReport)ml).bufferSize(getHost(), bufferSizeBefore,bufferSizeAfter);
-
-				}
-
-
+    
 		//return tryMessagesForConnected(messages);
 	}
 

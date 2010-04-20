@@ -155,6 +155,14 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 		}
 
 		tryOtherMessages();
+                 bufferSizeAfter=getMessageCollection().size();
+
+                for (MessageListener ml:mListeners)
+                {
+                        if (ml instanceof FuzzySprayReport)
+                                ((FuzzySprayReport)ml).bufferSize(getHost(), bufferSizeBefore,bufferSizeAfter);
+
+                }
 	}
 
 
@@ -244,14 +252,7 @@ public class FuzzySprayAndWaitRouter extends ActiveRouter {
 			/* try to send those messages */
 			this.tryMessagesToConnections(msgCollection, getConnections());
 		}
-                bufferSizeAfter=getMessageCollection().size();
-
-				for (MessageListener ml:mListeners)
-				{
-					if (ml instanceof FuzzySprayReport)
-						((FuzzySprayReport)ml).bufferSize(getHost(), bufferSizeBefore,bufferSizeAfter);
-
-				}
+               
 
 
 		//return tryMessagesForConnected(messages);
