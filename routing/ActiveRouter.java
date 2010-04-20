@@ -158,21 +158,25 @@ public abstract class ActiveRouter extends MessageRouter {
 	 */
 	protected int startTransfer(Message m, Connection con) {
 		int retVal;
-		
+		//int old=getNrofMessages();
 		if (!con.isReadyForTransfer()) {
 			return TRY_LATER_BUSY;
 		}
 		
 		retVal = con.startTransfer(getHost(), m);
+          //      if (retVal==DENIED_OLD) System.out.println("DEN");
+              //  System.out.println(deleteDelivered);
 		if (retVal == RCV_OK) { // started transfer
 			addToSendingConnections(con);
 		}
+
 		else if (deleteDelivered && retVal == DENIED_OLD && 
 				m.getTo() == con.getOtherNode(this.getHost())) {
 			/* final recipient has already received the msg -> delete it */
 			this.deleteMessage(m.getId(), false);
+                      //  System.out.println("D");
 		}
-		
+		//if (getNrofMessages()-old<0) System.out.println(getNrofMessages()-old);
 		return retVal;
 	}
 	
@@ -348,7 +352,8 @@ public abstract class ActiveRouter extends MessageRouter {
 		if (tuples.size() == 0) {
 			return null;
 		}
-		
+              //  System.out.println(tuples.size());
+		//int old=getNrofMessages();
 		for (Tuple<Message, Connection> t : tuples) {
 			Message m = t.getKey();
 			Connection con = t.getValue();
@@ -356,6 +361,7 @@ public abstract class ActiveRouter extends MessageRouter {
 				return t;
 			}
 		}
+          //      System.out.println(old-getNrofMessages());
 		
 		return null;
 	}
@@ -537,7 +543,8 @@ public abstract class ActiveRouter extends MessageRouter {
 	 */
 	@Override
 	public void update() {
-		
+          //      int old =getNrofMessages();
+
 		super.update();
 		
 		/* in theory we can have multiple sending connections even though
@@ -575,7 +582,8 @@ public abstract class ActiveRouter extends MessageRouter {
 				i++;
 			}
 		}
-		
+	//	if (old-getNrofMessages()>0)
+            //    System.out.println(old-getNrofMessages());
 		/* time to do a TTL check and drop old messages? Only if not sending */
 		if (SimClock.getTime() - lastTtlCheck >= TTL_CHECK_INTERVAL && 
 				sendingConnections.size() == 0) {
