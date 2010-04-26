@@ -237,58 +237,51 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
                //System.out.println("size of stats: "+statistics.size());
 			   output=output.concat("buffer total average="+format(sum_buffer_before/(double)num_of_nodes)+"\n");
                            output=output.concat("sent messages average="+format(sum_buffer_after/(double)num_of_nodes)+"\n");
-               if (getScenarioName().contains("FuzzySpray"))
+               if (getScenarioName().startsWith("FuzzySpray"))
 
                {
                        output=output.concat("---------Additional Stats--------\n");
-                       output=output.concat("simulation_times ");
+                       output=output.concat("simulation_times\t");
 
                         for (output_statistics os:statistics)
                         {
-                            output=output.concat(format(os.time)+" ");
+                            output=output.concat(format(os.time)+"\t");
                         }
                         output=output.concat("\n");
 
                         for (int j=0;j<priorities_count;j++)
                         {
-                                /*if (j==0)
-                                    output=output.concat ("P [ 0.0000 0.2000 ] ");
-                                else if (j==1 || j==8)
-                                    continue;
-                                else if (j==9)
-                                    output=output.concat ("P [ 0.8000 1.0000 ] ");
-                                else*/
-                                output=output.concat ("P "+ format(priorities_array[j]/(double)priorities_range)+" ");
+                                output=output.concat ("P\t"+ format(priorities_array[j]/(double)priorities_range)+"\t");
 
-                                output=output.concat("av_latency ");
+                                output=output.concat("av_latency\t");
                                 for (output_statistics os:statistics)
                                     {
-                                    output=output.concat(format(os.av_latency[j])+" ");
+                                    output=output.concat(format(os.av_latency[j])+"\t");
                                     }
-                                output=output.concat("av_copies ");
+                                output=output.concat("av_copies\t");
                                 for (output_statistics os:statistics)
                                     {
-                                    output=output.concat(format(os.av_copies[j])+" ");
+                                    output=output.concat(format(os.av_copies[j])+"\t");
                                     }
-                                output=output.concat("av_dropped ");
+                                output=output.concat("av_dropped\t");
                                 for (output_statistics os:statistics)
                                     {
-                                    output=output.concat(format(os.av_dropped[j])+" ");
+                                    output=output.concat(format(os.av_dropped[j])+"\t");
                                     }
-                                output=output.concat("av_removed ");
+                                output=output.concat("av_removed\t");
                                 for (output_statistics os:statistics)
                                     {
-                                    output=output.concat(format(os.av_dropped[j])+" ");
+                                    output=output.concat(format(os.av_dropped[j])+"\t");
                                     }
-                                output=output.concat("not_reached ");
+                                output=output.concat("not_reached\t");
                                 for (output_statistics os:statistics)
                                     {
-                                    output=output.concat(format(os.not_reached[j])+" ");
+                                    output=output.concat(format(os.not_reached[j])+"\t");
                                     }
-                                output=output.concat("out_of ");
+                                output=output.concat("out_of\t");
                                  for (output_statistics os:statistics)
                                     {
-                                    output=output.concat(format(os.current_total[j])+" ");
+                                    output=output.concat(format(os.current_total[j])+"\t");
                                     }
                                 output=output.concat("\n");
                             }
