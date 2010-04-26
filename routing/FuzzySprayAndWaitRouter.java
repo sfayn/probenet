@@ -28,7 +28,7 @@ import report.FuzzySprayReport;
  * Connected Mobile Networks</I> by Thrasyvoulos Spyropoulus et al.
  *
  */
-public class FuzzySprayAndWaitRouter extends ActiveRouter {
+public class FuzzySprayAndWaitRouter extends EnergyAwareRouter {
 
 		/** identifier for the ftcmax setting ({@value})*/
         public static final String FTCMAX = "ftcmax";

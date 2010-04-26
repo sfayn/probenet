@@ -26,7 +26,7 @@ import report.FuzzySprayReport;
  * Connected Mobile Networks</I> by Thrasyvoulos Spyropoulus et al.
  *
  */
-public class FuzzySprayAndWaitRouter_no_ACKS extends ActiveRouter {
+public class FuzzySprayAndWaitRouter_no_ACKS extends /*ActiveRouter*/EnergyAwareRouter {
 
 		/** identifier for the ftcmax setting ({@value})*/
         public static final String FTCMAX = "ftcmax";
@@ -242,6 +242,8 @@ public class FuzzySprayAndWaitRouter_no_ACKS extends ActiveRouter {
 			/* try to send those messages */
 			this.tryMessagesToConnections(msgCollection, getConnections());
 		}
+		else
+			assert(sendingConnections.size() != 0);
 
     
 		//return tryMessagesForConnected(messages);

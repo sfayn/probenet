@@ -29,18 +29,15 @@ import report.FuzzySprayReport;
  * Connected Mobile Networks</I> by Thrasyvoulos Spyropoulus et al.
  *
  */
-public class FuzzySprayRouter extends ActiveRouter {
+public class FuzzySprayRouter extends EnergyAwareRouter {
 
-    /** identifier for the ftcmax setting ({@value})*/
+		/** identifier for the ftcmax setting ({@value})*/
         public static final String FTCMAX = "ftcmax";
-      /** identifier for the msmax setting ({@value})*/
+		/** identifier for the msmax setting ({@value})*/
         public static final String MSMAX = "msmax";
-	   /** identifier for the logger file setting ({@value})*/
-       //public static final String FILENAME = "filename";
-
-	/** SprayAndWait router's settings name space ({@value})*/
-	public static final String FUZZYSPRAY_NS = "FuzzySprayRouter";
-	/** IDs of the messages that are known to have reached the final dst */
+		/** SprayAndWait router's settings name space ({@value})*/
+		public static final String FUZZYSPRAY_NS = "FuzzySprayRouter";
+		/** IDs of the messages that are known to have reached the final dst */
         protected Set<String> ackedMessageIds;
 
         public static final String FTC_PROPERTY = FUZZYSPRAY_NS + "." + "ftc";
@@ -108,6 +105,7 @@ public class FuzzySprayRouter extends ActiveRouter {
 	@Override
 	public void update() {
 		super.update();
+		
                 double current_time=SimClock.getTime();
 
                 if(current_time-FuzzySprayReport.lastReportTime>=FuzzySprayReport.reportInterval)

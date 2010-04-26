@@ -73,7 +73,7 @@ public class EnergyLevelReport extends Report implements UpdateListener {
 	 * Creates a snapshot of energy levels 
 	 * @param hosts The list of hosts in the world
 	 */
-	private void createSnapshot(List<DTNHost> hosts) {
+	protected void createSnapshot(List<DTNHost> hosts) {
 		write ("[" + (int)getSimTime() + "]"); /* simulation time stamp */
 		for (DTNHost h : hosts) {
 			if (this.reportedNodes != null && 

@@ -7,7 +7,6 @@ package report;
 
 import core.DTNHost;
 import core.Message;
-import java.util.LinkedList;
 import java.util.Vector;
 import routing.FuzzySprayAndWaitRouter;
 import routing.FuzzySprayAndWaitRouter_no_ACKS;
