@@ -158,6 +158,7 @@ public class EnergyAwareRouter extends ActiveRouter
 		
 		if (simTime > this.lastUpdate && sendingConnections.size() > 0) {
 			/* sending data */
+			assert(sendingConnections.size() == 1);
 			reduceEnergy((simTime - this.lastUpdate) * this.transmitEnergy);
 		}
 		this.lastUpdate = simTime;
@@ -173,7 +174,7 @@ public class EnergyAwareRouter extends ActiveRouter
 	public void update() {
 		super.update();
 		reduceSendingAndScanningEnergy();
-				
+		/*
 		if (isTransferring() || !canStartTransfer()) {
 			return; // transferring, don't try other connections yet
 		}
@@ -183,7 +184,7 @@ public class EnergyAwareRouter extends ActiveRouter
 			return; // started a transfer, don't try others (yet)
 		}
 		
-		this.tryAllMessagesToAllConnections();
+		this.tryAllMessagesToAllConnections();*/
 	}
 		
 	@Override
