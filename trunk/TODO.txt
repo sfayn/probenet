@@ -1,0 +1,5 @@
+-awk files
+-adaptable member functions maximum
+-better implementation of ACKS
+-right numbers for energy parameters
+
