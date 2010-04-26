@@ -1,0 +1,8 @@
+Scenario.name = AdaptableFuzzySprayAndWait
+Group.router = AdaptableFuzzySprayAndWaitRouter
+FuzzySprayAndWaitRouter.nrofCopies=4
+FuzzySprayAndWaitRouter.binaryMode=true
+FuzzySprayReport.output=reports/AFSnW_B%%Group.bufferSize%%_L%%FuzzySprayAndWaitRouter.nrofCopies%%_S%%Group.transmitSpeed%%.txt
+FuzzyEnergyReport.output=reports/AFSnW_B%%Group.bufferSize%%_L%%FuzzySprayAndWaitRouter.nrofCopies%%_S%%Group.transmitSpeed%%.energy
+Report.report1 = FuzzySprayReport
+

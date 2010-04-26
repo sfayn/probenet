@@ -212,99 +212,99 @@ public class MessageStatsReportSpecial extends Report implements MessageListener
                
 
                 write("Message stats for scenario " + getScenarioName() +
-				"\nsim_time: " + format(getSimTime()));
+				"\nsim_time:\t" + format(getSimTime()));
                 
                 String output="";
-                output=output.concat("created ");
+                output=output.concat("created\t");
 
                 for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.created)+" ");
+                    output=output.concat(format(os.created)+"\t");
                     }
-                output=output.concat("\nstarted ");
+                output=output.concat("\nstarted\t");
                 for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.started)+" ");
+                    output=output.concat(format(os.started)+"\t");
                     }
-                output=output.concat("\nrelayed ");
+                output=output.concat("\nrelayed\t");
                 for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.relayed)+" ");
+                    output=output.concat(format(os.relayed)+"\t");
                     }
-                output=output.concat("\naborted ");
+                output=output.concat("\naborted\t");
                 for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.aborted)+" ");
+                    output=output.concat(format(os.aborted)+"\t");
                     }
-                output=output.concat("\ndropped ");
+                output=output.concat("\ndropped\t");
                 for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.dropped)+" ");
+                    output=output.concat(format(os.dropped)+"\t");
                     }
-                output=output.concat("\nremoved ");
+                output=output.concat("\nremoved\t");
                  for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.removed)+" ");
+                    output=output.concat(format(os.removed)+"\t");
                     }
-                output=output.concat("\ndelivered ");
+                output=output.concat("\ndelivered\t");
                  for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.delivered)+" ");
+                    output=output.concat(format(os.delivered)+"\t");
                     }
-                output=output.concat("\ndelivery_prob ");
+                output=output.concat("\ndelivery_prob\t");
                  for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.delivery_prob)+" ");
+                    output=output.concat(format(os.delivery_prob)+"\t");
                     }
-                output=output.concat("\nresponse_prob ");
+                output=output.concat("\nresponse_prob\t");
                  for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.response_prob)+" ");
+                    output=output.concat(format(os.response_prob)+"\t");
                     }
-                output=output.concat("\noverhead_ratio ");
+                output=output.concat("\noverhead_ratio\t");
                  for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.overhead_ratio)+" ");
+                    output=output.concat(format(os.overhead_ratio)+"\t");
                     }
-                output=output.concat("\nlatency_avg ");
+                output=output.concat("\nlatency_avg\t");
                  for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.latency_avg)+" ");
+                    output=output.concat(format(os.latency_avg)+"\t");
                     }
-                output=output.concat("\nlatency_med ");
+                output=output.concat("\nlatency_med\t");
                  for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.latency_med)+" ");
+                    output=output.concat(format(os.latency_med)+"\t");
                     }
-                output=output.concat("\nhopcount_avg ");
+                output=output.concat("\nhopcount_avg\t");
                  for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.hopcount_avg)+" ");
+                    output=output.concat(format(os.hopcount_avg)+"\t");
                     }
-                output=output.concat("\nhopcount_med ");
+                output=output.concat("\nhopcount_med\t");
                  for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.hopcount_med)+" ");
+                    output=output.concat(format(os.hopcount_med)+"\t");
                     }
-                output=output.concat("\nbuffertime_avg ");
+                output=output.concat("\nbuffertime_avg\t");
                  for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.buffertime_avg)+" ");
+                    output=output.concat(format(os.buffertime_avg)+"\t");
                     }
-                output=output.concat("\nbuffertime_med ");
+                output=output.concat("\nbuffertime_med\t");
                  for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.buffertime_med)+" ");
+                    output=output.concat(format(os.buffertime_med)+"\t");
                     }
-                output=output.concat("\nrtt_avg ");
+                output=output.concat("\nrtt_avg\t");
                  for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.rtt_avg)+" ");
+                    output=output.concat(format(os.rtt_avg)+"\t");
                     }
-                 output=output.concat("\nrtt_med ");
+                 output=output.concat("\nrtt_med\t");
                  for (normal_statistics os:statistics_vector)
                     {
-                    output=output.concat(format(os.rtt_med)+" ");
+                    output=output.concat(format(os.rtt_med)+"\t");
                     }
 
 
