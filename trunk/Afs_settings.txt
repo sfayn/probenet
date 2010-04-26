@@ -1,0 +1,5 @@
+Scenario.name = AdaptableFuzzySpray
+Group.router = AdaptableFuzzySprayRouter
+FuzzyEnergyReport.output=reports/AFS_B%%Group.bufferSize%%_S%%Group.transmitSpeed%%.energy
+FuzzySprayReport.output=reports/AFS_B%%Group.bufferSize%%_S%%Group.transmitSpeed%%.txt
+Report.report1 = FuzzySprayReport
