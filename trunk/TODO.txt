@@ -1,7 +1,7 @@
+-change drop policy
 -awk files
 -done----adaptable member functions maximum
 -better implementation of ACKS
 -right numbers for energy parameters
 -simulation on different network conditions (tight to relaxed with one parameter at a time)
 -done----spaces to tabs
-
