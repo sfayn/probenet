@@ -21,6 +21,6 @@ BEGIN {
 #######################################################################
 
 END {
-	printf( "1\t%d\n",average/count);
+	printf( "%d\t%d\n",x,average/count);
 }
 

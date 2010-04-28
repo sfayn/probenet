@@ -3,5 +3,5 @@ Group.router = SprayAndWaitRouter
 SprayAndWaitRouter.nrofCopies =   4
 SprayAndWaitRouter.binaryMode = true
 Report.report1 = FuzzySprayReport
-FuzzySprayReport.output=reports/SW_B%%Group.bufferSize%%L%%SprayAndWaitRouter.nrofCopies%%S%%Group.transmitSpeed%%.txt
-FuzzyEnergyReport.output=reports/SW_B%%Group.bufferSize%%L%%SprayAndWaitRouter.nrofCopies%%S%%Group.transmitSpeed%%.energy
+FuzzySprayReport.output=reports/SW_L-%%SprayAndWaitRouter.nrofCopies%%_B-%%Group.bufferSize%%_TS-%%fuzzy.transmitSpeed%%_TR-%%fuzzy.transmitRange%%_W-%%Group.waitTime%%_S-%%Group.speed%%.txt
+FuzzyEnergyReport.output=reports/SW_L-%%SprayAndWaitRouter.nrofCopies%%_B-%%Group.bufferSize%%_TS-%%fuzzy.transmitSpeed%%_TR-%%fuzzy.transmitRange%%_W-%%Group.waitTime%%_S-%%Group.speed%%.energy
