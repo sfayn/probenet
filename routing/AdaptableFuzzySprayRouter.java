@@ -100,7 +100,7 @@ public class AdaptableFuzzySprayRouter extends EnergyAwareRouter {
 		makeRoomForNewMessage(msg.getSize());
 
 		msg.setTtl(this.msgTtl);
-                msg.addProperty(FTC_PROPERTY, (Integer)1);
+        msg.addProperty(FTC_PROPERTY, (Integer)1);
 		addToMessages(msg, true);
 
 		return true;

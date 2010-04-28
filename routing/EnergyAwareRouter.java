@@ -20,6 +20,9 @@ public class EnergyAwareRouter extends ActiveRouter
 	public static final String SCAN_ENERGY_S = "scanEnergy";
 	/** Energy usage per second when sending -setting id ({@value}). */
 	public static final String TRANSMIT_ENERGY_S = "transmitEnergy";
+	/** Energy usage per second when receiving -setting id ({@value}). */
+	public static final String RECEIVE_ENERGY_S = "receiveEnergy";//I added this previously no energy loss on receive
+
 	/** Energy update warmup period -setting id ({@value}). Defines the 
 	 * simulation time after which the energy level starts to decrease due to 
 	 * scanning, transmissions, etc. Default value = 0. If value of "-1" is 
@@ -38,7 +41,9 @@ public class EnergyAwareRouter extends ActiveRouter
 	/** energy usage per scan */
 	private double scanEnergy;
 	private double transmitEnergy;
+	private double receiveEnergy;//I added this previously no energy loss on receive
 	private double lastScanUpdate;
+	private double time_start_receive;
 	private double lastUpdate;
 	private double scanInterval;	
 	private ModuleCommunicationBus comBus;
@@ -60,6 +65,7 @@ public class EnergyAwareRouter extends ActiveRouter
 		
 		this.scanEnergy = s.getDouble(SCAN_ENERGY_S);
 		this.transmitEnergy = s.getDouble(TRANSMIT_ENERGY_S);
+		this.receiveEnergy=s.getDouble(RECEIVE_ENERGY_S);//I added this previously no energy loss on receive
 		this.scanInterval  = s.getDouble(SimScenario.SCAN_INTERVAL_S);
 		
 		if (s.contains(WARMUP_S)) {
@@ -103,23 +109,75 @@ public class EnergyAwareRouter extends ActiveRouter
 		setEnergy(this.initEnergy);
 		this.scanEnergy = r.scanEnergy;
 		this.transmitEnergy = r.transmitEnergy;
+		this.receiveEnergy=r.receiveEnergy;//I added this previously no energy loss on receive
 		this.scanInterval = r.scanInterval;
 		this.warmupTime  = r.warmupTime;
 		this.comBus = null;
 		this.lastScanUpdate = 0;
 		this.lastUpdate = 0;
+		this.time_start_receive=0;//I added this previously no energy loss on receive
 	}
 	
 	@Override
 	protected int checkReceiving(Message m) {
-		if (this.currentEnergy < 0) {
+		if (this.currentEnergy <= 0) {
 			return DENIED_UNSPECIFIED;
 		}
 		else {
 			 return super.checkReceiving(m);
 		}
 	}
-	
+
+	@Override //I added this previously unchecked
+	protected boolean canStartTransfer() {
+		if (this.currentEnergy <= 0) {
+			return false;
+		}
+		else {
+			 return super.canStartTransfer();
+		}
+	}
+
+	@Override //I added this previously unchecked but is not reached since all children are overriding it so I overided the following function
+	public boolean createNewMessage(Message m) {
+		if (this.currentEnergy <= 0) {
+			return false;
+		}
+		else
+			return super.createNewMessage(m);
+	}
+
+	@Override //I added this previously unchecked
+	protected void addToMessages(Message m, boolean newMessage) {
+		if (this.currentEnergy > 0)
+			super.addToMessages(m,newMessage);
+	}
+
+	@Override //I added this previously no energy loss on receive
+	public int receiveMessage(Message m, DTNHost from) {
+		int recvCheck = super.receiveMessage(m, from);
+		if (recvCheck==RCV_OK)
+			time_start_receive=SimClock.getTime();
+		return recvCheck;
+	}
+
+	@Override //I added this previously no energy loss on receive
+	public Message messageTransferred(String id, DTNHost from) {
+		Message m = super.messageTransferred(id, from);
+			assert(time_start_receive>=0);
+			reduceEnergy((SimClock.getTime()-time_start_receive)*receiveEnergy);
+			time_start_receive=-1;
+		return m;
+	}
+
+	@Override //I added this previously no energy loss on receive
+	public void messageAborted(String id, DTNHost from, int bytesRemaining) {
+		super.messageAborted(id,from,bytesRemaining);
+		assert(time_start_receive>=0);
+		reduceEnergy((SimClock.getTime()-time_start_receive)*receiveEnergy);
+		time_start_receive=-1;
+	}
+
 	/**
 	 * Updates the current energy so that the given amount is reduced from it.
 	 * If the energy level goes below zero, sets the level to zero.

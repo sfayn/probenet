@@ -1,1 +1,0 @@
-gawk -f average.awk %1 >>%2

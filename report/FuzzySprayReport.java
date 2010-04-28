@@ -120,6 +120,9 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 					priority=FuzzySprayAndWaitRouter_no_ACKS.FTCComparator.getPriority(m);
 				else
 					priority=0.6;
+				//System.out.println(messID+" "+ messages.size());
+				for (int i=messages.size();i<messID;i++)//this loop is needed in case we have some entries skipped
+					messages.add(i,null);
 				messages.add(messID,new message_info(getSimTime(),priority));
 
 	}
@@ -161,17 +164,17 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 		messages.set(i,info);
 	}
         
-        @Override        
-        public void calculateStatistics(double time){
-                //System.out.println("entered stats");
-                double [] sum_average_latency=new double[priorities_count];
+	@Override
+	public void calculateStatistics(double time){
+			//System.out.println("entered stats");
+		double [] sum_average_latency=new double[priorities_count];
 		int [] sum_in_network=new int[priorities_count];
 		int [] sum_dropped=new int[priorities_count];
 		int [] sum_removed=new int[priorities_count];
 		int [] num_reached=new int[priorities_count];
 		int [] not_reach=new int[priorities_count];
 
-                for (int j=0;j<priorities_count;j++)
+		for (int j=0;j<priorities_count;j++)
 		{
 			sum_average_latency[j]=0;
 			num_reached[j]=0;
@@ -181,15 +184,17 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 			sum_dropped[j]=0;
 		}
 
-                for (int i=1;i<messages.size();i++)
+		for (int i=1;i<messages.size();i++)
 		{
 			message_info m=messages.get(i);
                         //System.out.println(m.priority);
 			//if (m.priority>0 && m.priority<2)
 
 
-                        for (int j=0;j<priorities_count;j++)
+            for (int j=0;j<priorities_count;j++)
 			{
+				if (m==null)
+					continue;
 				if (m.priority==priorities_array[j])
 				{
                                         

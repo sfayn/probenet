@@ -5,3 +5,4 @@
 -right numbers for energy parameters
 -simulation on different network conditions (tight to relaxed with one parameter at a time)
 -done----spaces to tabs
+-done----reduce energy on receive and disallow routers which have died from sending or creating mesages
