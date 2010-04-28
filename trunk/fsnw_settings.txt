@@ -4,7 +4,7 @@ FuzzySprayAndWaitRouter.ftcmax=4
 FuzzySprayAndWaitRouter.msmax=100000
 FuzzySprayAndWaitRouter.nrofCopies=4
 FuzzySprayAndWaitRouter.binaryMode=true
-FuzzySprayReport.output=reports/FSnW_B%%Group.bufferSize%%_L%%FuzzySprayAndWaitRouter.nrofCopies%%_S%%Group.transmitSpeed%%_F%%FuzzySprayAndWaitRouter.ftcmax%%_M%%FuzzySprayAndWaitRouter.msmax%%.txt
-FuzzyEnergyReport.output=reports/FSnW_B%%Group.bufferSize%%_L%%FuzzySprayAndWaitRouter.nrofCopies%%_S%%Group.transmitSpeed%%_F%%FuzzySprayAndWaitRouter.ftcmax%%_M%%FuzzySprayAndWaitRouter.msmax%%.energy
+FuzzySprayReport.output=reports/FSnW_L-%%FuzzySprayAndWaitRouter.nrofCopies%%_F-%%FuzzySprayAndWaitRouter.ftcmax%%_M-%%FuzzySprayAndWaitRouter.msmax%%_B-%%Group.bufferSize%%_TS-%%fuzzy.transmitSpeed%%_TR-%%fuzzy.transmitRange%%_W-%%Group.waitTime%%_S-%%Group.speed%%.txt
+FuzzyEnergyReport.output=reports/FSnW_L-%%FuzzySprayAndWaitRouter.nrofCopies%%_F-%%FuzzySprayAndWaitRouter.ftcmax%%_M-%%FuzzySprayAndWaitRouter.msmax%%_B-%%Group.bufferSize%%_TS-%%fuzzy.transmitSpeed%%_TR-%%fuzzy.transmitRange%%_W-%%Group.waitTime%%_S-%%Group.speed%%.energy
 Report.report1 = FuzzySprayReport
 

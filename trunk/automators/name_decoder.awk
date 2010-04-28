@@ -1,46 +1,141 @@
 BEGIN {
-	FS = "[_-]";
+	FS = "[,_-]";
 	x_value=-1;
 }
 
 #######################################################################
 {
+	gsub(/k/, "000", B);
+	gsub(/M/, "000000", B);
+	gsub(/k/, "000", M);
+	gsub(/M/, "000000", M);
+	gsub(/k/, "000", TS);
+	gsub(/M/, "000000", TS);
+	gsub(/k/, "000", TR);
+	gsub(/M/, "000000", TR);
+	gsub(/k/, "000", W);
+	gsub(/M/, "000000", W);
+	gsub(/k/, "000", S);
+	gsub(/M/, "000000", S);
+	gsub(/k/, "000", L);
+	gsub(/M/, "000000", L);
+	gsub(/k/, "000", F);
+	gsub(/M/, "000000", F);	
+	gsub(/k_/, "000-", $0);
+	gsub(/M_/, "000000-", $0);
+	gsub(/\"/, "", $0);
+	
 	type=$1;
-	printf("%s-%s----\n",B,S);
 	i=2;
 	for (i=2;$i != "";i=i+2)
 	{
-		printf("%s-%s\n",$i,$(i+1));
-		if ($i="B" )
+		param=$i;
+		first=$(i+1);
+		second=$(i+2);
+		if (param=="B" )
 		{
 			if (B!=-1)
 			{
-				if (B=$(i+1))
+				if (B==first)
 					continue;
 				else
 					break;
 			}
 			else
-				x_value=$(i+1);
+				x_value=first;
 		}
-		if ($i="S" )
+		else if (param=="S" )
 		{
+			i++; ##because we have also comma
+			S=S+0;
 			if (S!=-1)
 			{
-				if (S=$(i+1))
+				if (S>=first && S<=second)
 					continue;
 				else
 					break;
 			}
 			else
-				x_value=$(i+1);
+				x_value=(first+second)/2;
 		}
-		if (type="FS")
+		else if (param=="W" )
 		{
+			i++; ##because we have aslo comma
+			W=W+0;
+			if (W!=-1)
+			{
+				if (W>=first && W<=second)
+					continue;
+				else
+					break;
+			}
+			else
+				x_value=(first+seccond)/2;
+		}
+		else if (param=="TR" )
+		{
+			if (TR!=-1)
+			{
+				if (TR==first)
+					continue;
+				else
+					break;
+			}
+			else
+				x_value=first;
+		}
+		else if (param=="TS" )
+		{
+			if (TS!=-1)
+			{
+				if (TS==first)
+					continue;
+				else
+					break;
+			}
+			else
+				x_value=first;
+		}
+		else if (param=="L" )
+		{
+			if (L!=-1)
+			{
+				if (L==first)
+					continue;
+				else
+					break;
+			}
+			else
+				x_value=first;
+		}
+		else if (param=="F" )
+		{
+			if (F!=-1)
+			{
+				if (F==first)
+					continue;
+				else
+					break;
+			}
+			else
+				x_value=first;
+		}
+		else if (param=="M" )
+		{
+			if (M!=-1)
+			{
+				if (M==first)
+					continue;
+				else
+					break;
+			}
+			else
+				x_value=first;
 		}
 	}
+	gsub(/\"/, "", name);
 	if ($i == "" && x_value!=-1)
-		printf( "x=%d ..\\reports\\%s\n",x_value,name+".energry");
+		printf( "x=%s ..\\reports\\%s.energy\n",x_value,name);
 	
 }
 
