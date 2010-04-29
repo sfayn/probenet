@@ -16,6 +16,7 @@ import core.MessageListener;
 import core.Settings;
 import core.SimClock;
 import core.Tuple;
+import java.util.Collection;
 import java.util.Comparator;
 import report.FuzzySprayReport;
 //import sun.security.action.GetIntegerAction;
@@ -101,6 +102,28 @@ public class FuzzySprayAndWaitRouter_no_ACKS extends /*ActiveRouter*/EnergyAware
 		return msg;
 	}
 
+	@Override
+	protected Message getOldestMessage(boolean excludeMsgBeingSent) {
+		Collection<Message> messages = this.getMessageCollection();
+		Message less_priority = null;
+		double least_priority=1;
+		for (Message m : messages) {
+
+			if (excludeMsgBeingSent && isSending(m.getId())) {
+				continue; // skip the message(s) that router is sending
+			}
+
+			if (less_priority == null ) {
+				less_priority = m;
+			}
+			else if (least_priority > FTCComparator.getPriority(m)) {
+				less_priority = m;
+				least_priority=FTCComparator.getPriority(less_priority);
+			}
+		}
+
+		return less_priority;
+	}
 
 	@Override
 	public boolean createNewMessage(Message msg) {
