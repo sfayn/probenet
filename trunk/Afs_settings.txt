@@ -3,5 +3,5 @@ Group.router = AdaptableFuzzySprayRouter
 FuzzyEnergyReport.output=reports/AFS_B-%%Group.bufferSize%%_TS-%%fuzzy.transmitSpeed%%_TR-%%fuzzy.transmitRange%%_W-%%Group.waitTime%%_S-%%Group.speed%%.energy
 FuzzySprayReport.output=reports/AFS_B-%%Group.bufferSize%%_TS-%%fuzzy.transmitSpeed%%_TR-%%fuzzy.transmitRange%%_W-%%Group.waitTime%%_S-%%Group.speed%%.txt
 Report.report1 = FuzzySprayReport
-Report.report2=DeliveredMessagesReport
-DeliveredMessagesReport.output=reports/FSnW_delivered.txt
+Report.report2=MessageDelayReport
+MessageDelayReport.output=reports/FSnW_delivered.txt

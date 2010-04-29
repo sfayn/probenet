@@ -93,7 +93,7 @@ public class AdaptableFuzzySprayRouter extends EnergyAwareRouter {
 			
 		return msg;
 	}
-/*
+
 	@Override
 	protected Message getOldestMessage(boolean excludeMsgBeingSent) {
 		Collection<Message> messages = this.getMessageCollection();
@@ -114,7 +114,7 @@ public class AdaptableFuzzySprayRouter extends EnergyAwareRouter {
 		}
 		return less_priority;
 	}
-*/
+
 	@Override
 	public boolean createNewMessage(Message msg) {
 		makeRoomForNewMessage(msg.getSize());
