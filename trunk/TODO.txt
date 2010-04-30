@@ -3,7 +3,7 @@
 -done----adaptable member functions maximum
 -better implementation of ACKS
 -uses size of messages for overhead and not absolute numbers
--do a comprehensive consise report of the parameters we need
+-done----do a comprehensive consise report of the parameters we need
 -right numbers for energy parameters
 -simulation on different network conditions (tight to relaxed with one parameter at a time)
 -done----spaces to tabs

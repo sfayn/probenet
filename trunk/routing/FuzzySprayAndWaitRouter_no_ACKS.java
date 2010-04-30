@@ -18,6 +18,7 @@ import core.SimClock;
 import core.Tuple;
 import java.util.Collection;
 import java.util.Comparator;
+import report.FuzzyComprehensiveReport;
 import report.FuzzySprayReport;
 //import sun.security.action.GetIntegerAction;
 
@@ -149,8 +150,10 @@ public class FuzzySprayAndWaitRouter_no_ACKS extends /*ActiveRouter*/EnergyAware
 
                     for (MessageListener ml:mListeners)
                     {
-                        if (ml instanceof FuzzySprayReport)
+                        if (ml instanceof FuzzySprayReport )
                             ((FuzzySprayReport)ml).calculateStatistics(current_time);
+						else if (ml instanceof FuzzyComprehensiveReport)
+							((FuzzyComprehensiveReport)ml).calculateStatistics(current_time);
 
                     }
 
