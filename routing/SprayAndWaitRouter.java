@@ -13,6 +13,7 @@ import core.Message;
 import core.MessageListener;
 import core.Settings;
 import core.SimClock;
+import report.FuzzyComprehensiveReport;
 import report.FuzzySprayReport;
 
 /**
@@ -105,8 +106,10 @@ public class SprayAndWaitRouter extends EnergyAwareRouter {
 
                     for (MessageListener ml:mListeners)
                     {
-                        if (ml instanceof FuzzySprayReport)
+                        if (ml instanceof FuzzySprayReport )
                             ((FuzzySprayReport)ml).calculateStatistics(current_time);
+						else if (ml instanceof FuzzyComprehensiveReport)
+							((FuzzyComprehensiveReport)ml).calculateStatistics(current_time);
 
                     }
 

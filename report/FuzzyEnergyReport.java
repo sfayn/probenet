@@ -18,7 +18,7 @@ public class FuzzyEnergyReport extends EnergyLevelReport {
 
 	@Override
 	protected void createSnapshot(List<DTNHost> hosts) {
-		header=header+ "\t" + (int)getSimTime(); /* simulation time stamp */
+		header=header+ "\t" + format(getSimTime()/3600.0); /* simulation time stamp */
 		double sum=0;
 		int empty_count=0;
 		for (DTNHost h : hosts) {
@@ -38,9 +38,9 @@ public class FuzzyEnergyReport extends EnergyLevelReport {
 	@Override
 	public void done()
 	{
-		write("time:"+header);
-		write("average:"+average);
-		write("off-nodes:"+empty);
+		write("time"+header);
+		write("average_energy"+average);
+		write("dead_nodes"+empty);
 		super.done();
 	}
 }

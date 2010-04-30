@@ -135,7 +135,7 @@ BEGIN {
 	}
 	gsub(/\"/, "", name);
 	if ($i == "" && x_value!=-1)
-		printf( "x=%s ..\\reports\\%s.energy\n",x_value,name);
+		printf( "x=%s ..\\reports\\%s.txt\n",x_value,name);
 	
 }
 

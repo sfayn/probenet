@@ -20,6 +20,7 @@ import core.Tuple;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import report.FuzzyComprehensiveReport;
 import report.FuzzySprayReport;
 //import sun.security.action.GetIntegerAction;
 
@@ -137,8 +138,10 @@ public class AdaptableFuzzySprayRouter extends EnergyAwareRouter {
 
                     for (MessageListener ml:mListeners)
                     {
-                        if (ml instanceof FuzzySprayReport)
+                        if (ml instanceof FuzzySprayReport )
                             ((FuzzySprayReport)ml).calculateStatistics(current_time);
+						else if (ml instanceof FuzzyComprehensiveReport)
+							((FuzzyComprehensiveReport)ml).calculateStatistics(current_time);
 
                     }
                     
