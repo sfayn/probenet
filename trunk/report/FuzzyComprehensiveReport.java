@@ -103,11 +103,12 @@ public class FuzzyComprehensiveReport extends FuzzyEnergyReport implements Updat
 
 	@Override
 	public void done() {
+		calculateStatistics(43200);//adjust to total simulation time
 		write(/*"Message stats for scenario " +*/ getScenarioName() +	"\nsim_time\t" + format(getSimTime()));
 
 		String output="";
 		output=output.concat("time\t");
-		for (int i=1;i<=12;i++)
+		for (int i=1;i<=statistics_vector.size();i++)
 		{
 			output=output.concat(i+"\t");
 		}
@@ -127,11 +128,14 @@ public class FuzzyComprehensiveReport extends FuzzyEnergyReport implements Updat
 			output=output.concat(format(os.latency_avg)+"\t");
 		}*/
 		write(output);
+		/*
 		if (delays.size() == 0) {
-			write("none delivered"+format(getSimTime()));
+			write("----------");
+			write("none_delivered");
+			write("----------");
 			super.done();
 			return;
-		}
+		}*/
 		double cumProb = 0, total_delay=0; // cumulative probability
 
 		java.util.Collections.sort(delays);
