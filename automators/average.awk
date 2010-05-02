@@ -5,11 +5,12 @@ BEGIN {
 
 #######################################################################
 {
-	if ($1=metric)
+	if ($1==metric)
 	{
 		i=2;
 		while ($i != "")
 		{
+			##printf("%d\n",$i);
 			average+=$i
 			i++;
 			count++;
@@ -21,6 +22,9 @@ BEGIN {
 #######################################################################
 
 END {
-	printf( "%d\t%d\n",x,average/count);
+	if (count>0)
+		printf( "%g\t%g\n",x,average/count);
+	else
+		printf("%g\t0\n",x);
 }
 

@@ -1,10 +1,12 @@
 BEGIN {
 	FS = "[,_-]";
 	x_value=-1;
+	error=0.01;
 }
 
 #######################################################################
 {
+	
 	gsub(/k/, "000", B);
 	gsub(/M/, "000000", B);
 	gsub(/k/, "000", M);
@@ -21,10 +23,10 @@ BEGIN {
 	gsub(/M/, "000000", L);
 	gsub(/k/, "000", F);
 	gsub(/M/, "000000", F);	
+	gsub(/\"/, "", $0);
+	name=$0;
 	gsub(/k_/, "000-", $0);
 	gsub(/M_/, "000000-", $0);
-	gsub(/\"/, "", $0);
-	
 	type=$1;
 	i=2;
 	for (i=2;$i != "";i=i+2)
@@ -48,29 +50,31 @@ BEGIN {
 		{
 			i++; ##because we have also comma
 			S=S+0;
+			average=(first+second)/2.0;
 			if (S!=-1)
 			{
-				if (S>=first && S<=second)
+				if (S>=average-error && S<=average+error)
 					continue;
 				else
 					break;
 			}
 			else
-				x_value=(first+second)/2;
+				x_value=average;
 		}
 		else if (param=="W" )
 		{
-			i++; ##because we have aslo comma
+			i++; ##because we have also comma
 			W=W+0;
+			average=(first+second)/2.0;
 			if (W!=-1)
 			{
-				if (W>=first && W<=second)
+				if (W>=average-error && W<=average+error)
 					continue;
 				else
 					break;
 			}
 			else
-				x_value=(first+seccond)/2;
+				x_value=average;
 		}
 		else if (param=="TR" )
 		{
@@ -133,7 +137,7 @@ BEGIN {
 				x_value=first;
 		}
 	}
-	gsub(/\"/, "", name);
+	gsub(/ /, "", name);
 	if ($i == "" && x_value!=-1)
 		printf( "x=%s ..\\reports\\%s.txt\n",x_value,name);
 	
