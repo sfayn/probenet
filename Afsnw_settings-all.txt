@@ -1,16 +1,16 @@
 Scenario.name = AdaptableFuzzySprayAndWait
 Group.router = AdaptableFuzzySprayAndWaitRouter
-FuzzySprayAndWaitRouter.nrofCopies=4
 FuzzySprayAndWaitRouter.binaryMode=true
-Events1.interval = [5,10;25,35]
-Group.waitTime= [0,30;0,90;0,120]
-fuzzy.transmitRange= [5;10;15;20;25;30;35]
-Group.transmitSpeed= [1k;10k;100k;1M;10M]
-fuzzy.transmitSpeed= [1k;10k;100k;1M;10M]
-Group.nrofHosts =60
-Events1.size=10k,100k
-Group.speed= 2.7,13.9
-Group.bufferSize=1M
+FuzzySprayAndWaitRouter.nrofCopies= [2;4;8;12;16;20;24;28;32;36;40]
+Group.bufferSize= [10k; 100k ;500k; 1M ;5M; 10M ; 100M]
+Group.nrofHosts = [20;60;100;140;180]
+Events1.size= [1k,10k;10k,100k;100k,500k]
+Group.speed= [2.7,13.9;7,10]
+Group.waitTime= 0,120
+fuzzy.transmitRange= 30
+Group.transmitSpeed=3M
+fuzzy.transmitSpeed=3M
+Events1.interval =25,35
 FuzzyComprehensiveReport.output =reports/AFSnW_L-%%FuzzySprayAndWaitRouter.nrofCopies%%_B-%%Group.bufferSize%%_TS-%%fuzzy.transmitSpeed%%_TR-%%fuzzy.transmitRange%%_W-%%Group.waitTime%%_S-%%Group.speed%%_N-%%Group.nrofHosts%%_MS-%%Events1.size%%_CI-%%Events1.interval%%.txt
 Report.report1 = FuzzyComprehensiveReport
 

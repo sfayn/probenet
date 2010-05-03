@@ -2,6 +2,18 @@ BEGIN {
 	FS = "[,_-]";
 	x_value=-1;
 	error=0.01;
+	#default values
+	L=4
+	N =60
+	MS=55000
+	S= 8.3
+	B=1000000
+	W= 60
+	TR= 30
+	TS=3000000
+	CI =30
+	F=4
+	M=100000
 }
 
 #######################################################################
@@ -23,6 +35,12 @@ BEGIN {
 	gsub(/M/, "000000", L);
 	gsub(/k/, "000", F);
 	gsub(/M/, "000000", F);	
+	gsub(/k/, "000", N);
+	gsub(/M/, "000000", N);	
+	gsub(/k/, "000", MS);
+	gsub(/M/, "000000", MS);	
+	gsub(/k/, "000", CI);
+	gsub(/M/, "000000", CI);	
 	gsub(/\"/, "", $0);
 	name=$0;
 	gsub(/k_/, "000-", $0);
@@ -111,6 +129,48 @@ BEGIN {
 			}
 			else
 				x_value=first;
+		}
+		else if (param=="N" )
+		{
+			if (N!=-1)
+			{
+				if (N==first)
+					continue;
+				else
+					break;
+			}
+			else
+				x_value=first;
+		}
+		else if (param=="MS" )
+		{
+			i++; ##because we have also comma
+			MS=MS+0;
+			average=(first+second)/2.0;
+			if (MS!=-1)
+			{
+				if (MS>=average-error && MS<=average+error)
+					continue;
+				else
+					break;
+			}
+			else
+				x_value=average;
+		}
+		else if (param=="CI" )
+		{
+			i++; ##because we have also comma
+			CI=CI+0;
+			average=(first+second)/2.0;
+			if (CI!=-1)
+			{
+				if (CI>=average-error && CI<=average+error)
+					continue;
+				else
+					break;
+			}
+			else
+				x_value=average;
 		}
 		else if (param=="F" )
 		{
