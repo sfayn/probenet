@@ -43,8 +43,10 @@ BEGIN {
 	gsub(/M/, "000000", CI);	
 	gsub(/\"/, "", $0);
 	name=$0;
-	gsub(/k_/, "000-", $0);
-	gsub(/M_/, "000000-", $0);
+	gsub(/k_/, "000_", $0);
+	gsub(/M_/, "000000_", $0);
+	gsub(/k,/, "000,", $0);
+	gsub(/M,/, "000000,", $0);
 	type=$1;
 	i=2;
 	for (i=2;$i != "";i=i+2)
@@ -54,6 +56,7 @@ BEGIN {
 		second=$(i+2);
 		if (param=="B" )
 		{
+			#printf("B");
 			if (B!=-1)
 			{
 				if (B==first)
@@ -66,6 +69,7 @@ BEGIN {
 		}
 		else if (param=="S" )
 		{
+			#printf("S");
 			i++; ##because we have also comma
 			S=S+0;
 			average=(first+second)/2.0;
@@ -81,6 +85,7 @@ BEGIN {
 		}
 		else if (param=="W" )
 		{
+			#printf("W");
 			i++; ##because we have also comma
 			W=W+0;
 			average=(first+second)/2.0;
@@ -96,6 +101,7 @@ BEGIN {
 		}
 		else if (param=="TR" )
 		{
+			#printf("TR");
 			if (TR!=-1)
 			{
 				if (TR==first)
@@ -108,6 +114,7 @@ BEGIN {
 		}
 		else if (param=="TS" )
 		{
+			#printf("TS");
 			if (TS!=-1)
 			{
 				if (TS==first)
@@ -120,6 +127,7 @@ BEGIN {
 		}
 		else if (param=="L" )
 		{
+			#printf("L");
 			if (L!=-1)
 			{
 				if (L==first)
@@ -132,6 +140,7 @@ BEGIN {
 		}
 		else if (param=="N" )
 		{
+			#printf("N");
 			if (N!=-1)
 			{
 				if (N==first)
@@ -144,9 +153,11 @@ BEGIN {
 		}
 		else if (param=="MS" )
 		{
+			#printf("MS");
 			i++; ##because we have also comma
 			MS=MS+0;
 			average=(first+second)/2.0;
+			#printf("%g",average);
 			if (MS!=-1)
 			{
 				if (MS>=average-error && MS<=average+error)
@@ -159,6 +170,7 @@ BEGIN {
 		}
 		else if (param=="CI" )
 		{
+			#printf("CI");
 			i++; ##because we have also comma
 			CI=CI+0;
 			average=(first+second)/2.0;
@@ -174,6 +186,7 @@ BEGIN {
 		}
 		else if (param=="F" )
 		{
+			#printf("F");
 			if (F!=-1)
 			{
 				if (F==first)
@@ -186,6 +199,7 @@ BEGIN {
 		}
 		else if (param=="M" )
 		{
+			#printf("M");
 			if (M!=-1)
 			{
 				if (M==first)
@@ -197,6 +211,7 @@ BEGIN {
 				x_value=first;
 		}
 	}
+	#printf("\n");
 	gsub(/ /, "", name);
 	if ($i == "" && x_value!=-1)
 		printf( "x=%s ..\\reports\\%s.txt\n",x_value,name);

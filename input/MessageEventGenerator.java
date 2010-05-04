@@ -8,6 +8,7 @@ import java.util.Random;
 
 import core.Settings;
 import core.SettingsError;
+import core.SimScenario;
 
 /**
  * Message creation -external events generator. Creates uniformly distributed
@@ -71,10 +72,11 @@ public class MessageEventGenerator implements EventQueue {
 	 * of hosts in the network.
 	 * @param s Settings for this generator.
 	 */
+	@SuppressWarnings("empty-statement")
 	public MessageEventGenerator(Settings s){
 		this.sizeRange = s.getCsvInts(MESSAGE_SIZE_S);
 		this.msgInterval = s.getCsvInts(MESSAGE_INTERVAL_S);
-		this.hostRange = s.getCsvInts(HOST_RANGE_S, 2);
+		this.hostRange=s.getCsvInts(HOST_RANGE_S, 2);
 		this.idPrefix = s.getSetting(MESSAGE_ID_PREFIX_S);
 		
 		if (s.contains(MESSAGE_TIME_S)) {

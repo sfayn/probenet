@@ -103,14 +103,14 @@ public class FuzzyComprehensiveReport extends FuzzyEnergyReport implements Updat
 
 	@Override
 	public void done() {
-		calculateStatistics(43200);//adjust to total simulation time
+		calculateStatistics(21600);//adjust to total simulation time
 		write(/*"Message stats for scenario " +*/ getScenarioName() +	"\nsim_time\t" + format(getSimTime()));
 
 		String output="";
 		output=output.concat("time\t");
 		for (int i=1;i<=statistics_vector.size();i++)
 		{
-			output=output.concat(i+"\t");
+			output=output.concat(format(i/4.0)+"\t");
 		}
 		output=output.concat("\ndelivery_prob\t");
 		for (normal_statistics os:statistics_vector)
@@ -128,14 +128,6 @@ public class FuzzyComprehensiveReport extends FuzzyEnergyReport implements Updat
 			output=output.concat(format(os.latency_avg)+"\t");
 		}*/
 		write(output);
-		/*
-		if (delays.size() == 0) {
-			write("----------");
-			write("none_delivered");
-			write("----------");
-			super.done();
-			return;
-		}*/
 		double cumProb = 0, total_delay=0; // cumulative probability
 
 		java.util.Collections.sort(delays);
@@ -148,11 +140,17 @@ public class FuzzyComprehensiveReport extends FuzzyEnergyReport implements Updat
 			delay_s=delay_s+"\t"+format(delays.get(i));
 			average_delay_s=average_delay_s+"\t"+ format(total_delay/(i+1));
 		}
+		if (delays.size() == 0) {
+			cumProb_s = cumProb_s+"\t"+ format(0);
+			delay_s=delay_s+"\t"+format(Double.NaN);
+			average_delay_s=average_delay_s+"\t"+ format(Double.NaN);
+		}
 		write("----------");
 		write(cumProb_s);
 		write(delay_s);
 		write(average_delay_s);
 		write("----------");
+		FuzzySprayReport.lastReportTime=0;
 		super.done();
 	}
 	
