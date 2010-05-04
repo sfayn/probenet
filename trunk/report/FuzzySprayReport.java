@@ -19,7 +19,7 @@ import routing.FuzzySprayRouter;
 public class FuzzySprayReport extends MessageStatsReportSpecial {
 
         public static double lastReportTime=0;
-        public static double  reportInterval=3600;
+        public static double  reportInterval=900;
 
 	private class message_info
 	{

@@ -83,7 +83,8 @@ public class SimScenario implements Serializable {
 	
 	/** package where to look for application classes */
 	private static final String APP_PACKAGE = "applications.";
-	
+
+	public static int number_hosts=0;
 	/** The world instance */
 	private World world;
 	/** List of hosts in this simulation */
@@ -347,6 +348,7 @@ public class SimScenario implements Serializable {
 			
 			// checks that these values are positive (throws Error if not)
 			ensurePositiveValue(nrofHosts, NROF_HOSTS_S);
+			number_hosts=nrofHosts;
 			ensurePositiveValue(nrofInterfaces, NROF_INTERF_S);
 
 			// setup interfaces
