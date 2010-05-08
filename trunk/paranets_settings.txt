@@ -1,0 +1,130 @@
+## Scenario settings
+Scenario.name = Paranets
+Scenario.simulateConnections = true
+Scenario.updateInterval = 0.1
+# 7200s == 2h
+Scenario.endTime = 7200
+
+# "wlan" interface for all nodes
+wlan.type = SimpleBroadcastInterface
+#InterferenceLimitedInterface
+# Transmit speed of 2 Mbps = 250kBps
+wlan.transmitSpeed = 300k
+wlan.transmitRange = 30
+
+# must be changed later to an interface which adapts to contention but not to interference
+cellular.type = SimpleBroadcastInterface
+#InterferenceLimitedInterface
+cellular.transmitSpeed = 10M
+cellular.transmitRange = 10000
+#1000
+
+# must be changed later to an interface which adapts to contention but not to interference
+satellite.type = SimpleBroadcastInterface
+#InterferenceLimitedInterface
+satellite.transmitSpeed = 8M
+satellite.transmitRange = 10000
+
+Scenario.nrofHostGroups = 2
+
+# Group Settings
+Group.movementModel = RandomWaypoint
+#MapRouteMovement
+Group.deleteDelivered= true
+
+Group1.bufferSize= 1M
+Group2.bufferSize= 2000M
+#Group.transmitSpeed=3M
+Group1.waitTime = 0,20
+Group.nrofInterfaces = 3
+Group.interface1 = wlan
+Group.interface2 = cellular
+Group.interface3 = satellite
+# Walking speeds
+Group1.speed = 2.7,5.4
+#does not move
+Group2.speed=0,0
+# Message TTL of 300 minutes (5 hours)
+Group.msgTtl = 300
+Group1.nrofHosts = 10
+Group2.nrofHosts = 1
+Group1.groupID = p
+Group2.groupID = s
+
+## Message creation parameters 
+# no message creation events (application creates them)
+Events.nrof = 0
+
+## Movement model settings
+MovementModel.rngSeed = 1
+MovementModel.worldSize = 3220, 3220
+MovementModel.warmup = 1000
+MapBasedMovement.nrofMapFiles = 4
+MapBasedMovement.mapFile1 = data/roads.wkt
+MapBasedMovement.mapFile2 = data/main_roads.wkt
+MapBasedMovement.mapFile3 = data/pedestrian_paths.wkt
+MapBasedMovement.mapFile4 = data/shops.wkt
+
+## Reports 
+Report.nrofReports = 1
+Report.warmup = 0
+Report.reportDir = reports/
+
+## Optimization settings 
+Optimization.cellSizeMult = 5
+Optimization.randomizeUpdateOrder = true
+
+
+## GUI settings
+GUI.UnderlayImage.fileName = data/helsinki_underlay.png
+GUI.UnderlayImage.offset = 64, 20
+GUI.UnderlayImage.scale = 4.75
+GUI.UnderlayImage.rotate = -0.015
+GUI.EventLogPanel.nrofEvents = 100
+
+## energy settings
+Report.nrofReports = 1
+Report.report1=FuzzyComprehensiveReport
+FuzzyComprehensiveReport.granularity=108
+Group.intialEnergy=19181
+Group.scanEnergy=1.027
+Group.transmitEnergy=0.647
+Group.receiveEnergy=0.422
+Group.scanInterval=1
+
+# Router Settings
+Group.router = ParanetAdaptableFuzzySprayAndWaitRouter
+ParanetAdaptableFuzzySprayAndWaitRouter.nrofCopies=4
+ParanetAdaptableFuzzySprayAndWaitRouter.binaryMode=true
+FuzzyComprehensiveReport.output =reports/paranets.txt
+
+
+# Application Settings
+MA_app.type = PARANETS_application
+MA_app.interval = 300,600
+MA_app.role=MA
+MA_app.SA_Address=10
+MA_app.requestSize = 5
+MA_app.pongSize = 5
+MA_app.MessageSizeRanges = 10,100
+MA_app.seed=0
+
+SA_app.type = PARANETS_application
+SA_app.interval = 300,600
+SA_app.role=SA
+SA_app.SA_Address=10
+SA_app.requestSize = 5
+SA_app.pongSize = 5
+SA_app.MessageSizeRanges = 10,100
+SA_app.seed=0
+
+Group.nrofApplications = 1
+Group1.application1 = MA_app
+Group2.application1 = SA_app
+Report.nrofReports = 2
+Report.report2 = PARANETS_AppReport
+PARANETS_AppReport.output =reports/paranets_app.txt
+
+Report.nrofReports = 3
+Report.report3 = MessageStatsReport
+MessageStatsReport.output =reports/paranets_stat.txt

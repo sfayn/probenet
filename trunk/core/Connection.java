@@ -39,6 +39,14 @@ public abstract class Connection {
 		this.bytesTransferred = 0;
 	}
 
+	public NetworkInterface gettoInterface()
+	{
+		return toInterface;
+	}
+	public NetworkInterface getfromInterface()
+	{
+		return fromInterface;
+	}
 
 	/**
 	 * Returns true if the connection is up
