@@ -158,14 +158,11 @@ public abstract class ActiveRouter extends MessageRouter {
 	 */
 	protected int startTransfer(Message m, Connection con) {
 		int retVal;
-		//int old=getNrofMessages();
 		if (!con.isReadyForTransfer()) {
 			return TRY_LATER_BUSY;
 		}
 		
 		retVal = con.startTransfer(getHost(), m);
-          //      if (retVal==DENIED_OLD) System.out.println("DEN");
-              //  System.out.println(deleteDelivered);
 		if (retVal == RCV_OK) { // started transfer
 			addToSendingConnections(con);
 		}
@@ -174,9 +171,7 @@ public abstract class ActiveRouter extends MessageRouter {
 				m.getTo() == con.getOtherNode(this.getHost())) {
 			/* final recipient has already received the msg -> delete it */
 			this.deleteMessage(m.getId(), false);
-                      //  System.out.println("D");
 		}
-		//if (getNrofMessages()-old<0) System.out.println(getNrofMessages()-old);
 		return retVal;
 	}
 	
@@ -352,8 +347,6 @@ public abstract class ActiveRouter extends MessageRouter {
 		if (tuples.size() == 0) {
 			return null;
 		}
-              //  System.out.println(tuples.size());
-		//int old=getNrofMessages();
 		for (Tuple<Message, Connection> t : tuples) {
 			Message m = t.getKey();
 			Connection con = t.getValue();
@@ -361,8 +354,7 @@ public abstract class ActiveRouter extends MessageRouter {
 				return t;
 			}
 		}
-          //      System.out.println(old-getNrofMessages());
-		
+
 		return null;
 	}
 	
