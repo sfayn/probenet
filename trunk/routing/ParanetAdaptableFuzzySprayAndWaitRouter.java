@@ -38,6 +38,7 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		/** SprayAndWait router's settings name space ({@value})*/
 		public static final String FUZZYSPRAY_NS = "ParanetAdaptableFuzzySprayAndWaitRouter";
 
+		public static final String MAX_TRANSMIT_SPEED = "availableBandwidth";
 		/** IDs of the messages that are known to have reached the final dst */
 		protected Set<String> ackedMessageIds;
 
@@ -56,9 +57,11 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 
 		protected int initialNrofCopies;
 		protected boolean isBinary;
+		protected int max_ts;
 
 	public ParanetAdaptableFuzzySprayAndWaitRouter(Settings s) throws IOException {
 		super(s);
+		max_ts=s.getInt(MAX_TRANSMIT_SPEED);
 		Settings snwSettings = new Settings(FUZZYSPRAY_NS);
 
 
@@ -66,6 +69,7 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		MSmax=0;
 		initialNrofCopies = snwSettings.getInt(NROF_COPIES);
 		isBinary = snwSettings.getBoolean( BINARY_MODE);
+		
 		ackedMessageIds = new HashSet<String>();
 		known_nodes=new HashSet<Integer>();
 	}
@@ -80,8 +84,14 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		this.MSmax=r.MSmax;
 		this.initialNrofCopies = r.initialNrofCopies;
 		this.isBinary = r.isBinary;
+		this.max_ts=r.max_ts;
 		ackedMessageIds = new HashSet<String>();
 		known_nodes=new HashSet<Integer>();
+	}
+
+	public int get_availableBandwaidth()
+	{
+		return max_ts;
 	}
 
 	@Override
