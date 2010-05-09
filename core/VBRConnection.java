@@ -64,6 +64,7 @@ public class VBRConnection extends Connection {
 	 * given by the interfaces, and calculate the missing data amount.
 	 *
 	 */
+	@Override
 	public void update() {
 		currentspeed =  this.fromInterface.getTransmitSpeed();
 		int othspeed =  this.toInterface.getTransmitSpeed();

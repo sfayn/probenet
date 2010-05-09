@@ -30,8 +30,6 @@ public class PARANETS_application extends Application {
 	public static final String NODE_ROLE = "role";
 	/** REQUEST generation interval */
 	public static final String REQUEST_INTERVAL = "interval";
-	/** MA address range - inclusive lower, exclusive upper */
-	//public static final String MA_RANGE = "MA_Range";
 	/** SA address  */
 	public static final String SA_ADDRESS = "SA_Address";
 	/** Seed for the app's random number generator */
@@ -40,6 +38,8 @@ public class PARANETS_application extends Application {
 	public static final String REQUEST_SIZE = "requestSize";
 	/** Size of the data messages */
 	public static final String MESSAGES_RANGE = "MessageSizeRanges";
+
+	public static final String COST_PER_SIZE = "CostsPerTechnology";
 
 	public static final String TYPE_PROPERTY = "PARANET_type";
 	public static final String TYPE_REQUEST = "request";
@@ -57,11 +57,15 @@ public class PARANETS_application extends Application {
 	private int		seed = 0;
 /*	private int		MA_Min=1;
 	private int		MA_Max=59;*/
-	private int		SA_ID=0;
+	static public int	SA_ID=0;
+	static public double wlan_cost=0;
+	static public double cellular_cost=0;
+	static public double satellite_cost=0;
 	private int		requestSize=1;
 	private int		minSize=100;
 	private int		maxSize=200;
 	private Random	rng;
+	private int msg_count=0;
 	
 	/** 
 	 * Creates a new PARANETS Application with the given settings.
@@ -94,13 +98,19 @@ public class PARANETS_application extends Application {
 			this.minSize = size[0];
 			this.maxSize = size[1];
 		}
+		if (s.contains(COST_PER_SIZE)){
+			double[] cost = s.getCsvDoubles(COST_PER_SIZE,3);
+			PARANETS_application.wlan_cost = cost[0];
+			PARANETS_application.cellular_cost = cost[1];
+			PARANETS_application.satellite_cost = cost[2];
+		}
 		/*if (s.contains(MA_RANGE)){
 			int[] range = s.getCsvInts(MA_RANGE,2);
 			this.MA_Min = range[0];
 			this.MA_Max = range[1];
 		}*/
 		if (s.contains(SA_ADDRESS)){
-			this.SA_ID = s.getInt(SA_ADDRESS);
+			PARANETS_application.SA_ID = s.getInt(SA_ADDRESS);
 		}
 
 		rng = new Random(this.seed);
@@ -121,12 +131,13 @@ public class PARANETS_application extends Application {
 		this.seed = a.seed;
 		/*this.MA_Min=a.MA_Min;
 		this.MA_Max=a.MA_Max;*/
-		this.SA_ID=a.SA_ID;
+		//this.SA_ID=a.SA_ID;
 		this.requestSize=a.requestSize;
 		this.minSize=a.minSize;
 		this.maxSize=a.maxSize;
 		this.current_interval=a.current_interval;
 		this.rng = new Random(this.seed);
+		this.msg_count=0;
 	}
 	
 	/** 
@@ -144,33 +155,36 @@ public class PARANETS_application extends Application {
 		if (msg.getTo()==host && type.equalsIgnoreCase(TYPE_REQUEST))
 		{
 			assert (SA);
-			String interf=(String)msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_PROPERTY);
+			//String interf=(String)msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_PROPERTY);
 			Integer wlan_size = (Integer)msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_WLAN);
 			Integer cellular_size = (Integer)msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_CELLULAR);
 			Integer satellite_size = (Integer)msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_SATELLITE);
 			assert (wlan_size!=null && cellular_size !=null && satellite_size !=null);
-			String id = "data" + SimClock.getIntTime() + "-" + host.getAddress() +"<"+interf+">";
+			String id = msg.getId()+"-data";
 			int [] sizes  ={wlan_size,cellular_size,satellite_size};
 			String [] interfaces={ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_WLAN,
 									ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_CELLULAR,
 									ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_SATELLITE};
-			super.sendEventToListeners("GotRequest", "("+sizes[0]+","+sizes[1]+","+sizes[2]+")", host);
+			super.sendEventToListeners("GotRequest",msg, msg.getFrom());
+			//int size=0;
 			for (int i=0;i<sizes.length;i++)
 			{
-				Message m = new Message(host, msg.getFrom(), id+"<"+interfaces[i]+">", sizes[i]);
+				Message m = new Message(host, msg.getFrom(), id+"-"+interfaces[i], sizes[i]);
 				m.addProperty(TYPE_PROPERTY, TYPE_DATA);
 				m.addProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_PROPERTY, interfaces[i]);
 				m.setAppID(APP_ID);
 				host.createNewMessage(m);
-				super.sendEventToListeners("SentData", interfaces[i]+"("+sizes[i]+")", host);
+				super.sendEventToListeners("SentData", m, msg.getFrom());
+				//size+=sizes[i];
 			}
+			//super.sendEventToListeners("SentData", ""+size, msg.getFrom());
 		}
 		
 		// Received a data reply
 		if (msg.getTo()==host && type.equalsIgnoreCase(TYPE_DATA) ) {
 			assert(!SA);
-			String interface_=(String) msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_PROPERTY);
-			super.sendEventToListeners("GotData", interface_+"("+msg.getSize()+")", host);
+			//String interface_=(String) msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_PROPERTY);
+			super.sendEventToListeners("GotData", msg, host);
 		}
 		return msg;
 	}
@@ -239,9 +253,8 @@ public class PARANETS_application extends Application {
 		double curTime = SimClock.getTime();
 		if (curTime - this.lastRequest >= this.current_interval) {
 			// Time to send a new request
-			Message m = new Message(host, randomHost(SA_ID,SA_ID), "request" +
-					SimClock.getIntTime() + "-" + host.getAddress(),
-					random_in_range(minSize,maxSize));
+			msg_count++;
+			Message m = new Message(host, randomHost(SA_ID,SA_ID), host.getAddress()+"."+msg_count,	random_in_range(minSize,maxSize));
 			m.addProperty(TYPE_PROPERTY, TYPE_REQUEST);
 			m.addProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_PROPERTY, ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_CELLULAR); //can be changed later (means that request sent on the cellualar channel)
 			m.addProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_WLAN, (Integer)(m.getSize()/3));//just for testing
@@ -251,7 +264,7 @@ public class PARANETS_application extends Application {
 			host.createNewMessage(m);
 			
 			// Call listeners
-			super.sendEventToListeners("SentRequest", "("+(Integer)(m.getSize()/3)+","+(Integer)(m.getSize()/3)+","+(Integer)(m.getSize()/3)+")", host);
+			super.sendEventToListeners("SentRequest", m, host);
 			
 			this.lastRequest = curTime;
 			this.current_interval=random_in_range(min_interval, max_interval); //next interval

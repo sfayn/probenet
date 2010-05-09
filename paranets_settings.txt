@@ -3,24 +3,24 @@ Scenario.name = Paranets
 Scenario.simulateConnections = true
 Scenario.updateInterval = 0.1
 # 7200s == 2h
-Scenario.endTime = 7200
+Scenario.endTime = 1800
 
 # "wlan" interface for all nodes
-wlan.type = SimpleBroadcastInterface
+wlan.type = ParanetsInterface
 #InterferenceLimitedInterface
 # Transmit speed of 2 Mbps = 250kBps
 wlan.transmitSpeed = 300k
 wlan.transmitRange = 30
 
 # must be changed later to an interface which adapts to contention but not to interference
-cellular.type = SimpleBroadcastInterface
+cellular.type = ParanetsInterface
 #InterferenceLimitedInterface
 cellular.transmitSpeed = 10M
 cellular.transmitRange = 10000
 #1000
 
 # must be changed later to an interface which adapts to contention but not to interference
-satellite.type = SimpleBroadcastInterface
+satellite.type = ParanetsInterface
 #InterferenceLimitedInterface
 satellite.transmitSpeed = 8M
 satellite.transmitRange = 10000
@@ -34,7 +34,6 @@ Group.deleteDelivered= true
 
 Group1.bufferSize= 1M
 Group2.bufferSize= 2000M
-#Group.transmitSpeed=3M
 Group1.waitTime = 0,20
 Group.nrofInterfaces = 3
 Group.interface1 = wlan
@@ -42,11 +41,13 @@ Group.interface2 = cellular
 Group.interface3 = satellite
 # Walking speeds
 Group1.speed = 2.7,5.4
+Group1.availableBandwidth=20M
+Group2.availableBandwidth=20M
 #does not move
 Group2.speed=0,0
 # Message TTL of 300 minutes (5 hours)
 Group.msgTtl = 300
-Group1.nrofHosts = 10
+Group1.nrofHosts = 30
 Group2.nrofHosts = 1
 Group1.groupID = p
 Group2.groupID = s
@@ -103,20 +104,16 @@ FuzzyComprehensiveReport.output =reports/paranets.txt
 MA_app.type = PARANETS_application
 MA_app.interval = 300,600
 MA_app.role=MA
-MA_app.SA_Address=10
 MA_app.requestSize = 5
-MA_app.pongSize = 5
-MA_app.MessageSizeRanges = 10,100
 MA_app.seed=0
+MA_app.CostsPerTechnology=0,0.5,1
 
 SA_app.type = PARANETS_application
-SA_app.interval = 300,600
 SA_app.role=SA
-SA_app.SA_Address=10
-SA_app.requestSize = 5
-SA_app.pongSize = 5
-SA_app.MessageSizeRanges = 10,100
+SA_app.SA_Address=30
+SA_app.MessageSizeRanges = 10k,100k
 SA_app.seed=0
+SA_app.CostsPerTechnology=0,0.5,1
 
 Group.nrofApplications = 1
 Group1.application1 = MA_app
