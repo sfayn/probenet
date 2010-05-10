@@ -10,6 +10,7 @@ import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.event.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -23,7 +24,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 import core.Coord;
 import core.SimClock;
@@ -34,7 +37,7 @@ import core.SimClock;
  * GUI's control panel
  *
  */
-public class GUIControls extends JPanel implements ActionListener {
+public class GUIControls extends JPanel implements ActionListener, ChangeListener {
 	private static final String PATH_GRAPHICS = "buttonGraphics/";
 	private static final String ICON_PAUSE = "Pause16.gif";
 	private static final String ICON_PLAY = "Play16.gif";
@@ -84,13 +87,14 @@ public class GUIControls extends JPanel implements ActionListener {
 	public static final int FFW_SPEED_INDEX = 7;
 	
 	private double guiUpdateInterval;
-	private JComboBox zoomChooser;
+	//private JComboBox zoomChooser;
+	private javax.swing.JSpinner zoomSelector;
 	
 	/** Zoom levels for GUI */
-	public static final String[] ZOOM_LEVELS = {"0.02", "0.05", "0.1", "0.2","0.3",
+	/*public static final String[] ZOOM_LEVELS = {"0.02", "0.05", "0.1", "0.2","0.3",
 		"0.4","0.5","0.8", "1.0","1.3", "1.7", "2.0", "2.5", "3.0"};
 	private final int INITIAL_ZOOM_SELECTION = 2; // index of initial zoom
-	
+	*/
 	private PlayField pf;
 	private DTNSimGUI gui;
 	
@@ -135,7 +139,9 @@ public class GUIControls extends JPanel implements ActionListener {
 		
 		this.screenShotButton = new JButton(TEXT_SCREEN_SHOT);
 		this.guiUpdateChooser = new JComboBox(UP_SPEEDS);
-		this.zoomChooser = new JComboBox(ZOOM_LEVELS);
+		//this.zoomChooser = new JComboBox(ZOOM_LEVELS);
+		
+		this.zoomSelector = new JSpinner(new SpinnerNumberModel(0.1, 0.001, Double.POSITIVE_INFINITY, 0.001));
 
 		this.add(simTimeField);
 		this.add(sepsField);
@@ -153,14 +159,16 @@ public class GUIControls extends JPanel implements ActionListener {
 		this.updateUpdateInterval();
 		
 		this.add(new JLabel(createImageIcon(ICON_ZOOM)));
-		this.zoomChooser.setSelectedIndex(this.INITIAL_ZOOM_SELECTION);
+		//this.zoomChooser.setSelectedIndex(this.INITIAL_ZOOM_SELECTION);
 		this.updateZoomScale(false);
 		
-		this.add(this.zoomChooser);
+		//this.add(this.zoomChooser);
+		this.add(this.zoomSelector);
 		this.add(this.screenShotButton);
 		
 		guiUpdateChooser.addActionListener(this);
-		zoomChooser.addActionListener(this);
+		//zoomChooser.addActionListener(this);
+		zoomSelector.addChangeListener(this);
 		this.screenShotButton.addActionListener(this);
 	}
 	
@@ -279,7 +287,7 @@ public class GUIControls extends JPanel implements ActionListener {
 	 * positive)
 	 */
 	public void changeZoom(int delta) {
-		int newIndex = zoomChooser.getSelectedIndex() + delta;
+		/*int newIndex = zoomChooser.getSelectedIndex() + delta;
 		if (newIndex < 1) {
 			newIndex = 0;
 		}
@@ -287,7 +295,19 @@ public class GUIControls extends JPanel implements ActionListener {
 			newIndex = ZOOM_LEVELS.length -1;
 		}
 		
-		this.zoomChooser.setSelectedIndex(newIndex);
+		this.zoomChooser.setSelectedIndex(newIndex);*/
+		
+		SpinnerNumberModel model = (SpinnerNumberModel) this.zoomSelector.getModel();
+		Number newValue = new Double(model.getNumber().doubleValue() + model.getStepSize().doubleValue() * delta); 
+		
+		// if the min number is greater than the new value (1 returned), set to min
+		if(model.getMinimum().compareTo(newValue) > 0)
+		{
+			model.setValue(model.getMinimum());
+		}
+		else
+			model.setValue(newValue);
+		
 		this.updateZoomScale(true);
 	}
 	
@@ -308,12 +328,17 @@ public class GUIControls extends JPanel implements ActionListener {
 		else if (e.getSource() == this.guiUpdateChooser) {
 			updateUpdateInterval();
 		}
-		else if (e.getSource() == this.zoomChooser) {
-			updateZoomScale(true);
-		}
+		//else if (e.getSource() == this.zoomChooser) {
+		//	updateZoomScale(true);
+		//}
 		else if (e.getSource() == this.screenShotButton) {
 			takeScreenShot();
 		}
+	}
+	
+	public void stateChanged(ChangeEvent e)
+	{
+		updateZoomScale(true);
 	}
 
 	private void setPlayUntil() {
@@ -343,8 +368,9 @@ public class GUIControls extends JPanel implements ActionListener {
 	 * the same
 	 */
 	private void updateZoomScale(boolean centerView) {
-		String selString = this.zoomChooser.getSelectedItem().toString();
-		double scale = Double.parseDouble(selString);
+		//String selString = this.zoomChooser.getSelectedItem().toString();
+		//double scale = Double.parseDouble(selString);
+		double scale = ((SpinnerNumberModel)zoomSelector.getModel()).getNumber().doubleValue();
 		
 		if (centerView) {
 			Coord center = gui.getCenterViewCoord();
