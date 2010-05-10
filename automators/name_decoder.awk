@@ -177,7 +177,11 @@ BEGIN {
 			if (CI!=-1)
 			{
 				if (CI>=average-error && CI<=average+error)
+				{
+					if (L==-1 && x_value==-1) ## needed in case L is varing and we are in AFS
+						x_value=-2;
 					continue;
+				}
 				else
 					break;
 			}
@@ -213,7 +217,12 @@ BEGIN {
 	}
 	#printf("\n");
 	gsub(/ /, "", name);
-	if ($i == "" && x_value!=-1)
+	if ($i=="" && x_value==-2) # in case we are in AFS and L is varing
+	{
+		printf( "x=2 ..\\reports\\%s.txt\n",name);
+		printf( "x=40 ..\\reports\\%s.txt\n",name);
+	}		
+	else if ($i == "" && x_value!=-1)
 		printf( "x=%s ..\\reports\\%s.txt\n",x_value,name);
 	
 }
