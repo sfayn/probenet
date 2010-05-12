@@ -14,6 +14,9 @@ import core.Settings;
 import core.SimClock;
 import core.SimScenario;
 import core.World;
+import java.security.Timestamp;
+import java.security.cert.CertPath;
+import java.util.Date;
 import routing.ParanetAdaptableFuzzySprayAndWaitRouter;
 
 /**
@@ -47,7 +50,20 @@ public class PARANETS_application extends Application {
 	
 	/** Application ID */
 	public static final String APP_ID = "jh.PARANETS_Application";
-	
+
+        public double throughputSensed=0;
+        public Date stampSensed;
+
+        public double throughputSensedEstimate=0;
+        public Date stampSensedEstimate;
+
+        public double throughputShared=0;
+        public Date stampShared;
+        
+        public double throughputEstimate=0;
+        public Date stampEstimate;
+
+
 	// Private vars
 	private double	lastRequest = 0;
 	private double	min_interval = 500;
@@ -138,6 +154,11 @@ public class PARANETS_application extends Application {
 		this.current_interval=a.current_interval;
 		this.rng = new Random(this.seed);
 		this.msg_count=0;
+
+                this.stampEstimate=new Date();
+                this.stampSensed=this.stampEstimate;
+                this.stampSensedEstimate=this.stampEstimate;
+                this.stampShared=this.stampEstimate;
 	}
 	
 	/** 
@@ -236,7 +257,10 @@ public class PARANETS_application extends Application {
 			return -1;
 		}
 	}
-	
+	public void updateThroughputEstimate(){       //updates the value of throughputEstimate
+
+        }
+
 	@Override
 	public Application replicate() {
 		return new PARANETS_application(this);
