@@ -4,6 +4,8 @@
  */
 package routing;
 
+import applications.PARANETS_application;
+import core.Application;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -505,6 +507,21 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 				otherRouter.ackedMessageIds.addAll(this.ackedMessageIds);
 				deleteAckedMessages();
 				otherRouter.deleteAckedMessages();
+
+                                //exchange channel parameters
+                                 Collection <Application> myAppCollection=this.getApplications(PARANETS_application.APP_ID);
+                                 PARANETS_application myParanetsApp=(PARANETS_application)((myAppCollection.toArray())[0]);
+
+                                 Collection <Application> otherAppCollection=mRouter.getApplications(PARANETS_application.APP_ID);
+                                 PARANETS_application otherParanetsApp=(PARANETS_application)((otherAppCollection.toArray())[0]);
+
+                                 
+                                 if (myParanetsApp.stampShared.before(otherParanetsApp.stampEstimate))
+                                 {
+                                         myParanetsApp.throughputShared=otherParanetsApp.throughputEstimate;
+                                         myParanetsApp.updateThroughputEstimate();
+                                 }
+
 			}
 		}
 	}
