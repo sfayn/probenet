@@ -26,12 +26,12 @@ public class PARANETS_AppReport extends Report implements ApplicationListener
 		else
 			return d2;
 	}
-	private class Request
+	public class Request
 	{
 		public double cost_for_request=0;
 		public double cost_for_delivery=0;
 		public int data_size=0;
-		public int reached_size=0;
+		public int [] reached_size=new int[3];
 
 		public double start_time=-1;
 		public String request_interface;
@@ -40,10 +40,15 @@ public class PARANETS_AppReport extends Report implements ApplicationListener
 		public double [] data_reached_time= new double[3];
 		public String [] data_interface =new String[3];
 
+		public int reached_size()
+		{
+			return reached_size[0]+reached_size[1]+reached_size[2];
+		}
+
 		public boolean reached()
 		{
 			int error=2;
-			return (reached_size+error>=data_size && reached_size-error<=data_size);
+			return (reached_size()+error>=data_size && reached_size()-error<=data_size);
 		}
 
 	}
@@ -60,7 +65,9 @@ public class PARANETS_AppReport extends Report implements ApplicationListener
 		return 0;//not needed will not reach here
 	}
 
-	Map<String,Request> stats=new HashMap<String,Request>();
+	public Map<String,Request> stats=new HashMap<String,Request>();
+	public String [] last_delivered=new String[3];
+
 	public void gotEvent(String event, Object params, Application app,
 			DTNHost host) {
 		// Check that the event is sent by correct application type
@@ -97,8 +104,11 @@ public class PARANETS_AppReport extends Report implements ApplicationListener
 				assert true: "Illigal interface type "+ inter;
 			current.data_interface[index]=inter;
 			current.data_reached_time[index]=SimClock.getTime();
-			current.reached_size+=msg.getSize();
+			current.reached_size[index]=msg.getSize();
 			current.cost_for_delivery=getCost(msg.getSize(), inter);
+			((PARANETS_application)app).conditions[index].sensed((SimClock.getTime()-current.data_sent_time)/msg.getSize());
+			if (current.reached())
+				last_delivered[index]=id;
 			stats.put(id, current);
 		}
 		else if (event.equalsIgnoreCase("SentData")) {

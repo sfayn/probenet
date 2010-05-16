@@ -14,9 +14,6 @@ import core.Settings;
 import core.SimClock;
 import core.SimScenario;
 import core.World;
-import java.security.Timestamp;
-import java.security.cert.CertPath;
-import java.util.Date;
 import routing.ParanetAdaptableFuzzySprayAndWaitRouter;
 
 /**
@@ -44,6 +41,8 @@ public class PARANETS_application extends Application {
 
 	public static final String COST_PER_SIZE = "CostsPerTechnology";
 
+	public static final String NOMINAL_TH="NominalThroughput";
+
 	public static final String TYPE_PROPERTY = "PARANET_type";
 	public static final String TYPE_REQUEST = "request";
 	public static final String TYPE_DATA = "data";
@@ -51,18 +50,65 @@ public class PARANETS_application extends Application {
 	/** Application ID */
 	public static final String APP_ID = "jh.PARANETS_Application";
 
-        public double throughputSensed=0;
-        public Date stampSensed;
+    public class network_conditions
+	{
 
-        public double throughputSensedEstimate=0;
-        public Date stampSensedEstimate;
+		private class fuzzy_parameters
+		{
+			public double Tmin=0;
+			public double Tmax=10;//just example might be changed
+		}
+		
+		private fuzzy_parameters params;
 
-        public double throughputShared=0;
-        public Date stampShared;
-        
-        public double throughputEstimate=0;
-        public Date stampEstimate;
+        private double stampSensed;
+        private double throughputSensedEstimate;
+        private double stampShared;
+        private double throughputEstimate;
+		
+		public void setInitially(double nominal_TH)
+		{
+			throughputSensedEstimate=nominal_TH;
+			throughputEstimate=nominal_TH;
+			stampSensed=SimClock.getTime();
+			stampShared=stampSensed;
+			params =new fuzzy_parameters();
+		}
 
+		public void sensed(double sensed_TH)
+		{
+			double time_diff=SimClock.getTime()-stampSensed;
+			stampSensed=SimClock.getTime(); //for next time
+			params=getFuzzyParams(time_diff,params);
+			throughputSensedEstimate=getNewEstimate(throughputSensedEstimate,sensed_TH,time_diff,params);
+		}
+		public void shared(double shared_TH)
+		{
+			double time_diff=SimClock.getTime()-stampShared;
+			stampShared=SimClock.getTime(); //for next time
+			params=getFuzzyParams(time_diff,params);
+			throughputEstimate=getNewEstimate(throughputSensedEstimate,shared_TH,time_diff,params);
+		}
+
+		private fuzzy_parameters getFuzzyParams(double time_diff, fuzzy_parameters params) {
+			throw new UnsupportedOperationException("Not yet implemented");
+		}
+
+		private double getNewEstimate(double estimate, double new_value, double time_diff, fuzzy_parameters params) {
+			throw new UnsupportedOperationException("Not yet implemented");
+		}
+
+		public double getTH_estimate()
+		{
+			return throughputEstimate;
+		}
+		public double last_stamp()
+		{
+			return (stampSensed>stampShared?stampSensed:stampShared);
+		}
+	}
+
+	public network_conditions [] conditions =new network_conditions[3];;
 
 	// Private vars
 	private double	lastRequest = 0;
@@ -82,6 +128,10 @@ public class PARANETS_application extends Application {
 	private int		maxSize=200;
 	private Random	rng;
 	private int msg_count=0;
+	private double wlan_nominal=1000000;
+	private double cellular_nominal=10000000;
+	private double satellite_nominal=8000000;
+
 	
 	/** 
 	 * Creates a new PARANETS Application with the given settings.
@@ -129,6 +179,18 @@ public class PARANETS_application extends Application {
 			PARANETS_application.SA_ID = s.getInt(SA_ADDRESS);
 		}
 
+		if (s.contains(NOMINAL_TH)){
+			double[] nominals = s.getCsvDoubles(NOMINAL_TH,3);
+			for (int i=0;i<this.conditions.length;i++)
+			{
+				this.conditions[i]=new network_conditions();
+				conditions[i].setInitially(nominals[i]);
+			}
+			wlan_nominal=nominals[0];
+			cellular_nominal=nominals[1];
+			satellite_nominal=nominals[2];
+		}
+
 		rng = new Random(this.seed);
 		super.setAppID(APP_ID);
 	}
@@ -155,10 +217,11 @@ public class PARANETS_application extends Application {
 		this.rng = new Random(this.seed);
 		this.msg_count=0;
 
-                this.stampEstimate=new Date();
-                this.stampSensed=this.stampEstimate;
-                this.stampSensedEstimate=this.stampEstimate;
-                this.stampShared=this.stampEstimate;
+		for (int i=0;i<this.conditions.length;i++)
+			this.conditions[i]=new network_conditions();
+		this.conditions[0].setInitially(wlan_nominal);
+		this.conditions[1].setInitially(cellular_nominal);
+		this.conditions[2].setInitially(satellite_nominal);
 	}
 	
 	/** 
@@ -257,9 +320,6 @@ public class PARANETS_application extends Application {
 			return -1;
 		}
 	}
-	public void updateThroughputEstimate(){       //updates the value of throughputEstimate
-
-        }
 
 	@Override
 	public Application replicate() {
