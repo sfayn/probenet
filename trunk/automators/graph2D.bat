@@ -9,7 +9,7 @@ FOR %%r in (SW,AFS, AFSnW, AFSnA) do FOR /F "delims=" %%f IN (%%r_file) do gawk 
 gawk -f get_min.awk temp >min
 FOR /F "delims=" %%m IN (min) do set MIN_VALUE=%%m
 FOR %%r in (SW,AFS, AFSnW, AFSnA) do FOR /F "delims=" %%f IN (%%r_file) DO FOR %%m in (latency,av_latency) do gawk -f latency.awk metric="%%m" min=%MIN_VALUE% %%f >> ..\values\%%r_%%m_1
-FOR %%r in (SW,AFS, AFSnW, AFSnA) do FOR %%m in (latency,av_latency) do gawk -f sort.awk  ..\values\%%r_%%m_1 > ..\values\%%r_%%m
+FOR %%r in (SW,AFS, AFSnW, AFSnA) do FOR %%m in (latency,av_latency) do gawk -f merge_equal_results.awk  ..\values\%%r_%%m_1 > ..\values\%%r_%%m
 FOR %%r in (SW,AFS, AFSnW, AFSnA) do FOR %%m in (latency,av_latency) do erase  ..\values\%%r_%%m_1, %%r_file
 erase min,temp
 
