@@ -220,7 +220,7 @@ BEGIN {
 	if ($i=="" && x_value==-2) # in case we are in AFS and L is varing
 	{
 		printf( "x=2 ..\\reports\\%s.txt\n",name);
-		printf( "x=40 ..\\reports\\%s.txt\n",name);
+		printf( "x=1000000 ..\\reports\\%s.txt\n",name);
 	}		
 	else if ($i == "" && x_value!=-1)
 		printf( "x=%s ..\\reports\\%s.txt\n",x_value,name);

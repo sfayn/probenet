@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 import report.FuzzyComprehensiveReport;
 import report.FuzzySprayReport;
+import report.PARANETS_AppReport;
 //import sun.security.action.GetIntegerAction;
 
 /**
@@ -490,8 +491,10 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 
 	@Override
 	public void changedConnection(Connection con) {
-		if (con.isUp()) { // new connection
-			if (con.isInitiator(getHost())) {
+		if (con.isUp()) // new connection
+		{
+			if (con.isInitiator(getHost()))
+			{
 				// initiator performs all the actions on behalf of the
 				// other node too (so that the meeting probs are updated
 				// for both before exchanging them)
@@ -508,20 +511,23 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 				deleteAckedMessages();
 				otherRouter.deleteAckedMessages();
 
-                                //exchange channel parameters
-                                 Collection <Application> myAppCollection=this.getApplications(PARANETS_application.APP_ID);
-                                 PARANETS_application myParanetsApp=(PARANETS_application)((myAppCollection.toArray())[0]);
+				//exchange channel parameters
+				Collection <Application> myAppCollection=this.getApplications(PARANETS_application.APP_ID);
+				PARANETS_application myParanetsApp=(PARANETS_application)((myAppCollection.toArray())[0]);
 
-                                 Collection <Application> otherAppCollection=mRouter.getApplications(PARANETS_application.APP_ID);
-                                 PARANETS_application otherParanetsApp=(PARANETS_application)((otherAppCollection.toArray())[0]);
+				Collection <Application> otherAppCollection=mRouter.getApplications(PARANETS_application.APP_ID);
+				PARANETS_application otherParanetsApp=(PARANETS_application)((otherAppCollection.toArray())[0]);
 
-                                 
-                                 if (myParanetsApp.stampShared.before(otherParanetsApp.stampEstimate))
-                                 {
-                                         myParanetsApp.throughputShared=otherParanetsApp.throughputEstimate;
-                                         myParanetsApp.updateThroughputEstimate();
-                                 }
 
+				for (int i=0;i<myParanetsApp.conditions.length;i++)
+				{
+					if (myParanetsApp.conditions[i].last_stamp()<(otherParanetsApp.conditions[i].last_stamp()))
+					{
+						PARANETS_AppReport other_report=(PARANETS_AppReport)(otherParanetsApp.getAppListeners().get(0));
+						PARANETS_AppReport.Request shared_data_stat=other_report.stats.get(other_report.last_delivered[i]);
+						myParanetsApp.conditions[i].shared((shared_data_stat.data_reached_time[i]-shared_data_stat.data_sent_time)/shared_data_stat.reached_size[i]);
+					}
+				}
 			}
 		}
 	}
