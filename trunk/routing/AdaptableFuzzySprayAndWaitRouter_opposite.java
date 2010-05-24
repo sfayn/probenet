@@ -30,13 +30,13 @@ import report.FuzzySprayReport;
  * Connected Mobile Networks</I> by Thrasyvoulos Spyropoulus et al.
  *
  */
-public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
+public class AdaptableFuzzySprayAndWaitRouter_opposite extends EnergyAwareRouter {
 		/** identifier for the logger file setting ({@value})*/
 		public static final String NROF_COPIES = "nrofCopies";
 		/** identifier for the binary-mode setting ({@value})*/
 		public static final String BINARY_MODE = "binaryMode";
 		/** SprayAndWait router's settings name space ({@value})*/
-		public static final String FUZZYSPRAY_NS = "FuzzySprayAndWaitRouter";
+		public static final String FUZZYSPRAY_NS = "AdaptableFuzzySprayAndWaitRouter_opposite";
 
 		/** IDs of the messages that are known to have reached the final dst */
         protected Set<String> ackedMessageIds;
@@ -53,7 +53,7 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		protected int initialNrofCopies;
 		protected boolean isBinary;
 
-	public AdaptableFuzzySprayAndWaitRouter(Settings s) throws IOException {
+	public AdaptableFuzzySprayAndWaitRouter_opposite(Settings s) throws IOException {
 		super(s);
 		Settings snwSettings = new Settings(FUZZYSPRAY_NS);
 
@@ -69,7 +69,7 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 	 * Copy constructor.
 	 * @param r The router prototype where setting values are copied from
 	 */
-	protected AdaptableFuzzySprayAndWaitRouter(AdaptableFuzzySprayAndWaitRouter r) {
+	protected AdaptableFuzzySprayAndWaitRouter_opposite(AdaptableFuzzySprayAndWaitRouter_opposite r) {
 		super(r);
 		this.FTCmax=r.FTCmax;
         this.MSmax=r.MSmax;
@@ -115,6 +115,7 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		}
 		msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
 		msg.updateProperty(MSG_COUNT_PROPERTY, nrofCopies);
+
 		return msg;
 	}
 
@@ -145,8 +146,8 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		makeRoomForNewMessage(msg.getSize());
 
 		msg.setTtl(this.msgTtl);
-		msg.addProperty(FTC_PROPERTY, (Integer)1);
-		msg.addProperty(MSG_COUNT_PROPERTY, new Integer(initialNrofCopies));
+                msg.addProperty(FTC_PROPERTY, (Integer)1);
+				msg.addProperty(MSG_COUNT_PROPERTY, new Integer(initialNrofCopies));
 		addToMessages(msg, true);
 
 		return true;
@@ -230,8 +231,11 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 	 * @return The return value of {@link #tryMessagesForConnected(List)}
 	 */
 	protected void tryOtherMessages() {
+
 		List<Message> msgCollection=getMessagesWithCopiesLeft();
+
 		Collections.sort(msgCollection,new FTCComparator1());
+
 		if (msgCollection.size() > 0) {
 			/* try to send those messages */
 			this.tryMessagesToConnections(msgCollection, getConnections());
@@ -257,7 +261,68 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 
 		return list;
 	}
+/*
+    public class FTCComparator implements Comparator<Tuple<Message, Connection> > {
 
+
+		private int compute_fuzzy(int CDM, int size)
+		{
+                       // System.out.println("CDM: "+CDM);
+			int BS0 = 0;
+			int BS1 = 2;
+			int BS2 = 3;
+			int BS3 = 4;
+			int BS4 = 5;
+			int BS5 = 6;
+			int BS6 = 7;
+			int BS7 = 8;
+			int BS8 = 10;
+
+			String FTC=null;
+			String MS=null;
+			int BS=0;
+			int P;
+
+			if (CDM <= FTCmax/3) FTC = "high";
+			else if (CDM >= (FTCmax*2)/3) FTC = "low";
+			else FTC = "medium";
+
+			//Message size membership function
+			if (size < MSmax/4) MS = "small";
+			else if (size > (MSmax*3)/4) MS = "large";
+			else MS = "medium";
+
+                        //System.out.println("FTC: "+FTC);
+                        //System.out.println("MS: "+MS);
+			//Inference rules and Defuzzification using Center of Area (COA)
+			if (FTC.equals("low") && MS.equals("small")) BS = BS0;
+			else if (FTC.equals("low") && MS.equals("medium")) BS = BS1;
+			else if (FTC.equals("low") && MS.equals("large")) BS = BS2;
+			else if (FTC.equals("medium") && MS.equals("small")) BS = BS3;
+			else if (FTC.equals("medium") && MS.equals("medium")) BS = BS4;
+			else if (FTC.equals("medium") && MS.equals("large")) BS = BS5;
+			else if (FTC.equals("high") && MS.equals("small")) BS = BS6;
+			else if (FTC.equals("high") && MS.equals("medium")) BS = BS7;
+			else if (FTC.equals("high") && MS.equals("large")) BS = BS8;
+
+			//Setting the priority of the message
+			P = 10-BS;
+
+                       // System.out.println("P: "+P);
+			return P;
+		}
+		public int getPriority(Message m)
+		{
+			return compute_fuzzy((Integer)m.getProperty(FTC_PROPERTY),(Integer)m.getSize());
+		}
+		public int compare(Tuple<Message, Connection> t1, Tuple<Message, Connection> t2) {
+
+            return (getPriority(t1.getKey())-getPriority(t2.getKey()));
+
+        }
+
+    }
+*/
 	public class FTCComparator1 implements Comparator<Message > {
 
 
@@ -279,8 +344,8 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 			int BS=0;
 			int P;
 
-			if (CDM <= FTCmax/3) FTC = "low";
-			else if (CDM >= (FTCmax*2)/3) FTC = "high";
+			if (CDM <= FTCmax/3) FTC = "high";
+			else if (CDM >= (FTCmax*2)/3) FTC = "low";
 			else FTC = "medium";
 
 			//Message size membership function
@@ -329,9 +394,9 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 				DTNHost otherHost = con.getOtherNode(getHost());
 				MessageRouter mRouter = otherHost.getRouter();
 
-				assert mRouter instanceof AdaptableFuzzySprayAndWaitRouter : "FuzzySprayAndWaitRouter only works "+
+				assert mRouter instanceof AdaptableFuzzySprayAndWaitRouter_opposite : "FuzzySprayAndWaitRouter only works "+
 				" with other routers of same type";
-				AdaptableFuzzySprayAndWaitRouter otherRouter = (AdaptableFuzzySprayAndWaitRouter)mRouter;
+				AdaptableFuzzySprayAndWaitRouter_opposite otherRouter = (AdaptableFuzzySprayAndWaitRouter_opposite)mRouter;
 
 				// exchange ACKed message data
 				this.ackedMessageIds.addAll(otherRouter.ackedMessageIds);
@@ -354,7 +419,7 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 	}
 
 	@Override
-	public AdaptableFuzzySprayAndWaitRouter replicate() {
-		return new AdaptableFuzzySprayAndWaitRouter(this);
+	public AdaptableFuzzySprayAndWaitRouter_opposite replicate() {
+		return new AdaptableFuzzySprayAndWaitRouter_opposite(this);
 	}
 }

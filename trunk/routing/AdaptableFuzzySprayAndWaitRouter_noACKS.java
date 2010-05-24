@@ -30,16 +30,13 @@ import report.FuzzySprayReport;
  * Connected Mobile Networks</I> by Thrasyvoulos Spyropoulus et al.
  *
  */
-public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
+public class AdaptableFuzzySprayAndWaitRouter_noACKS extends EnergyAwareRouter {
 		/** identifier for the logger file setting ({@value})*/
 		public static final String NROF_COPIES = "nrofCopies";
 		/** identifier for the binary-mode setting ({@value})*/
 		public static final String BINARY_MODE = "binaryMode";
 		/** SprayAndWait router's settings name space ({@value})*/
 		public static final String FUZZYSPRAY_NS = "FuzzySprayAndWaitRouter";
-
-		/** IDs of the messages that are known to have reached the final dst */
-        protected Set<String> ackedMessageIds;
 
         public static final String FTC_PROPERTY = FUZZYSPRAY_NS + "." + "ftc";
 		public static final String MSG_COUNT_PROPERTY = FUZZYSPRAY_NS + "." +"copies";
@@ -53,15 +50,13 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		protected int initialNrofCopies;
 		protected boolean isBinary;
 
-	public AdaptableFuzzySprayAndWaitRouter(Settings s) throws IOException {
+	public AdaptableFuzzySprayAndWaitRouter_noACKS(Settings s) throws IOException {
 		super(s);
 		Settings snwSettings = new Settings(FUZZYSPRAY_NS);
-
         FTCmax=0;
         MSmax=0;
 		initialNrofCopies = snwSettings.getInt(NROF_COPIES);
 		isBinary = snwSettings.getBoolean( BINARY_MODE);
-        ackedMessageIds = new HashSet<String>();
 		known_nodes=new HashSet<Integer>();
 	}
 
@@ -69,13 +64,12 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 	 * Copy constructor.
 	 * @param r The router prototype where setting values are copied from
 	 */
-	protected AdaptableFuzzySprayAndWaitRouter(AdaptableFuzzySprayAndWaitRouter r) {
+	protected AdaptableFuzzySprayAndWaitRouter_noACKS(AdaptableFuzzySprayAndWaitRouter_noACKS r) {
 		super(r);
 		this.FTCmax=r.FTCmax;
         this.MSmax=r.MSmax;
         this.initialNrofCopies = r.initialNrofCopies;
 		this.isBinary = r.isBinary;
-        ackedMessageIds = new HashSet<String>();
 		known_nodes=new HashSet<Integer>();
 	}
 
@@ -109,12 +103,9 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 			nrofCopies = 1;
 		}
 
-		/* was this node the final recipient of the message? */
-		if (isDeliveredMessage(msg)) {
-			this.ackedMessageIds.add(id);
-		}
 		msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
 		msg.updateProperty(MSG_COUNT_PROPERTY, nrofCopies);
+
 		return msg;
 	}
 
@@ -123,14 +114,13 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		Collection<Message> messages = this.getMessageCollection();
 		Message less_priority = null;
 		double least_priority=1;
-		FTCComparator1 f=new FTCComparator1();
+		FTCComparator f=new FTCComparator();
 		for (Message m : messages) {
 			if (excludeMsgBeingSent && isSending(m.getId())) {
 				continue; // skip the message(s) that router is sending
 			}
 			if (less_priority == null ) {
 				less_priority = m;
-				least_priority=f.getPriority(less_priority);
 			}
 			else if (least_priority > f.getPriority(m)) {
 				less_priority = m;
@@ -216,29 +206,27 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 
 		/* was the message delivered to the final recipient? */
 		if (msg.getTo() == con.getOtherNode(getHost())) {
-			this.ackedMessageIds.add(msg.getId()); // yes, add to ACKed messages
 			this.deleteMessage(msg.getId(), false); // delete from buffer
 		}
-
-
-
 	}
 
-    	/**
+    /**
 	 * Tries to send all other messages to all connected hosts ordered by
 	 * hop counts and their delivery probability
 	 * @return The return value of {@link #tryMessagesForConnected(List)}
 	 */
 	protected void tryOtherMessages() {
+
 		List<Message> msgCollection=getMessagesWithCopiesLeft();
 		Collections.sort(msgCollection,new FTCComparator1());
+
 		if (msgCollection.size() > 0) {
 			/* try to send those messages */
 			this.tryMessagesToConnections(msgCollection, getConnections());
 		}
 	}
 
-		/**
+	/**
 	 * Creates and returns a list of messages this router is currently
 	 * carrying and still has copies left to distribute (nrof copies > 1).
 	 * @return A list of messages that have copies left
@@ -257,6 +245,67 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 
 		return list;
 	}
+
+    public class FTCComparator implements Comparator<Tuple<Message, Connection> > {
+
+
+		private int compute_fuzzy(int CDM, int size)
+		{
+                       // System.out.println("CDM: "+CDM);
+			int BS0 = 0;
+			int BS1 = 2;
+			int BS2 = 3;
+			int BS3 = 4;
+			int BS4 = 5;
+			int BS5 = 6;
+			int BS6 = 7;
+			int BS7 = 8;
+			int BS8 = 10;
+
+			String FTC=null;
+			String MS=null;
+			int BS=0;
+			int P;
+
+			if (CDM <= FTCmax/3) FTC = "low";
+			else if (CDM >= (FTCmax*2)/3) FTC = "high";
+			else FTC = "medium";
+
+			//Message size membership function
+			if (size < MSmax/4) MS = "small";
+			else if (size > (MSmax*3)/4) MS = "large";
+			else MS = "medium";
+
+                        //System.out.println("FTC: "+FTC);
+                        //System.out.println("MS: "+MS);
+			//Inference rules and Defuzzification using Center of Area (COA)
+			if (FTC.equals("low") && MS.equals("small")) BS = BS0;
+			else if (FTC.equals("low") && MS.equals("medium")) BS = BS1;
+			else if (FTC.equals("low") && MS.equals("large")) BS = BS2;
+			else if (FTC.equals("medium") && MS.equals("small")) BS = BS3;
+			else if (FTC.equals("medium") && MS.equals("medium")) BS = BS4;
+			else if (FTC.equals("medium") && MS.equals("large")) BS = BS5;
+			else if (FTC.equals("high") && MS.equals("small")) BS = BS6;
+			else if (FTC.equals("high") && MS.equals("medium")) BS = BS7;
+			else if (FTC.equals("high") && MS.equals("large")) BS = BS8;
+
+			//Setting the priority of the message
+			P = 10-BS;
+
+                       // System.out.println("P: "+P);
+			return P;
+		}
+		public int getPriority(Message m)
+		{
+			return compute_fuzzy((Integer)m.getProperty(FTC_PROPERTY),(Integer)m.getSize());
+		}
+		public int compare(Tuple<Message, Connection> t1, Tuple<Message, Connection> t2) {
+
+            return (getPriority(t1.getKey())-getPriority(t2.getKey()));
+
+        }
+
+    }
 
 	public class FTCComparator1 implements Comparator<Message > {
 
@@ -318,43 +367,8 @@ public class AdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 
     }
 
-
 	@Override
-	public void changedConnection(Connection con) {
-		if (con.isUp()) { // new connection
-			if (con.isInitiator(getHost())) {
-				// initiator performs all the actions on behalf of the
-				// other node too (so that the meeting probs are updated
-				// for both before exchanging them)
-				DTNHost otherHost = con.getOtherNode(getHost());
-				MessageRouter mRouter = otherHost.getRouter();
-
-				assert mRouter instanceof AdaptableFuzzySprayAndWaitRouter : "FuzzySprayAndWaitRouter only works "+
-				" with other routers of same type";
-				AdaptableFuzzySprayAndWaitRouter otherRouter = (AdaptableFuzzySprayAndWaitRouter)mRouter;
-
-				// exchange ACKed message data
-				this.ackedMessageIds.addAll(otherRouter.ackedMessageIds);
-				otherRouter.ackedMessageIds.addAll(this.ackedMessageIds);
-				deleteAckedMessages();
-				otherRouter.deleteAckedMessages();
-			}
-		}
-	}
-
-    /**
-	 * Deletes the messages from the message buffer that are known to be ACKed
-	 */
-	protected void deleteAckedMessages() {
-		for (String id : this.ackedMessageIds) {
-			if (this.hasMessage(id) && !isSending(id)) {
-				this.deleteMessage(id, false);
-			}
-		}
-	}
-
-	@Override
-	public AdaptableFuzzySprayAndWaitRouter replicate() {
-		return new AdaptableFuzzySprayAndWaitRouter(this);
+	public AdaptableFuzzySprayAndWaitRouter_noACKS replicate() {
+		return new AdaptableFuzzySprayAndWaitRouter_noACKS(this);
 	}
 }

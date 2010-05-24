@@ -107,6 +107,7 @@ public class AdaptableFuzzySprayRouter extends EnergyAwareRouter {
 			}
 			if (less_priority == null ) {
 				less_priority = m;
+				//least_priority=f.getPriority(less_priority);
 			}
 			else if (least_priority > f.getPriority(m)) {
 				less_priority = m;
@@ -189,7 +190,7 @@ public class AdaptableFuzzySprayRouter extends EnergyAwareRouter {
 		}
 
 
-                msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
+        msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
 		/* was the message delivered to the final recipient? */
 		if (msg.getTo() == con.getOtherNode(getHost())) {
 			this.ackedMessageIds.add(msg.getId()); // yes, add to ACKed messages

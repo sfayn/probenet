@@ -1,0 +1,15 @@
+Scenario.name = DeliverAll_withACKS
+Group.router = DeliverAllRouter_withACKS
+Events1.interval = [1,6;5,10;10,20]
+Group.waitTime= 0,120
+fuzzy.transmitRange= 30
+Group.transmitSpeed= 2M
+fuzzy.transmitSpeed= 2M
+Group.nrofHosts =60
+Events1.size=10k,100k
+Group.speed= 2.7,13.9
+Group.bufferSize=250M
+MovementModel.rngSeed = 1
+FuzzyComprehensiveReport.output =reports/DAwA_B-%%Group.bufferSize%%_TS-%%fuzzy.transmitSpeed%%_TR-%%fuzzy.transmitRange%%_W-%%Group.waitTime%%_S-%%Group.speed%%_N-%%Group.nrofHosts%%_MS-%%Events1.size%%_CI-%%Events1.interval%%_%%MovementModel.rngSeed%%.txt
+Report.report1 = FuzzyComprehensiveReport
+

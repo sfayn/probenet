@@ -43,9 +43,6 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 
 		protected Set<Integer> known_nodes;
 
-        protected int bufferSizeBefore;
-        protected int bufferSizeAfter;
-
 	public AdaptableFuzzySprayRouter_noACKS(Settings s) throws IOException {
 		super(s);
         FTCmax=0;
@@ -99,6 +96,7 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 			}
 			if (less_priority == null ) {
 				less_priority = m;
+				//least_priority=f.getPriority(less_priority);
 			}
 			else if (least_priority > f.getPriority(m)) {
 				less_priority = m;
@@ -142,7 +140,6 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 		if (!canStartTransfer() || isTransferring()) {
 			return; // nothing to transfer or is currently transferring
 		}
-                bufferSizeBefore=getNrofMessages();
 
 		/* try messages that could be delivered to final recipient */
 		if (exchangeDeliverableMessages() != null) {
@@ -150,16 +147,6 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 		}
 
 		tryOtherMessages();
-
-                bufferSizeAfter=getNrofMessages();
-
-		for (MessageListener ml:mListeners)
-                {
-                    if (ml instanceof FuzzySprayReport)
-                        ((FuzzySprayReport)ml).bufferSize(getHost(),  bufferSizeBefore,bufferSizeAfter);
-
-                }
-           //     System.out.println(bufferSizeAfter -bufferSizeBefore);
 	}
 
 
@@ -181,7 +168,7 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 		}
 
 
-                msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
+        msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
 		/* was the message delivered to the final recipient? */
 		if (msg.getTo() == con.getOtherNode(getHost())) {
 			this.deleteMessage(msg.getId(), false); // delete from buffer
