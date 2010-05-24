@@ -1,0 +1,17 @@
+Scenario.name = AdaptableFuzzySprayAndWait_opposite
+Group.router = AdaptableFuzzySprayAndWaitRouter_opposite2
+AdaptableFuzzySprayAndWaitRouter_opposite2.nrofCopies=[2;4;6;8;10;12;14;18;20;22;24;30;34;36;40;45;50;60;70;80;90;100;120;150;180;200]
+AdaptableFuzzySprayAndWaitRouter_opposite2.binaryMode=true
+Events1.interval = 25,35
+Group.waitTime= 0,120
+fuzzy.transmitRange= 30
+Group.transmitSpeed= 1M
+fuzzy.transmitSpeed= 1M
+Group.nrofHosts =60
+Events1.size=10k,100k
+Group.speed= 0,10 
+Group.bufferSize=1M
+MovementModel.rngSeed = [1;2;3;4;5]
+FuzzyComprehensiveReport.output =reports/AFSnWO2_L-%%AdaptableFuzzySprayAndWaitRouter_opposite2.nrofCopies%%_B-%%Group.bufferSize%%_TS-%%fuzzy.transmitSpeed%%_TR-%%fuzzy.transmitRange%%_W-%%Group.waitTime%%_S-%%Group.speed%%_N-%%Group.nrofHosts%%_MS-%%Events1.size%%_CI-%%Events1.interval%%_%%MovementModel.rngSeed%%.txt
+Report.report1 = FuzzyComprehensiveReport
+

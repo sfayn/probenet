@@ -1,0 +1,14 @@
+Scenario.name = AdaptableFuzzySpray_drop_last
+Group.router = AdaptableFuzzySprayRouter_drop_last
+Events1.interval = 25,35
+Group.waitTime= 0,120
+fuzzy.transmitRange= 30
+Group.transmitSpeed= 1M
+fuzzy.transmitSpeed= 1M
+Group.nrofHosts =60
+Events1.size=10k,100k
+Group.speed= 2.7,13.9
+Group.bufferSize=[10k;100k;500k;1M;10M;100M;250M]
+MovementModel.rngSeed = [1;2]
+FuzzyComprehensiveReport.output=reports/AFSDL_B-%%Group.bufferSize%%_TS-%%fuzzy.transmitSpeed%%_TR-%%fuzzy.transmitRange%%_W-%%Group.waitTime%%_S-%%Group.speed%%_N-%%Group.nrofHosts%%_MS-%%Events1.size%%_CI-%%Events1.interval%%_%%MovementModel.rngSeed%%.txt
+Report.report1 = FuzzyComprehensiveReport

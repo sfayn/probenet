@@ -52,12 +52,9 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		public static final String INTERFACE_SATELLITE="satellite";
 		public static final String INTERFACE_CELLULAR="cellular";
 
-
 		protected int FTCmax;
 		protected int MSmax;
-
 		protected Set<Integer> known_nodes;
-
 		protected int initialNrofCopies;
 		protected boolean isBinary;
 		protected int max_ts;
@@ -66,13 +63,10 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		super(s);
 		max_ts=s.getInt(MAX_TRANSMIT_SPEED);
 		Settings snwSettings = new Settings(FUZZYSPRAY_NS);
-
-
 		FTCmax=0;
 		MSmax=0;
 		initialNrofCopies = snwSettings.getInt(NROF_COPIES);
 		isBinary = snwSettings.getBoolean( BINARY_MODE);
-		
 		ackedMessageIds = new HashSet<String>();
 		known_nodes=new HashSet<Integer>();
 	}
@@ -142,8 +136,9 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		Collection<Message> messages = this.getMessageCollection();
 		Message less_priority = null;
 		double least_priority=1;
-		FTCComparator f=new FTCComparator();
-		for (Message m : messages) {
+		FTCComparator1 f=new FTCComparator1();
+		for (Message m : messages)
+		{
 			if (excludeMsgBeingSent && isSending(m.getId())) {
 				continue; // skip the message(s) that router is sending
 			}
@@ -195,7 +190,6 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		if (exchangeDeliverableMessages() != null) {
 			//return;
 		}
-
 		tryOtherMessages();
 	}
 
@@ -221,13 +215,12 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 				return con;
 			}
 		}
-
 		return null;
 	}
 
 	@Override
-	protected Tuple<Message, Connection> tryMessagesForConnected(
-			List<Tuple<Message, Connection>> tuples) {
+	protected Tuple<Message, Connection> tryMessagesForConnected(List<Tuple<Message, Connection>> tuples)
+	{
 		if (tuples.size() == 0) {
 			return null;
 		}
@@ -239,7 +232,6 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 				//return t;
 			}
 		}
-
 		return null;
 	}
 
@@ -249,7 +241,6 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 			/* no messages -> empty list */
 			return new ArrayList<Tuple<Message, Connection>>(0);
 		}
-
 		List<Tuple<Message, Connection>> forTuples =
 			new ArrayList<Tuple<Message, Connection>>();
 		for (Message m : getMessageCollection()) {
@@ -262,7 +253,6 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 				}
 			}
 		}
-
 		return forTuples;
 	}
 
@@ -300,9 +290,6 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 			this.ackedMessageIds.add(msg.getId()); // yes, add to ACKed messages
 			this.deleteMessage(msg.getId(), false); // delete from buffer
 		}
-
-
-
 	}
 
     	/**
@@ -310,8 +297,8 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 	 * hop counts and their delivery probability
 	 * @return The return value of {@link #tryMessagesForConnected(List)}
 	 */
-	protected void tryOtherMessages() {
-
+	protected void tryOtherMessages()
+	{
 		List<Message> msgCollection=getMessagesWithCopiesLeft();
 		Collections.sort(msgCollection,new FTCComparator1());
 		if (msgCollection.size() > 0) {
@@ -347,7 +334,7 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		}
 	}
 
-		/**
+	/**
 	 * Creates and returns a list of messages this router is currently
 	 * carrying and still has copies left to distribute (nrof copies > 1).
 	 * @return A list of messages that have copies left
@@ -363,13 +350,11 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 				list.add(m);
 			}
 		}
-
 		return list;
 	}
 
-    public class FTCComparator implements Comparator<Tuple<Message, Connection> > {
-
-
+	public class FTCComparator1 implements Comparator<Message > 
+	{
 		private int compute_fuzzy(int CDM, int size)
 		{
 		       // System.out.println("CDM: "+CDM);
@@ -420,77 +405,15 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 		{
 			return compute_fuzzy((Integer)m.getProperty(FTC_PROPERTY),(Integer)m.getSize());
 		}
-		public int compare(Tuple<Message, Connection> t1, Tuple<Message, Connection> t2) {
-
-	    return (getPriority(t1.getKey())-getPriority(t2.getKey()));
-
-	}
-
-    }
-
-	public class FTCComparator1 implements Comparator<Message > {
-
-
-		private int compute_fuzzy(int CDM, int size)
+		public int compare(Message m1, Message m2)
 		{
-		       // System.out.println("CDM: "+CDM);
-			int BS0 = 0;
-			int BS1 = 2;
-			int BS2 = 3;
-			int BS3 = 4;
-			int BS4 = 5;
-			int BS5 = 6;
-			int BS6 = 7;
-			int BS7 = 8;
-			int BS8 = 10;
-
-			String FTC=null;
-			String MS=null;
-			int BS=0;
-			int P;
-
-			if (CDM <= FTCmax/3) FTC = "low";
-			else if (CDM >= (FTCmax*2)/3) FTC = "high";
-			else FTC = "medium";
-
-			//Message size membership function
-			if (size < MSmax/4) MS = "small";
-			else if (size > (MSmax*3)/4) MS = "large";
-			else MS = "medium";
-
-			//System.out.println("FTC: "+FTC);
-			//System.out.println("MS: "+MS);
-			//Inference rules and Defuzzification using Center of Area (COA)
-			if (FTC.equals("low") && MS.equals("small")) BS = BS0;
-			else if (FTC.equals("low") && MS.equals("medium")) BS = BS1;
-			else if (FTC.equals("low") && MS.equals("large")) BS = BS2;
-			else if (FTC.equals("medium") && MS.equals("small")) BS = BS3;
-			else if (FTC.equals("medium") && MS.equals("medium")) BS = BS4;
-			else if (FTC.equals("medium") && MS.equals("large")) BS = BS5;
-			else if (FTC.equals("high") && MS.equals("small")) BS = BS6;
-			else if (FTC.equals("high") && MS.equals("medium")) BS = BS7;
-			else if (FTC.equals("high") && MS.equals("large")) BS = BS8;
-
-			//Setting the priority of the message
-			P = 10-BS;
-
-		       // System.out.println("P: "+P);
-			return P;
+			return (getPriority(m1)-getPriority(m2));
 		}
-		public int getPriority(Message m)
-		{
-			return compute_fuzzy((Integer)m.getProperty(FTC_PROPERTY),(Integer)m.getSize());
-		}
-
-		public int compare(Message m1, Message m2) {
-			return (getPriority(m2)-getPriority(m1));
-		}
-
     }
-
 
 	@Override
-	public void changedConnection(Connection con) {
+	public void changedConnection(Connection con)
+	{
 		if (con.isUp()) // new connection
 		{
 			if (con.isInitiator(getHost()))
@@ -517,7 +440,6 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 
 				Collection <Application> otherAppCollection=mRouter.getApplications(PARANETS_application.APP_ID);
 				PARANETS_application otherParanetsApp=(PARANETS_application)((otherAppCollection.toArray())[0]);
-
 
 				for (int i=0;i<myParanetsApp.conditions.length;i++)
 				{

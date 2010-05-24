@@ -9,9 +9,6 @@ Group.transmitSpeed=3M
 fuzzy.transmitSpeed=3M
 Events1.interval =25,35
 
-L=4,B=1M,N=60,MS=10k,100k,S=-1,W=0,120,TR=30,TS=3M,CI=25,35
-AFS_B-1M_TS-3M_TR-30_W-0,120_S-2.7,13.9_N-20_MS-1k,10k_CI-25,35
-AFS_B-1M_TS-3M_TR-30_W-0,120_S-*_N-60_MS-10k,100k_CI-25,35
 
 Events1.interval = [5,10;25,35]
 Group.waitTime= [0,30;0,90;0,120]
@@ -23,3 +20,31 @@ Group.nrofHosts =60
 Events1.size=10k,100k
 Group.speed= 2.7,13.9
 Group.bufferSize=1M
+
+FuzzySprayAndWaitRouter.nrofCopies=[2;4;6;8;10;12;14;18;20;22;24;30;34;36;40;45;50;60;70;80;90;100;120;150;180;500;600;700;800;900;1000;1500;3000;4000;5000;10000;50000;100000;1000000]
+FuzzySprayAndWaitRouter.binaryMode=true
+Events1.interval = 25,35
+Group.waitTime= 0,120
+fuzzy.transmitRange= 30
+Group.transmitSpeed= 1M
+fuzzy.transmitSpeed= 1M
+Group.nrofHosts =60
+Events1.size=10k,100k
+Group.speed= 0,10 //maybe here also others 0,6;0,8;0,10;5,15;10,20
+Group.bufferSize=1M
+MovementModel.rngSeed = [0;2;3;4;5;6;7;8;9;10;11]
+
+
+
+FuzzySprayAndWaitRouter.nrofCopies=[4;8;12;20;50;100;130;150;180;200;300;400;500;1000;10000;100k]
+FuzzySprayAndWaitRouter.binaryMode=true
+Events1.interval = 25,35
+Group.waitTime= 0,120
+fuzzy.transmitRange= 30
+Group.transmitSpeed= 1M
+fuzzy.transmitSpeed= 1M
+Group.nrofHosts =60
+Events1.size=10k,100k
+Group.speed= 20,30
+Group.bufferSize=1M
+MovementModel.rngSeed = 2
