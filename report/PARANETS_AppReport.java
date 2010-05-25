@@ -106,8 +106,8 @@ public class PARANETS_AppReport extends Report implements ApplicationListener
 			current.data_reached_time[index]=SimClock.getTime();
 			current.reached_size[index]=msg.getSize();
 			current.cost_for_delivery=getCost(msg.getSize(), inter);
-			((PARANETS_application)app).conditions[index].sensed((SimClock.getTime()-current.data_sent_time)/msg.getSize());
-			if (current.reached())
+			((PARANETS_application)app).conditions[index].sensed(msg.getSize()/(current.data_reached_time[index]-current.data_sent_time));
+			//if (current.reached())
 				last_delivered[index]=id;
 			stats.put(id, current);
 		}

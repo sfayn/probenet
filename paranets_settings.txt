@@ -32,25 +32,25 @@ Group.movementModel = RandomWaypoint
 #MapRouteMovement
 Group.deleteDelivered= true
 
-Group1.bufferSize= 1M
-Group2.bufferSize= 2000M
+Group2.bufferSize= 1M
+Group1.bufferSize= 2000M
 Group1.waitTime = 0,20
 Group.nrofInterfaces = 3
 Group.interface1 = wlan
 Group.interface2 = cellular
 Group.interface3 = satellite
 # Walking speeds
-Group1.speed = 2.7,5.4
+Group2.speed = 2.7,5.4
 Group1.availableBandwidth=20M
 Group2.availableBandwidth=20M
 #does not move
-Group2.speed=0,0
+Group1.speed=0,0
 # Message TTL of 300 minutes (5 hours)
 Group.msgTtl = 300
-Group1.nrofHosts = 30
-Group2.nrofHosts = 1
-Group1.groupID = p
-Group2.groupID = s
+Group1.nrofHosts = 1
+Group2.nrofHosts = 30
+Group1.groupID = s
+Group2.groupID = p
 
 ## Message creation parameters 
 # no message creation events (application creates them)
@@ -104,22 +104,29 @@ FuzzyComprehensiveReport.output =reports/paranets.txt
 MA_app.type = PARANETS_application
 MA_app.interval = 300,600
 MA_app.role=MA
+MA_app.SA_Address=0
 MA_app.requestSize = 5
 MA_app.seed=0
 MA_app.CostsPerTechnology=0,0.5,1
 MA_app.NominalThroughput=1M,10M,8M
+MA_app.MaxCost=1,5
+MA_app.lagrange=false
+MA_app.num_minibundles=10
 
 SA_app.type = PARANETS_application
 SA_app.role=SA
-SA_app.SA_Address=30
+SA_app.SA_Address=0
 SA_app.MessageSizeRanges = 10k,100k
 SA_app.seed=0
 SA_app.CostsPerTechnology=0,0.5,1
 SA_app.NominalThroughput=1M,10M,8M
+SA_app.MaxCost=1,5
+SA_app.lagrange=false
+SA_app.num_minibundles=10
 
 Group.nrofApplications = 1
-Group1.application1 = MA_app
-Group2.application1 = SA_app
+Group1.application1 = SA_app
+Group2.application1 = MA_app
 Report.nrofReports = 2
 Report.report2 = PARANETS_AppReport
 PARANETS_AppReport.output =reports/paranets_app.txt
