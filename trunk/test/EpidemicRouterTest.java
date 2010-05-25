@@ -547,7 +547,7 @@ public class EpidemicRouterTest extends AbstractRouterTest {
 	/**
 	 * Runs a message exchange between node h1 and another node
 	 * @param withDestination If true, the other node is the final destination
-	 *        of the messages, if false, the other node is not the final dst
+	 *	of the messages, if false, the other node is not the final dst
 	 * @return The order of the messages in a space delimited string
 	 */
 	private String runMessageExchange(boolean withDestination) {

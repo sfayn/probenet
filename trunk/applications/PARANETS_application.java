@@ -58,53 +58,66 @@ public class PARANETS_application extends Application {
 			public double Tmin=0;
 			public double Tmax=10;//just example might be changed
 		}
-		
+
+		private class throughputMeasurements{
+			public double throughput;
+			public double stamp;
+
+			public throughputMeasurements(double nominal_TH){
+			    throughput=nominal_TH;
+			    stamp=SimClock.getTime();
+			}
+		}
+
 		private fuzzy_parameters params;
 
-        private double stampSensed;
-        private double throughputSensedEstimate;
-        private double stampShared;
-        private double throughputEstimate;
+
+   //     private double stampSensed;
+	private throughputMeasurements throughputSensedEstimate;
+  //      private double stampShared;
+	private throughputMeasurements throughputEstimate;
+	private throughputMeasurements throughputShared;
 		
 		public void setInitially(double nominal_TH)
 		{
-			throughputSensedEstimate=nominal_TH;
-			throughputEstimate=nominal_TH;
-			stampSensed=SimClock.getTime();
-			stampShared=stampSensed;
+			throughputSensedEstimate =new throughputMeasurements(nominal_TH);
+			throughputEstimate =new throughputMeasurements(nominal_TH);
+			throughputShared=new throughputMeasurements(nominal_TH);
 			params =new fuzzy_parameters();
 		}
 
 		public void sensed(double sensed_TH)
 		{
-			double time_diff=SimClock.getTime()-stampSensed;
-			stampSensed=SimClock.getTime(); //for next time
-			params=getFuzzyParams(time_diff,params);
-			throughputSensedEstimate=getNewEstimate(throughputSensedEstimate,sensed_TH,time_diff,params);
+			double time_diff=SimClock.getTime()-throughputSensedEstimate.stamp;
+			
+			params=getFuzzyParams();
+			throughputSensedEstimate.throughput=getNewEstimate();
+			throughputSensedEstimate.stamp=SimClock.getTime(); //for next time
 		}
 		public void shared(double shared_TH)
 		{
-			double time_diff=SimClock.getTime()-stampShared;
-			stampShared=SimClock.getTime(); //for next time
-			params=getFuzzyParams(time_diff,params);
-			throughputEstimate=getNewEstimate(throughputSensedEstimate,shared_TH,time_diff,params);
+			double time_diff=SimClock.getTime()-throughputShared.stamp;
+			
+			params=getFuzzyParams();
+			throughputEstimate.throughput=getNewEstimate();
+			throughputShared.stamp=SimClock.getTime(); //for next time
 		}
 
-		private fuzzy_parameters getFuzzyParams(double time_diff, fuzzy_parameters params) {
+		private fuzzy_parameters getFuzzyParams() {
 			throw new UnsupportedOperationException("Not yet implemented");
 		}
 
-		private double getNewEstimate(double estimate, double new_value, double time_diff, fuzzy_parameters params) {
+		private double getNewEstimate() {
 			throw new UnsupportedOperationException("Not yet implemented");
 		}
 
 		public double getTH_estimate()
 		{
-			return throughputEstimate;
+			return throughputEstimate.throughput;
 		}
 		public double last_stamp()
 		{
-			return (stampSensed>stampShared?stampSensed:stampShared);
+			return (throughputSensedEstimate.stamp>throughputShared.stamp?throughputSensedEstimate.stamp:throughputShared.stamp);
 		}
 	}
 

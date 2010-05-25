@@ -91,8 +91,8 @@ while (<>) {
 
       @values = sort { $a <=> $b } @values;
       for (my $i=0; $i < @values; $i++) {
-        # print normalized to mAh
-        print $dataFile "$round $i " . $values[$i]/3600 . "\n";
+	# print normalized to mAh
+	print $dataFile "$round $i " . $values[$i]/3600 . "\n";
       }
     }
     

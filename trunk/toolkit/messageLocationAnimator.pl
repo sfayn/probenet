@@ -49,11 +49,11 @@ yrange  Value range for the y-axis (default: variable). E.g. "0:3500"
 size    Size (pixels) of the resulting image (default: 800,800)
 delay   Delay per animation frame (default: 100)
 inc     Regular expression for matching the messages that should be included
-        in the animation (default: \'.*\'). E.g. use \'M(1|2)$\' for animating 
-        only messages M1 and M2
+	in the animation (default: \'.*\'). E.g. use \'M(1|2)$\' for animating 
+	only messages M1 and M2
 ptype   Type of the point (integer value) to use in the location of the message
-        (default: variable). Valid values are from 0 to 21. Type "test" in 
-        gnuplot to get samples of all types.
+	(default: variable). Valid values are from 0 to 21. Type "test" in 
+	gnuplot to get samples of all types.
 
 example: 
   messageLocationAnimator.pl -name test reportfile.txt
@@ -115,7 +115,7 @@ while (<>) {
     }
     else { # no file handle for this message ID -> create one
       if (not m/$includeRe/) {
-        next;
+	next;
       }
       print "New message ID: $_\n";
       my $fileName = "${time}-${_}.data";

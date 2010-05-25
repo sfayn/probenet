@@ -150,18 +150,18 @@ public class SimMenuBar extends JMenuBar implements ActionListener {
 				offsets = settings.getCsvInts("offset", 2);
 				scale = settings.getDouble("scale");
 				rotate = settings.getDouble("rotate");
-	            image = ImageIO.read(new File(imgFile));
-	        } catch (IOException ex) {
-	        	warn("Couldn't set underlay image " + imgFile + ". " + 
-	        			ex.getMessage());
-	        	enableBgImage.setSelected(false);
-	        	return;
-	        }
-	        catch (SettingsError er) {
-	        	warn("Problem with the underlay image settings: " + 
-	        			er.getMessage());
-	        	return;
-	        }
+		    image = ImageIO.read(new File(imgFile));
+		} catch (IOException ex) {
+			warn("Couldn't set underlay image " + imgFile + ". " + 
+					ex.getMessage());
+			enableBgImage.setSelected(false);
+			return;
+		}
+		catch (SettingsError er) {
+			warn("Problem with the underlay image settings: " + 
+					er.getMessage());
+			return;
+		}
 			field.setUnderlayImage(image, offsets[0], offsets[1],
 					scale, rotate);
 		}

@@ -50,13 +50,13 @@ public class PlayField extends JPanel {
 		this.w = w;
 		this.refGraphic = new ScaleReferenceGraphic();
 		updateFieldSize();
-        this.setBackground(bgColor);
-        this.overlayGraphics = Collections.synchronizedList(
-        		new ArrayList<PlayFieldGraphic>());
-        this.mapGraphic = null;
-        this.underlayImage = null;
-        this.imageTransform = null;
-        this.autoClearOverlay = true;
+	this.setBackground(bgColor);
+	this.overlayGraphics = Collections.synchronizedList(
+			new ArrayList<PlayFieldGraphic>());
+	this.mapGraphic = null;
+	this.underlayImage = null;
+	this.imageTransform = null;
+	this.autoClearOverlay = true;
 	}
 	
 	/**
@@ -83,16 +83,16 @@ public class PlayField extends JPanel {
 			return;
 		}
 		this.underlayImage = image;
-        this.imageTransform = AffineTransform.getRotateInstance(rotation);
-        this.imageTransform.scale(scale, scale);
-        this.curTransform = new AffineTransform(imageTransform);
-        this.underlayImgDx = dx;
-        this.underlayImgDy = dy;
-        
+	this.imageTransform = AffineTransform.getRotateInstance(rotation);
+	this.imageTransform.scale(scale, scale);
+	this.curTransform = new AffineTransform(imageTransform);
+	this.underlayImgDx = dx;
+	this.underlayImgDy = dy;
+	
 		curTransform.scale(PlayFieldGraphic.getScale(),
 				PlayFieldGraphic.getScale());
 		curTransform.translate(this.underlayImgDx, this.underlayImgDy);
-        
+	
 	}
 	
 	/**
@@ -241,12 +241,12 @@ public class PlayField extends JPanel {
 	 * and current scale/zoom.
 	 */ 
 	private void updateFieldSize() {
-        Dimension minSize = new Dimension(
-        		PlayFieldGraphic.scale(w.getSizeX()),
-        		PlayFieldGraphic.scale(w.getSizeY()) );
-        this.setMinimumSize(minSize);
-        this.setPreferredSize(minSize);
-        this.setSize(minSize);
+	Dimension minSize = new Dimension(
+			PlayFieldGraphic.scale(w.getSizeX()),
+			PlayFieldGraphic.scale(w.getSizeY()) );
+	this.setMinimumSize(minSize);
+	this.setPreferredSize(minSize);
+	this.setSize(minSize);
 	}
 	
 }

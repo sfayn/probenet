@@ -36,8 +36,8 @@ public class SprayAndWaitRouter extends EnergyAwareRouter {
 	protected int initialNrofCopies;
 	protected boolean isBinary;
 
-        protected int bufferSizeBefore;
-        protected int bufferSizeAfter;
+	protected int bufferSizeBefore;
+	protected int bufferSizeAfter;
 
     
 	public SprayAndWaitRouter(Settings s) {
@@ -45,7 +45,7 @@ public class SprayAndWaitRouter extends EnergyAwareRouter {
 		Settings snwSettings = new Settings(SPRAYANDWAIT_NS);
 		
 		initialNrofCopies = snwSettings.getInt(NROF_COPIES);
-                //System.out.println(initialNrofCopies);
+		//System.out.println(initialNrofCopies);
 		isBinary = snwSettings.getBoolean( BINARY_MODE);
 	}
 	
@@ -98,27 +98,27 @@ public class SprayAndWaitRouter extends EnergyAwareRouter {
 	public void update() {
 		super.update();
 
-                double current_time=SimClock.getTime();
+		double current_time=SimClock.getTime();
 
-                if(current_time-FuzzySprayReport.lastReportTime>=FuzzySprayReport.reportInterval)
-                {
-                    FuzzySprayReport.lastReportTime=current_time;
+		if(current_time-FuzzySprayReport.lastReportTime>=FuzzySprayReport.reportInterval)
+		{
+		    FuzzySprayReport.lastReportTime=current_time;
 
-                    for (MessageListener ml:mListeners)
-                    {
-                        if (ml instanceof FuzzySprayReport )
-                            ((FuzzySprayReport)ml).calculateStatistics(current_time);
+		    for (MessageListener ml:mListeners)
+		    {
+			if (ml instanceof FuzzySprayReport )
+			    ((FuzzySprayReport)ml).calculateStatistics(current_time);
 						else if (ml instanceof FuzzyComprehensiveReport)
 							((FuzzyComprehensiveReport)ml).calculateStatistics(current_time);
 
-                    }
+		    }
 
-                }
+		}
 
 		if (!canStartTransfer() || isTransferring()) {
 			return; // nothing to transfer or is currently transferring 
 		}
-                bufferSizeBefore=getMessageCollection().size();
+		bufferSizeBefore=getMessageCollection().size();
 
 		/* try messages that could be delivered to final recipient */
 		if (exchangeDeliverableMessages() != null) {
@@ -134,14 +134,14 @@ public class SprayAndWaitRouter extends EnergyAwareRouter {
 			this.tryMessagesToConnections(copiesLeft, getConnections());
 		}
 
-                bufferSizeAfter=getMessageCollection().size();
+		bufferSizeAfter=getMessageCollection().size();
 
-                for (MessageListener ml:mListeners)
-                {
-                    if (ml instanceof FuzzySprayReport)
-                        ((FuzzySprayReport)ml).bufferSize(getHost(), bufferSizeBefore,bufferSizeAfter);
+		for (MessageListener ml:mListeners)
+		{
+		    if (ml instanceof FuzzySprayReport)
+			((FuzzySprayReport)ml).bufferSize(getHost(), bufferSizeBefore,bufferSizeAfter);
 
-                }
+		}
 
 	}
 	

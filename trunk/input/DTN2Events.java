@@ -53,7 +53,7 @@ public class DTN2Events implements EventQueue {
 	
 	
 	//************************************************************************//
-	//                                    ParserHandler                                    //
+	//				    ParserHandler				    //
 	//************************************************************************//
 	
 	/**
@@ -84,7 +84,7 @@ public class DTN2Events implements EventQueue {
 		}
 		
 		//********************************************************************//
-		//                     CLAInterface Implementation                    //
+		//		     CLAInterface Implementation		    //
 		//********************************************************************//
 		public BundleTransferReceipt incomingBundle(String location, 
 				CLAParser.BundleAttributes attributes) {
@@ -187,7 +187,7 @@ public class DTN2Events implements EventQueue {
 	
 	
 	//************************************************************************//
-	//                              EventQueue Implementation                              //
+	//			      EventQueue Implementation			      //
 	//************************************************************************//
 	public ExternalEvent nextEvent() {
 		if (!this.events.isEmpty()) {
@@ -206,7 +206,7 @@ public class DTN2Events implements EventQueue {
 	
 	
 	//************************************************************************//
-	//                                   Public Methods                                    //
+	//				   Public Methods				    //
 	//************************************************************************//
 	
 	/**
@@ -223,7 +223,7 @@ public class DTN2Events implements EventQueue {
 	
 	
 	//************************************************************************//
-	//                                   Private Methods                                   //
+	//				   Private Methods				   //
 	//************************************************************************//
 	private void enqueMsg(int from, int to, Bundle bundle) {
 		String id;

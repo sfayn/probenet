@@ -38,12 +38,12 @@ public class AdaptableFuzzySprayAndWaitRouter_noACKS extends EnergyAwareRouter {
 		/** SprayAndWait router's settings name space ({@value})*/
 		public static final String FUZZYSPRAY_NS = "FuzzySprayAndWaitRouter";
 
-        public static final String FTC_PROPERTY = FUZZYSPRAY_NS + "." + "ftc";
+	public static final String FTC_PROPERTY = FUZZYSPRAY_NS + "." + "ftc";
 		public static final String MSG_COUNT_PROPERTY = FUZZYSPRAY_NS + "." +"copies";
 
 
-        protected int FTCmax;
-        protected int MSmax;
+	protected int FTCmax;
+	protected int MSmax;
 
 		protected Set<Integer> known_nodes;
 
@@ -53,8 +53,8 @@ public class AdaptableFuzzySprayAndWaitRouter_noACKS extends EnergyAwareRouter {
 	public AdaptableFuzzySprayAndWaitRouter_noACKS(Settings s) throws IOException {
 		super(s);
 		Settings snwSettings = new Settings(FUZZYSPRAY_NS);
-        FTCmax=0;
-        MSmax=0;
+	FTCmax=0;
+	MSmax=0;
 		initialNrofCopies = snwSettings.getInt(NROF_COPIES);
 		isBinary = snwSettings.getBoolean( BINARY_MODE);
 		known_nodes=new HashSet<Integer>();
@@ -67,8 +67,8 @@ public class AdaptableFuzzySprayAndWaitRouter_noACKS extends EnergyAwareRouter {
 	protected AdaptableFuzzySprayAndWaitRouter_noACKS(AdaptableFuzzySprayAndWaitRouter_noACKS r) {
 		super(r);
 		this.FTCmax=r.FTCmax;
-        this.MSmax=r.MSmax;
-        this.initialNrofCopies = r.initialNrofCopies;
+	this.MSmax=r.MSmax;
+	this.initialNrofCopies = r.initialNrofCopies;
 		this.isBinary = r.isBinary;
 		known_nodes=new HashSet<Integer>();
 	}
@@ -202,7 +202,7 @@ public class AdaptableFuzzySprayAndWaitRouter_noACKS extends EnergyAwareRouter {
 			nrofCopies--;
 		}
 		msg.updateProperty(MSG_COUNT_PROPERTY, nrofCopies);
-        msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
+	msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
 
 		/* was the message delivered to the final recipient? */
 		if (msg.getTo() == con.getOtherNode(getHost())) {
@@ -251,7 +251,7 @@ public class AdaptableFuzzySprayAndWaitRouter_noACKS extends EnergyAwareRouter {
 
 		private int compute_fuzzy(int CDM, int size)
 		{
-                       // System.out.println("CDM: "+CDM);
+		       // System.out.println("CDM: "+CDM);
 			int BS0 = 0;
 			int BS1 = 2;
 			int BS2 = 3;
@@ -276,8 +276,8 @@ public class AdaptableFuzzySprayAndWaitRouter_noACKS extends EnergyAwareRouter {
 			else if (size > (MSmax*3)/4) MS = "large";
 			else MS = "medium";
 
-                        //System.out.println("FTC: "+FTC);
-                        //System.out.println("MS: "+MS);
+			//System.out.println("FTC: "+FTC);
+			//System.out.println("MS: "+MS);
 			//Inference rules and Defuzzification using Center of Area (COA)
 			if (FTC.equals("low") && MS.equals("small")) BS = BS0;
 			else if (FTC.equals("low") && MS.equals("medium")) BS = BS1;
@@ -292,7 +292,7 @@ public class AdaptableFuzzySprayAndWaitRouter_noACKS extends EnergyAwareRouter {
 			//Setting the priority of the message
 			P = 10-BS;
 
-                       // System.out.println("P: "+P);
+		       // System.out.println("P: "+P);
 			return P;
 		}
 		public int getPriority(Message m)
@@ -301,9 +301,9 @@ public class AdaptableFuzzySprayAndWaitRouter_noACKS extends EnergyAwareRouter {
 		}
 		public int compare(Tuple<Message, Connection> t1, Tuple<Message, Connection> t2) {
 
-            return (getPriority(t1.getKey())-getPriority(t2.getKey()));
+	    return (getPriority(t1.getKey())-getPriority(t2.getKey()));
 
-        }
+	}
 
     }
 
@@ -312,7 +312,7 @@ public class AdaptableFuzzySprayAndWaitRouter_noACKS extends EnergyAwareRouter {
 
 		private int compute_fuzzy(int CDM, int size)
 		{
-                       // System.out.println("CDM: "+CDM);
+		       // System.out.println("CDM: "+CDM);
 			int BS0 = 0;
 			int BS1 = 2;
 			int BS2 = 3;
@@ -337,8 +337,8 @@ public class AdaptableFuzzySprayAndWaitRouter_noACKS extends EnergyAwareRouter {
 			else if (size > (MSmax*3)/4) MS = "large";
 			else MS = "medium";
 
-                        //System.out.println("FTC: "+FTC);
-                        //System.out.println("MS: "+MS);
+			//System.out.println("FTC: "+FTC);
+			//System.out.println("MS: "+MS);
 			//Inference rules and Defuzzification using Center of Area (COA)
 			if (FTC.equals("low") && MS.equals("small")) BS = BS0;
 			else if (FTC.equals("low") && MS.equals("medium")) BS = BS1;
@@ -353,7 +353,7 @@ public class AdaptableFuzzySprayAndWaitRouter_noACKS extends EnergyAwareRouter {
 			//Setting the priority of the message
 			P = 10-BS;
 
-                       // System.out.println("P: "+P);
+		       // System.out.println("P: "+P);
 			return P;
 		}
 		public int getPriority(Message m)

@@ -72,7 +72,7 @@ while($cont) {
 		next; # not numeric value 
 	}
     $sum += $value;
-        
+	
 	if (defined $oldKey and $oldKey ne $key) {
 		die "key mismatch: $key vs. $oldKey";
 	}

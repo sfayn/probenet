@@ -113,7 +113,7 @@ public class ContactTimesReport extends Report implements ConnectionListener {
 			if (contacts == null) {
 				contacts = 0;
 			}
-			//     time(interval)             nrofContacts
+			//     time(interval)	     nrofContacts
 			write((i*this.granularity) + " " + contacts);
 		}
 		

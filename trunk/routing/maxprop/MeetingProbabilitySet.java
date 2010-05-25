@@ -28,18 +28,18 @@ public class MeetingProbabilitySet {
 	 * Constructor. Creates a probability set with empty node-probability
 	 * mapping.
 	 * @param maxSetSize Maximum size of the probability set; when the set is
-	 *        full, smallest values are dropped when new are added
+	 *	full, smallest values are dropped when new are added
 	 */
 	public MeetingProbabilitySet(int maxSetSize, double alpha) {
 		this.alpha = alpha;
 		this.probs = new HashMap<Integer, Double>();
-        if (maxSetSize == INFINITE_SET_SIZE || maxSetSize < 1) {
-        	this.probs = new HashMap<Integer, Double>();
-        	this.maxSetSize = INFINITE_SET_SIZE;
-        } else {
-        	this.probs = new HashMap<Integer, Double>(maxSetSize);
-            this.maxSetSize = maxSetSize;
-        }
+	if (maxSetSize == INFINITE_SET_SIZE || maxSetSize < 1) {
+		this.probs = new HashMap<Integer, Double>();
+		this.maxSetSize = INFINITE_SET_SIZE;
+	} else {
+		this.probs = new HashMap<Integer, Double>(maxSetSize);
+	    this.maxSetSize = maxSetSize;
+	}
 		this.lastUpdateTime = 0;
 	}
 	
@@ -73,8 +73,8 @@ public class MeetingProbabilitySet {
 	 * @param index The node index to update the probability for
 	 */
 	public void updateMeetingProbFor(Integer index) {
-        Map.Entry<Integer, Double> smallestEntry = null;
-        double smallestValue = Double.MAX_VALUE;
+	Map.Entry<Integer, Double> smallestEntry = null;
+	double smallestValue = Double.MAX_VALUE;
 
 		this.lastUpdateTime = SimClock.getTime();
 		
@@ -90,17 +90,17 @@ public class MeetingProbabilitySet {
 		 * normalize to one by dividing all the entries by 1+alpha */ 
 		for (Map.Entry<Integer, Double> entry : probs.entrySet()) {
 			entry.setValue(entry.getValue() / (1+alpha));
-            if (entry.getValue() < smallestValue) {
-                smallestEntry = entry;
-                smallestValue = entry.getValue();
-            }
+	    if (entry.getValue() < smallestValue) {
+		smallestEntry = entry;
+		smallestValue = entry.getValue();
+	    }
 
 		}
 
-        if (probs.size() >= maxSetSize) {
-            core.Debug.p("Probsize: " + probs.size() + " dropping " + 
-                    probs.remove(smallestEntry.getKey()));
-        }
+	if (probs.size() >= maxSetSize) {
+	    core.Debug.p("Probsize: " + probs.size() + " dropping " + 
+		    probs.remove(smallestEntry.getKey()));
+	}
 	}
 	
 	public void updateMeetingProbFor(Integer index, double iet)	{

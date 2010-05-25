@@ -26,21 +26,21 @@ public class WKTReaderTest extends TestCase {
 
 	private final int NROF_TST_NODES = 9;
 	/* Topology:  n6--n5
-	 *            |   |
-	 *        n1--n2--n7----n3
-	 *         |
-	 *        n4--n8--n9 (-- n10; from ADD_TOPOLOGY)
-	 *                ( |
-	 *                  n11; from ADD_TOPOLOGY2 ) 
+	 *	    |   |
+	 *	n1--n2--n7----n3
+	 *	 |
+	 *	n4--n8--n9 (-- n10; from ADD_TOPOLOGY)
+	 *		( |
+	 *		  n11; from ADD_TOPOLOGY2 ) 
 	 */
-	//                           				  n1       n2       n7       n3
+	//			   				  n1       n2       n7       n3
 	private String TST_TOPOLOGY = "LINESTRING (1.0 1.0, 2.0 1.0, 3.0 1.0, 8.0 1.0) \n\r" +
-	//              n1       n4
+	//	      n1       n4
 	"LINESTRING (1.0 1.0, 1.0 3.0)\n"+
-	//              n2      n6        n5        n7
+	//	      n2      n6	n5	n7
 	"LINESTRING (2.0 1.0, 2.0 0.0, 3.0 0.0, 3.0 1.0)\r\n"+
 	"POINT (1.0 2.0)\n" + // should skip this line
-	//              n4       n8                   n8      n9
+	//	      n4       n8		   n8      n9
 	"LINESTRING (1.0 3.0, 2.0 3.0) LINESTRING (2.0 3.0, 3.0 3.0)";
 	
 	//											  n9	 n10

@@ -52,13 +52,13 @@ public class DTNSim {
 		if (args.length > 0) {
 			if (args[0].equals(BATCH_MODE_FLAG)) {
 				batchMode = true;
-                if (args.length == 1) {
-                    firstConfIndex = 1;
-                }
-                else {
-                    nrofRuns = parseNrofRuns(args[1]);
-                    firstConfIndex = 2;
-                }
+		if (args.length == 1) {
+		    firstConfIndex = 1;
+		}
+		else {
+		    nrofRuns = parseNrofRuns(args[1]);
+		    firstConfIndex = 2;
+		}
 			}
 			else { /* GUI mode */				
 				try { /* is there a run index for the GUI mode ? */
@@ -101,9 +101,9 @@ public class DTNSim {
 	private static void initSettings(String[] confFiles, int firstIndex) {
 		int i = firstIndex;
 
-        if (i >= confFiles.length) {
-            return;
-        }
+	if (i >= confFiles.length) {
+	    return;
+	}
 
 		try {
 			Settings.init(confFiles[i]);

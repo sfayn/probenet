@@ -59,7 +59,7 @@ public class AdjacencyGraphvizReportTest extends TestCase {
 		h2.setLocation(new Coord(1,10));
 		h2.update(true);
 		//       h2
- 		// h1          h3
+ 		// h1	  h3
 		
 		h2.setLocation(c2);
 		h2.connect(h3); // reconnect
