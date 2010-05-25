@@ -447,7 +447,8 @@ public class ParanetAdaptableFuzzySprayAndWaitRouter extends EnergyAwareRouter {
 					{
 						PARANETS_AppReport other_report=(PARANETS_AppReport)(otherParanetsApp.getAppListeners().get(0));
 						PARANETS_AppReport.Request shared_data_stat=other_report.stats.get(other_report.last_delivered[i]);
-						myParanetsApp.conditions[i].shared((shared_data_stat.data_reached_time[i]-shared_data_stat.data_sent_time)/shared_data_stat.reached_size[i]);
+						if (shared_data_stat!=null)
+							myParanetsApp.conditions[i].shared(shared_data_stat.reached_size[i]/(shared_data_stat.data_reached_time[i]-shared_data_stat.data_sent_time));
 					}
 				}
 			}
