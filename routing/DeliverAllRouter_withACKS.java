@@ -31,7 +31,7 @@ public class DeliverAllRouter_withACKS extends EnergyAwareRouter {
 
 	public DeliverAllRouter_withACKS(Settings s) throws IOException {
 		super(s);
-        ackedMessageIds = new HashSet<String>();
+	ackedMessageIds = new HashSet<String>();
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class DeliverAllRouter_withACKS extends EnergyAwareRouter {
 	 */
 	protected DeliverAllRouter_withACKS(DeliverAllRouter_withACKS r) {
 		super(r);
-        ackedMessageIds = new HashSet<String>();
+	ackedMessageIds = new HashSet<String>();
 	}
 
 	@Override
@@ -113,10 +113,10 @@ public class DeliverAllRouter_withACKS extends EnergyAwareRouter {
 		if (msg.getTo() == con.getOtherNode(getHost())) {
 			this.ackedMessageIds.add(msg.getId()); // yes, add to ACKed messages
 			this.deleteMessage(msg.getId(), false); // delete from buffer
-                 //       System.out.println("DD");
+		 //       System.out.println("DD");
 
 		}
-           
+	   
 
 	}
 

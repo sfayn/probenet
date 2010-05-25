@@ -9,7 +9,7 @@ Version 1.4.0 (18 Mar 2010)
        take timescale as a parameter, and estimate the needed routing algorithm
        parameters based on that
        * see Karvo and Ott, Time Scales and Delay-Tolerant Routing Protocols,
-         CHANTS 2008, for more information. 
+	 CHANTS 2008, for more information. 
 	 * added new (unrealistic) EpidemicOracleRouter that transfers messages 
 	   immediately and deletes all replicas from buffers when the message is
 	   delivered

@@ -47,7 +47,7 @@ public class SprayAndWaitRouter_withACKS extends EnergyAwareRouter {
 		Settings snwSettings = new Settings(SPRAYANDWAIT_NS);
 		
 		initialNrofCopies = snwSettings.getInt(NROF_COPIES);
-                //System.out.println(initialNrofCopies);
+		//System.out.println(initialNrofCopies);
 		isBinary = snwSettings.getBoolean( BINARY_MODE);
 		ackedMessageIds = new HashSet<String>();
 	}

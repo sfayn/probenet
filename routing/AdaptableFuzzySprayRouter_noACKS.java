@@ -35,18 +35,18 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 		/** SprayAndWait router's settings name space ({@value})*/
 		public static final String FUZZYSPRAY_NS = "FuzzySprayRouter";
 
-        public static final String FTC_PROPERTY = FUZZYSPRAY_NS + "." + "ftc";
+	public static final String FTC_PROPERTY = FUZZYSPRAY_NS + "." + "ftc";
 
 
-        protected int FTCmax;
-        protected int MSmax;
+	protected int FTCmax;
+	protected int MSmax;
 
 		protected Set<Integer> known_nodes;
 
 	public AdaptableFuzzySprayRouter_noACKS(Settings s) throws IOException {
 		super(s);
-        FTCmax=0;
-        MSmax=0;
+	FTCmax=0;
+	MSmax=0;
 		known_nodes=new HashSet<Integer>();
 	}
 
@@ -56,8 +56,8 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 	 */
 	protected AdaptableFuzzySprayRouter_noACKS(AdaptableFuzzySprayRouter_noACKS r) {
 		super(r);
-        this.FTCmax=r.FTCmax;
-        this.MSmax=r.MSmax;
+	this.FTCmax=r.FTCmax;
+	this.MSmax=r.MSmax;
 		known_nodes=new HashSet<Integer>();
 	}
 
@@ -79,7 +79,7 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 	public Message messageTransferred(String id, DTNHost from) {
 		Message msg = super.messageTransferred(id, from);
 
-        msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
+	msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
 			
 		return msg;
 	}
@@ -111,7 +111,7 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 		makeRoomForNewMessage(msg.getSize());
 
 		msg.setTtl(this.msgTtl);
-        msg.addProperty(FTC_PROPERTY, (Integer)1);
+	msg.addProperty(FTC_PROPERTY, (Integer)1);
 		addToMessages(msg, true);
 
 		return true;
@@ -120,22 +120,22 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 	@Override
 	public void update() {
 		super.update();
-                double current_time=SimClock.getTime();
+		double current_time=SimClock.getTime();
 
-                if(current_time-FuzzySprayReport.lastReportTime>=FuzzySprayReport.reportInterval)
-                {
-                    FuzzySprayReport.lastReportTime=current_time;
+		if(current_time-FuzzySprayReport.lastReportTime>=FuzzySprayReport.reportInterval)
+		{
+		    FuzzySprayReport.lastReportTime=current_time;
 
-                    for (MessageListener ml:mListeners)
-                    {
-                        if (ml instanceof FuzzySprayReport )
-                            ((FuzzySprayReport)ml).calculateStatistics(current_time);
+		    for (MessageListener ml:mListeners)
+		    {
+			if (ml instanceof FuzzySprayReport )
+			    ((FuzzySprayReport)ml).calculateStatistics(current_time);
 						else if (ml instanceof FuzzyComprehensiveReport)
 							((FuzzyComprehensiveReport)ml).calculateStatistics(current_time);
 
-                    }
-                    
-                }
+		    }
+		    
+		}
 
 		if (!canStartTransfer() || isTransferring()) {
 			return; // nothing to transfer or is currently transferring
@@ -168,14 +168,14 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 		}
 
 
-        msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
+	msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
 		/* was the message delivered to the final recipient? */
 		if (msg.getTo() == con.getOtherNode(getHost())) {
 			this.deleteMessage(msg.getId(), false); // delete from buffer
-                 //       System.out.println("DD");
+		 //       System.out.println("DD");
 
 		}
-           
+	   
 
 	}
 
@@ -220,7 +220,7 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 		Collections.sort(messages,new FTCComparator());
 
 
-          
+	  
      
 		return tryMessagesForConnected(messages);
 	}
@@ -230,7 +230,7 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
   
 		private /*static*/ int compute_fuzzy(int CDM, int size)
 		{
-                       // System.out.println("CDM: "+CDM);
+		       // System.out.println("CDM: "+CDM);
 			int BS0 = 0;
 			int BS1 = 2;
 			int BS2 = 3;
@@ -255,8 +255,8 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 			else if (size > (MSmax*3)/4) MS = "large";
 			else MS = "medium";
 		
-                        //System.out.println("FTC: "+FTC);
-                        //System.out.println("MS: "+MS);
+			//System.out.println("FTC: "+FTC);
+			//System.out.println("MS: "+MS);
 			//Inference rules and Defuzzification using Center of Area (COA)
 			if (FTC.equals("low") && MS.equals("small")) BS = BS0;
 			else if (FTC.equals("low") && MS.equals("medium")) BS = BS1;
@@ -271,7 +271,7 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 			//Setting the priority of the message
 			P = 10-BS;
 		
-                       // System.out.println("P: "+P);
+		       // System.out.println("P: "+P);
 			return P;
 		}
 		public /*static*/ int getPriority(Message m)
@@ -279,10 +279,10 @@ public class AdaptableFuzzySprayRouter_noACKS extends EnergyAwareRouter {
 			return compute_fuzzy((Integer)m.getProperty(FTC_PROPERTY),(Integer)m.getSize());
 		}
 		public int compare(Tuple<Message, Connection> t1, Tuple<Message, Connection> t2) {
-                
-            return (getPriority(t1.getKey())-getPriority(t2.getKey()));
+		
+	    return (getPriority(t1.getKey())-getPriority(t2.getKey()));
 
-        }
+	}
 
     }
 

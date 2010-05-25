@@ -428,7 +428,7 @@ public abstract class MessageRouter {
 		for (MessageListener ml : this.mListeners) {
 			ml.messageTransferAborted(incoming, from, this.host);
 		}
-              //  System.out.println("ab");
+	      //  System.out.println("ab");
 	}
 	
 	/**
@@ -452,8 +452,8 @@ public abstract class MessageRouter {
 	 * because it was delivered to final destination.  
 	 */
 	public void deleteMessage(String id, boolean drop) {
-          //      int oldSize=getNrofMessages();
-                Message removed = removeFromMessages(id);
+	  //      int oldSize=getNrofMessages();
+		Message removed = removeFromMessages(id);
 		if (removed == null) throw new SimError("no message for id " +
 				id + " to remove at " + this.host);
 		//System.out.println(oldSize-getNrofMessages());
@@ -518,7 +518,7 @@ public abstract class MessageRouter {
 	 * @param m1 The first message
 	 * @param m2 The second message
 	 * @return -1 if the first message should come first, 1 if the second 
-	 *          message should come first, or 0 if the ordering isn't defined
+	 *	  message should come first, or 0 if the ordering isn't defined
 	 */
 	protected int compareByQueueMode(Message m1, Message m2) {
 		switch (sendQueueMode) {

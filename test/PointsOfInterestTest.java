@@ -28,19 +28,19 @@ import core.Settings;
 public class PointsOfInterestTest extends TestCase {
 	
 	/* Topology:  n7--n5
-	 *            |   |
-	 *        n1--n2--n6--n3
-	 *         |
-	 *        n4
+	 *	    |   |
+	 *	n1--n2--n6--n3
+	 *	 |
+	 *	n4
 	 */
 	private static final String MAP_DATA = 
-	//				   n1       n2       n6        n3
+	//				   n1       n2       n6	n3
 		"LINESTRING (1.0 1.0, 2.0 1.0, 3.0 1.0, 4.0 1.0) \n" +
-	//              n1        n4
+	//	      n1	n4
 	"LINESTRING (1.0 1.0, 1.0 2.0)\n";
 	
 	private static final String MAP_DATA2 =
-	//              n2       n7       n5       n6
+	//	      n2       n7       n5       n6
 	"LINESTRING (2.0 1.0, 2.0 0.0, 3.0 0.0, 3.0 1.0)\n";
 	
 	private static final String[] POINTS_IN_MAP = { 

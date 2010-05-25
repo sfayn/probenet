@@ -535,7 +535,7 @@ public abstract class ActiveRouter extends MessageRouter {
 	 */
 	@Override
 	public void update() {
-          //      int old =getNrofMessages();
+	  //      int old =getNrofMessages();
 
 		super.update();
 		
@@ -575,7 +575,7 @@ public abstract class ActiveRouter extends MessageRouter {
 			}
 		}
 	//	if (old-getNrofMessages()>0)
-            //    System.out.println(old-getNrofMessages());
+	    //    System.out.println(old-getNrofMessages());
 		/* time to do a TTL check and drop old messages? Only if not sending */
 		if (SimClock.getTime() - lastTtlCheck >= TTL_CHECK_INTERVAL && 
 				sendingConnections.size() == 0) {

@@ -35,24 +35,24 @@ public class AdaptableFuzzySprayRouter_drop_last extends EnergyAwareRouter {
 		/** SprayAndWait router's settings name space ({@value})*/
 		public static final String FUZZYSPRAY_NS = "FuzzySprayRouter";
 		/** IDs of the messages that are known to have reached the final dst */
-        protected Set<String> ackedMessageIds;
+	protected Set<String> ackedMessageIds;
 
-        public static final String FTC_PROPERTY = FUZZYSPRAY_NS + "." + "ftc";
+	public static final String FTC_PROPERTY = FUZZYSPRAY_NS + "." + "ftc";
 
 
-        protected int FTCmax;
-        protected int MSmax;
+	protected int FTCmax;
+	protected int MSmax;
 
 		protected Set<Integer> known_nodes;
 
-        protected int bufferSizeBefore;
-        protected int bufferSizeAfter;
+	protected int bufferSizeBefore;
+	protected int bufferSizeAfter;
 
 	public AdaptableFuzzySprayRouter_drop_last(Settings s) throws IOException {
 		super(s);
-        FTCmax=0;
-        MSmax=0;
-        ackedMessageIds = new HashSet<String>();
+	FTCmax=0;
+	MSmax=0;
+	ackedMessageIds = new HashSet<String>();
 		known_nodes=new HashSet<Integer>();
 	}
 
@@ -62,9 +62,9 @@ public class AdaptableFuzzySprayRouter_drop_last extends EnergyAwareRouter {
 	 */
 	protected AdaptableFuzzySprayRouter_drop_last(AdaptableFuzzySprayRouter_drop_last r) {
 		super(r);
-        this.FTCmax=r.FTCmax;
-        this.MSmax=r.MSmax;
-        ackedMessageIds = new HashSet<String>();
+	this.FTCmax=r.FTCmax;
+	this.MSmax=r.MSmax;
+	ackedMessageIds = new HashSet<String>();
 		known_nodes=new HashSet<Integer>();
 	}
 
@@ -90,7 +90,7 @@ public class AdaptableFuzzySprayRouter_drop_last extends EnergyAwareRouter {
 		if (isDeliveredMessage(msg)) {
 			this.ackedMessageIds.add(id);
 		}
-                msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
+		msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
 			
 		return msg;
 	}
@@ -122,7 +122,7 @@ public class AdaptableFuzzySprayRouter_drop_last extends EnergyAwareRouter {
 		makeRoomForNewMessage(msg.getSize());
 
 		msg.setTtl(this.msgTtl);
-        msg.addProperty(FTC_PROPERTY, (Integer)1);
+	msg.addProperty(FTC_PROPERTY, (Integer)1);
 		addToMessages(msg, true);
 
 		return true;
@@ -131,27 +131,27 @@ public class AdaptableFuzzySprayRouter_drop_last extends EnergyAwareRouter {
 	@Override
 	public void update() {
 		super.update();
-                double current_time=SimClock.getTime();
+		double current_time=SimClock.getTime();
 
-                if(current_time-FuzzySprayReport.lastReportTime>=FuzzySprayReport.reportInterval)
-                {
-                    FuzzySprayReport.lastReportTime=current_time;
+		if(current_time-FuzzySprayReport.lastReportTime>=FuzzySprayReport.reportInterval)
+		{
+		    FuzzySprayReport.lastReportTime=current_time;
 
-                    for (MessageListener ml:mListeners)
-                    {
-                        if (ml instanceof FuzzySprayReport )
-                            ((FuzzySprayReport)ml).calculateStatistics(current_time);
+		    for (MessageListener ml:mListeners)
+		    {
+			if (ml instanceof FuzzySprayReport )
+			    ((FuzzySprayReport)ml).calculateStatistics(current_time);
 						else if (ml instanceof FuzzyComprehensiveReport)
 							((FuzzyComprehensiveReport)ml).calculateStatistics(current_time);
 
-                    }
-                    
-                }
+		    }
+		    
+		}
 
 		if (!canStartTransfer() || isTransferring()) {
 			return; // nothing to transfer or is currently transferring
 		}
-                bufferSizeBefore=getNrofMessages();
+		bufferSizeBefore=getNrofMessages();
 
 		/* try messages that could be delivered to final recipient */
 		if (exchangeDeliverableMessages() != null) {
@@ -160,15 +160,15 @@ public class AdaptableFuzzySprayRouter_drop_last extends EnergyAwareRouter {
 
 		tryOtherMessages();
 
-                bufferSizeAfter=getNrofMessages();
+		bufferSizeAfter=getNrofMessages();
 
 		for (MessageListener ml:mListeners)
-                {
-                    if (ml instanceof FuzzySprayReport)
-                        ((FuzzySprayReport)ml).bufferSize(getHost(),  bufferSizeBefore,bufferSizeAfter);
+		{
+		    if (ml instanceof FuzzySprayReport)
+			((FuzzySprayReport)ml).bufferSize(getHost(),  bufferSizeBefore,bufferSizeAfter);
 
-                }
-           //     System.out.println(bufferSizeAfter -bufferSizeBefore);
+		}
+	   //     System.out.println(bufferSizeAfter -bufferSizeBefore);
 	}
 
 
@@ -190,15 +190,15 @@ public class AdaptableFuzzySprayRouter_drop_last extends EnergyAwareRouter {
 		}
 
 
-        msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
+	msg.updateProperty(FTC_PROPERTY, (Integer)msg.getProperty(FTC_PROPERTY)+1);
 		/* was the message delivered to the final recipient? */
 		if (msg.getTo() == con.getOtherNode(getHost())) {
 			this.ackedMessageIds.add(msg.getId()); // yes, add to ACKed messages
 			this.deleteMessage(msg.getId(), false); // delete from buffer
-                 //       System.out.println("DD");
+		 //       System.out.println("DD");
 
 		}
-           
+	   
 
 	}
 
@@ -243,7 +243,7 @@ public class AdaptableFuzzySprayRouter_drop_last extends EnergyAwareRouter {
 		Collections.sort(messages,new FTCComparator());
 
 
-          
+	  
      
 		return tryMessagesForConnected(messages);
 	}
@@ -253,7 +253,7 @@ public class AdaptableFuzzySprayRouter_drop_last extends EnergyAwareRouter {
   
 		private /*static*/ int compute_fuzzy(int CDM, int size)
 		{
-                       // System.out.println("CDM: "+CDM);
+		       // System.out.println("CDM: "+CDM);
 			int BS0 = 0;
 			int BS1 = 2;
 			int BS2 = 3;
@@ -278,8 +278,8 @@ public class AdaptableFuzzySprayRouter_drop_last extends EnergyAwareRouter {
 			else if (size > (MSmax*3)/4) MS = "large";
 			else MS = "medium";
 		
-                        //System.out.println("FTC: "+FTC);
-                        //System.out.println("MS: "+MS);
+			//System.out.println("FTC: "+FTC);
+			//System.out.println("MS: "+MS);
 			//Inference rules and Defuzzification using Center of Area (COA)
 			if (FTC.equals("low") && MS.equals("small")) BS = BS0;
 			else if (FTC.equals("low") && MS.equals("medium")) BS = BS1;
@@ -294,7 +294,7 @@ public class AdaptableFuzzySprayRouter_drop_last extends EnergyAwareRouter {
 			//Setting the priority of the message
 			P = 10-BS;
 		
-                       // System.out.println("P: "+P);
+		       // System.out.println("P: "+P);
 			return P;
 		}
 		public /*static*/ int getPriority(Message m)
@@ -302,10 +302,10 @@ public class AdaptableFuzzySprayRouter_drop_last extends EnergyAwareRouter {
 			return compute_fuzzy((Integer)m.getProperty(FTC_PROPERTY),(Integer)m.getSize());
 		}
 		public int compare(Tuple<Message, Connection> t1, Tuple<Message, Connection> t2) {
-                
-            return (getPriority(t1.getKey())-getPriority(t2.getKey()));
+		
+	    return (getPriority(t1.getKey())-getPriority(t2.getKey()));
 
-        }
+	}
 
     }
     @Override

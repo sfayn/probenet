@@ -13,21 +13,21 @@ my $gnuplot = "gnuplot";
 
 my (
 	$outfile, $constTotalSum, $hitCountIndex,
-	$labelRe, $term,          $range,
+	$labelRe, $term,	  $range,
 	$params, $comp, $logscale, $help
 );
 
 my $usage = '
 usage:  -out <output file name> 
-        [-comp]
-        [-log]
-        [-total <total sum>]
-        [-index <hitcount index>]
-        [-label <plot title extracting RE>]
-        [-params <params for plots>]
-        [-term <gnuplot output terminal>]
-        [-range <x range of plot>]
-        fileNames...
+	[-comp]
+	[-log]
+	[-total <total sum>]
+	[-index <hitcount index>]
+	[-label <plot title extracting RE>]
+	[-params <params for plots>]
+	[-term <gnuplot output terminal>]
+	[-range <x range of plot>]
+	fileNames...
 ';
 
 GetOptions(
@@ -83,9 +83,9 @@ if ( not defined $outfile or not @ARGV ) {
 	exit();
 }
 
-$hitCountIndex = 1               unless defined $hitCountIndex;
-$term          = "emf"           unless defined $term;
-$params        = "smooth unique" unless defined $params;
+$hitCountIndex = 1	       unless defined $hitCountIndex;
+$term	  = "emf"	   unless defined $term;
+$params	= "smooth unique" unless defined $params;
 $labelRe       = '([^_]*)_'      unless defined $labelRe;
 
 my $plotfile = "$outfile.gnuplot";

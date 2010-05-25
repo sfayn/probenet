@@ -15,7 +15,7 @@ my $hostPrefix = "g";
 my ($rings, $radius, $help);
     
 GetOptions("rings=n" => \$rings,
-           "radius=n" => \$radius,
+	   "radius=n" => \$radius,
 	   "help|?!" => \$help);
     
 unless (defined($help)) {

@@ -18,8 +18,8 @@ import routing.FuzzySprayRouter;
  */
 public class FuzzySprayReport extends MessageStatsReportSpecial {
 
-        public static double lastReportTime=0;
-        public static double  reportInterval=900;
+	public static double lastReportTime=0;
+	public static double  reportInterval=900;
 
 	private class message_info
 	{
@@ -27,7 +27,7 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 		public double starting_time=-1;
 		public double finishing_time=-1;
 
-                double priority=0;
+		double priority=0;
 		int copies_in_network=0;
 		int dropped_copies=0;
 		int removed_copies=0;
@@ -36,7 +36,7 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 		{
 
 			starting_time=start;
-                        priority=start_priority;
+			priority=start_priority;
 
 		}
 
@@ -57,33 +57,33 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 		}
 
 	};
-        private int priorities_count=9;
-        private int priorities_range=10;
-        private int[]priorities_array={0,2,3,4,5,6,7,8,10};
+	private int priorities_count=9;
+	private int priorities_range=10;
+	private int[]priorities_array={0,2,3,4,5,6,7,8,10};
 
-        private class output_statistics
-        {
-            
-            double [] av_latency=new double[priorities_count];
-            double [] av_copies=new double [priorities_count];
-            double [] av_dropped=new double [priorities_count];
-            double [] av_removed=new double [priorities_count];
-            int [] not_reached=new int [priorities_count];
-            int [] current_total=new int [priorities_count];
-            double time;
+	private class output_statistics
+	{
+	    
+	    double [] av_latency=new double[priorities_count];
+	    double [] av_copies=new double [priorities_count];
+	    double [] av_dropped=new double [priorities_count];
+	    double [] av_removed=new double [priorities_count];
+	    int [] not_reached=new int [priorities_count];
+	    int [] current_total=new int [priorities_count];
+	    double time;
 
-        };
+	};
 	Vector<message_info> messages=new Vector<message_info>(10000); //adjust to number of messages ids
-        Vector<output_statistics> statistics =new Vector <output_statistics>(100);//adjust to number of simulation hours
+	Vector<output_statistics> statistics =new Vector <output_statistics>(100);//adjust to number of simulation hours
 
 	int num_of_nodes=0;
 	double sum_buffer_before=0;
-        double sum_buffer_after=0;
+	double sum_buffer_after=0;
 
 	public FuzzySprayReport() {
 		super();
 		messages.add(0,null);
-                //statistica.add(0,null);
+		//statistica.add(0,null);
 	}
 
 	@Override
@@ -110,8 +110,8 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 			addWarmupID(m.getId());
 			return;
 		}
-                int messID=Integer.parseInt(m.getId().substring(1));
-                double priority;
+		int messID=Integer.parseInt(m.getId().substring(1));
+		double priority;
 				if (getScenarioName().equals("FuzzySprayAndWait"))
 					priority=FuzzySprayAndWaitRouter.FTCComparator.getPriority(m);
 				else if (getScenarioName().equals("FuzzySpray"))
@@ -129,9 +129,9 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 
 	public void bufferSize(DTNHost host,int bufferSizeBefore, int bufferSizeAfter)
 	{
-              //  System.out.println("Buffer");
+	      //  System.out.println("Buffer");
 		sum_buffer_before+=bufferSizeBefore;
-                sum_buffer_after+=bufferSizeAfter;
+		sum_buffer_after+=bufferSizeAfter;
 		num_of_nodes++;
 	}
 
@@ -146,7 +146,7 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 		message_info info=messages.get(i);
 		info.hop_count++;
 		info.copies_in_network++;
-                double priority;
+		double priority;
 				if (from.getRouter() instanceof FuzzySprayAndWaitRouter)
 					priority=FuzzySprayAndWaitRouter.FTCComparator.getPriority(m);
 				else if (from.getRouter() instanceof FuzzySprayRouter)
@@ -155,15 +155,15 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 					priority=FuzzySprayAndWaitRouter_no_ACKS.FTCComparator.getPriority(m);
 				else
 					priority=0.6;
-                info.priority=priority;
-                //System.out.println(priority);
+		info.priority=priority;
+		//System.out.println(priority);
 		if (finalTarget) {
 				info.finishing_time=getSimTime();
 
 		}
 		messages.set(i,info);
 	}
-        
+	
 	@Override
 	public void calculateStatistics(double time){
 			//System.out.println("entered stats");
@@ -187,17 +187,17 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 		for (int i=1;i<messages.size();i++)
 		{
 			message_info m=messages.get(i);
-                        //System.out.println(m.priority);
+			//System.out.println(m.priority);
 			//if (m.priority>0 && m.priority<2)
 
 
-            for (int j=0;j<priorities_count;j++)
+	    for (int j=0;j<priorities_count;j++)
 			{
 				if (m==null)
 					continue;
 				if (m.priority==priorities_array[j])
 				{
-                                        
+					
 					sum_in_network[j]+=m.copies_in_network;
 					sum_dropped[j]+=m.dropped_copies;
 					sum_removed[j]+=m.removed_copies;
@@ -213,89 +213,89 @@ public class FuzzySprayReport extends MessageStatsReportSpecial {
 			}
 		}
 
-                output_statistics statistics_instance=new output_statistics();
-                statistics_instance.time=time;
+		output_statistics statistics_instance=new output_statistics();
+		statistics_instance.time=time;
 		for (int j=0;j<priorities_count;j++)
 		{
-                       
-                        statistics_instance.current_total[j]=num_reached[j]+not_reach[j];
-                        statistics_instance.av_latency[j]=sum_average_latency[j]/(double)num_reached[j];
-                        statistics_instance.av_copies[j]=sum_in_network[j]/(double)statistics_instance.current_total[j];
-                        statistics_instance.av_dropped[j]=sum_dropped[j]/(double)statistics_instance.current_total[j];
-                        statistics_instance.av_removed[j]=sum_removed[j]/(double)statistics_instance.current_total[j];
-                        statistics_instance.not_reached[j]=not_reach[j];
+		       
+			statistics_instance.current_total[j]=num_reached[j]+not_reach[j];
+			statistics_instance.av_latency[j]=sum_average_latency[j]/(double)num_reached[j];
+			statistics_instance.av_copies[j]=sum_in_network[j]/(double)statistics_instance.current_total[j];
+			statistics_instance.av_dropped[j]=sum_dropped[j]/(double)statistics_instance.current_total[j];
+			statistics_instance.av_removed[j]=sum_removed[j]/(double)statistics_instance.current_total[j];
+			statistics_instance.not_reached[j]=not_reach[j];
 
 		}
 
-                statistics.add(statistics_instance);
-                super.calculateStatistics(time);
+		statistics.add(statistics_instance);
+		super.calculateStatistics(time);
 
-        }
+	}
 
 
 @Override
 	public void done() {
-                calculateStatistics(43200);//adjust to total simulation time
+		calculateStatistics(43200);//adjust to total simulation time
 		
-               String output="";
-         
-               //System.out.println("size of stats: "+statistics.size());
+	       String output="";
+	 
+	       //System.out.println("size of stats: "+statistics.size());
 			   output=output.concat("buffer total average="+format(sum_buffer_before/(double)num_of_nodes)+"\n");
-                           output=output.concat("sent messages average="+format(sum_buffer_after/(double)num_of_nodes)+"\n");
-               if (getScenarioName().startsWith("FuzzySpray"))
+			   output=output.concat("sent messages average="+format(sum_buffer_after/(double)num_of_nodes)+"\n");
+	       if (getScenarioName().startsWith("FuzzySpray"))
 
-               {
-                       output=output.concat("---------Additional Stats--------\n");
-                       output=output.concat("simulation_times\t");
+	       {
+		       output=output.concat("---------Additional Stats--------\n");
+		       output=output.concat("simulation_times\t");
 
-                        for (output_statistics os:statistics)
-                        {
-                            output=output.concat(format(os.time)+"\t");
-                        }
-                        output=output.concat("\n");
+			for (output_statistics os:statistics)
+			{
+			    output=output.concat(format(os.time)+"\t");
+			}
+			output=output.concat("\n");
 
-                        for (int j=0;j<priorities_count;j++)
-                        {
-                                output=output.concat ("P\t"+ format(priorities_array[j]/(double)priorities_range)+"\t");
+			for (int j=0;j<priorities_count;j++)
+			{
+				output=output.concat ("P\t"+ format(priorities_array[j]/(double)priorities_range)+"\t");
 
-                                output=output.concat("av_latency\t");
-                                for (output_statistics os:statistics)
-                                    {
-                                    output=output.concat(format(os.av_latency[j])+"\t");
-                                    }
-                                output=output.concat("av_copies\t");
-                                for (output_statistics os:statistics)
-                                    {
-                                    output=output.concat(format(os.av_copies[j])+"\t");
-                                    }
-                                output=output.concat("av_dropped\t");
-                                for (output_statistics os:statistics)
-                                    {
-                                    output=output.concat(format(os.av_dropped[j])+"\t");
-                                    }
-                                output=output.concat("av_removed\t");
-                                for (output_statistics os:statistics)
-                                    {
-                                    output=output.concat(format(os.av_dropped[j])+"\t");
-                                    }
-                                output=output.concat("not_reached\t");
-                                for (output_statistics os:statistics)
-                                    {
-                                    output=output.concat(format(os.not_reached[j])+"\t");
-                                    }
-                                output=output.concat("out_of\t");
-                                 for (output_statistics os:statistics)
-                                    {
-                                    output=output.concat(format(os.current_total[j])+"\t");
-                                    }
-                                output=output.concat("\n");
-                            }
-                }
+				output=output.concat("av_latency\t");
+				for (output_statistics os:statistics)
+				    {
+				    output=output.concat(format(os.av_latency[j])+"\t");
+				    }
+				output=output.concat("av_copies\t");
+				for (output_statistics os:statistics)
+				    {
+				    output=output.concat(format(os.av_copies[j])+"\t");
+				    }
+				output=output.concat("av_dropped\t");
+				for (output_statistics os:statistics)
+				    {
+				    output=output.concat(format(os.av_dropped[j])+"\t");
+				    }
+				output=output.concat("av_removed\t");
+				for (output_statistics os:statistics)
+				    {
+				    output=output.concat(format(os.av_dropped[j])+"\t");
+				    }
+				output=output.concat("not_reached\t");
+				for (output_statistics os:statistics)
+				    {
+				    output=output.concat(format(os.not_reached[j])+"\t");
+				    }
+				output=output.concat("out_of\t");
+				 for (output_statistics os:statistics)
+				    {
+				    output=output.concat(format(os.current_total[j])+"\t");
+				    }
+				output=output.concat("\n");
+			    }
+		}
        
-                
+		
 		output=output.concat("--------------Normal Stats-------------------\n");
-                write(output);
-                lastReportTime=0;
+		write(output);
+		lastReportTime=0;
 		super.done();
 	}
 }

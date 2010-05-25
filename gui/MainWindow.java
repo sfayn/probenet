@@ -35,46 +35,46 @@ public class MainWindow extends JFrame {
     		EventLogPanel elp, DTNSimGUI gui) {
     	super(WINDOW_TITLE + " - " + scenName);
     	JFrame.setDefaultLookAndFeelDecorated(true);
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+	setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-        JPanel leftPane = new JPanel();
-        leftPane.setLayout(new BoxLayout(leftPane,BoxLayout.Y_AXIS));
+	JPanel leftPane = new JPanel();
+	leftPane.setLayout(new BoxLayout(leftPane,BoxLayout.Y_AXIS));
     	JScrollPane hostListScroll;
-        JSplitPane fieldLogSplit;
-        JSplitPane logControlSplit;
-        JSplitPane mainSplit;
-        
+	JSplitPane fieldLogSplit;
+	JSplitPane logControlSplit;
+	JSplitPane mainSplit;
+	
     	setLayout(new BorderLayout());
-        setJMenuBar(new SimMenuBar(field));
-        
-        playFieldScroll = new JScrollPane(field);
-        hostListScroll = new JScrollPane(new NodeChooser(world.getHosts(),gui));
-        hostListScroll.setHorizontalScrollBarPolicy(
-        		JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	setJMenuBar(new SimMenuBar(field));
+	
+	playFieldScroll = new JScrollPane(field);
+	hostListScroll = new JScrollPane(new NodeChooser(world.getHosts(),gui));
+	hostListScroll.setHorizontalScrollBarPolicy(
+			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        logControlSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-        		new JScrollPane(elp.getControls()),new JScrollPane(elp));
-        logControlSplit.setResizeWeight(0.1);
-        logControlSplit.setOneTouchExpandable(true);
-        
-        fieldLogSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-        		leftPane, logControlSplit);
-        fieldLogSplit.setResizeWeight(1-SPLIT_PANE_LOG_WEIGHT);
-        fieldLogSplit.setOneTouchExpandable(true);
-        
-        setPreferredSize(new Dimension(WIN_XSIZE, WIN_YSIZE));
+	logControlSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+			new JScrollPane(elp.getControls()),new JScrollPane(elp));
+	logControlSplit.setResizeWeight(0.1);
+	logControlSplit.setOneTouchExpandable(true);
+	
+	fieldLogSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+			leftPane, logControlSplit);
+	fieldLogSplit.setResizeWeight(1-SPLIT_PANE_LOG_WEIGHT);
+	fieldLogSplit.setOneTouchExpandable(true);
+	
+	setPreferredSize(new Dimension(WIN_XSIZE, WIN_YSIZE));
 
-        leftPane.add(guiControls);
-        leftPane.add(playFieldScroll);
-        leftPane.add(infoPanel);
-        
-        mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, 
-        		fieldLogSplit, hostListScroll);
-        mainSplit.setOneTouchExpandable(true);
-        mainSplit.setResizeWeight(0.60);        
-        this.getContentPane().add(mainSplit);
-        
-        pack();
+	leftPane.add(guiControls);
+	leftPane.add(playFieldScroll);
+	leftPane.add(infoPanel);
+	
+	mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, 
+			fieldLogSplit, hostListScroll);
+	mainSplit.setOneTouchExpandable(true);
+	mainSplit.setResizeWeight(0.60);	
+	this.getContentPane().add(mainSplit);
+	
+	pack();
     }
 
     /**

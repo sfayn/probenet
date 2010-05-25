@@ -58,8 +58,8 @@ public class ExternalEventsQueue implements EventQueue {
 		else {
 			setNrofPreload(DEFAULT_NROF_PRELOAD);
 		}
-        String eeFilePath = s.valueFillString(s.getSetting(PATH_SETTING));
-        init(eeFilePath);
+	String eeFilePath = s.valueFillString(s.getSetting(PATH_SETTING));
+	init(eeFilePath);
     }
 
 	/**

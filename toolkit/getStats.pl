@@ -52,7 +52,7 @@ range  Range of y-values in the resulting graph (e.g. 0:100).
 
 example: 
   getStats.pl -stat delivery_prob -label \'RC-([\w-]+)_\' -out stats \
-              -term emf -range 0:1 reports/RC*MessageStats*
+	      -term emf -range 0:1 reports/RC*MessageStats*
 ';
     exit();
 }

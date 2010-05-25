@@ -102,7 +102,7 @@ public class EventLogPanel extends JPanel
 		// also ensures that the update is done in Swing's EDT
 		ActionListener taskPerformer = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-		          updateLogView();
+			  updateLogView();
 		      }
 		  };
 		  Timer t = new Timer(LOG_UP_INTERVAL, taskPerformer);

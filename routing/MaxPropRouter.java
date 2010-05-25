@@ -93,12 +93,12 @@ public class MaxPropRouter extends ActiveRouter {
 			alpha = DEFAULT_ALPHA;
 		}
 
-        Settings mpSettings = new Settings(MAXPROP_NS);
-        if (mpSettings.contains(PROB_SET_MAX_SIZE_S)) {
-            probSetMaxSize = mpSettings.getInt(PROB_SET_MAX_SIZE_S);
-        } else {
-            probSetMaxSize = DEFAULT_PROB_SET_MAX_SIZE;
-        }
+	Settings mpSettings = new Settings(MAXPROP_NS);
+	if (mpSettings.contains(PROB_SET_MAX_SIZE_S)) {
+	    probSetMaxSize = mpSettings.getInt(PROB_SET_MAX_SIZE_S);
+	} else {
+	    probSetMaxSize = DEFAULT_PROB_SET_MAX_SIZE;
+	}
 	}
 	
 	/**

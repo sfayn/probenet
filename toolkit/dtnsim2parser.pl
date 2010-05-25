@@ -36,7 +36,7 @@ my %ignoreCommands = ('C_MSG_SENT' => 1,
 		      );
 
 while(<INFILE>) {
-    #                             timestamp    action      msgId 
+    #			     timestamp    action      msgId 
     my ($time, $action, $id) = m/^(\d+\.\d+): ([\w\s]+):? (MSG_\d+_D_\d+)_\(\d+\)/;
     
     unless ($time and $action and $id) {
