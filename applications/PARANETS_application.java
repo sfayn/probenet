@@ -68,7 +68,7 @@ public class PARANETS_application extends Application
 		message_divisions d=new message_divisions();
 		if (!lagrange)	//i.e. LARA's method
 		{
-			double max_throuput=0, current_cost=Double.MAX_VALUE, new_cost,new_throuput;
+			double max_throuput=0, current_cost=max_cost, new_cost,new_throuput;
 			for (int i=0;i<=num_minibundles;i++)
 				for (int j=0;j<=num_minibundles-i;j++)
 				{
@@ -87,13 +87,15 @@ public class PARANETS_application extends Application
 						}
 					}
 				}
+			System.out.println("divison: "+d.wlan+","+d.cellular+","+d.satellite+ " cost:"+current_cost);
 			return d;
 		}
 		else			//i.e. LAGRANGE's method
 		{
-			//option 1
 			double K=max_cost,S=1,Sc=satellite_cost,Wc=wlan_cost,Cc=cellular_cost,Ct=conditions[1].getTH_estimate(),Wt=conditions[0].getTH_estimate(),St=conditions[2].getTH_estimate();
 			double Y_temp, X_temp,Z_temp,X,Y,Z,cost=0,max_throughput=0,cost_temp,throughput_temp;
+			//** region 1 **//
+			//option 2
 			X_temp=(K-S*Sc)/(Wc+Ct/Wt*Cc-Sc-Ct/Wt*Sc);
 			Y_temp=Ct/Wt*X_temp;
 			Z_temp=S-X_temp-Y_temp;
@@ -107,7 +109,21 @@ public class PARANETS_application extends Application
 				cost=cost_temp;
 				max_throughput=throughput_temp;
 			}
-			//option 2
+			//option 3
+			X_temp=S/(1+Ct/Wt+St/Wt);
+			Y_temp=Ct/Wt*X_temp;
+			Z_temp=St/Wt*X_temp;
+			cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+			throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St)
+			{
+				X=X_temp;
+				Y=Y_temp;
+				Z=Z_temp;
+				cost=cost_temp;
+				max_throughput=throughput_temp;
+			}
+			//option 4c
 			Z_temp=(S*Wc-K)/(Wc-Sc);
 			Y_temp=0;
 			X_temp=(K-Z_temp*Sc)/Wc;
@@ -124,7 +140,7 @@ public class PARANETS_application extends Application
 					max_throughput=throughput_temp;
 				}
 			}
-			//option 3
+			//option 4b
 			Z_temp=S/(1+Wt/St);
 			Y_temp=0;
 			X_temp=S-Z_temp;
@@ -141,7 +157,7 @@ public class PARANETS_application extends Application
 					max_throughput=throughput_temp;
 				}
 			}
-			//option 4
+			//option 5a
 			Z_temp=0;
 			Y_temp=S/(1+Wt/Ct);
 			X_temp=S-Y_temp;
@@ -158,7 +174,7 @@ public class PARANETS_application extends Application
 					max_throughput=throughput_temp;
 				}
 			}
-			//option 5
+			//option 5b
 			Z_temp=0;
 			Y_temp=(K-S*Cc)/(Cc-Wc);
 			X_temp=S-Y_temp;
@@ -175,11 +191,341 @@ public class PARANETS_application extends Application
 					max_throughput=throughput_temp;
 				}
 			}
-			//option 6
+			//option 1
 			Z_temp=(K-S*Wc)/(Sc+Wc);
 			Y_temp=S-Z_temp*(1+Wt/St);
 			X_temp=Z_temp*Wt/St;
 			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 4d
+			X_temp=K/(Wc+St*Sc/Wt);
+			Y_temp=0;
+			Z_temp=X_temp*St/Wt;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 5d
+			X_temp=K/(Wc+Ct*Cc/Wt);
+			Z_temp=0;
+			Y_temp=X_temp*Ct/Wt;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//** region 2 **//
+			//option 1
+			Z_temp=(K-S*Wc)/(Sc-Wc+Ct/St*(Cc-Wc));
+			Y_temp=Ct/St*Z_temp;
+			X_temp=S-Z_temp-Y_temp;
+			cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+			throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			{
+				X=X_temp;
+				Y=Y_temp;
+				Z=Z_temp;
+				cost=cost_temp;
+				max_throughput=throughput_temp;
+			}
+			//option 2
+			Z_temp=K/(Sc-Wt/(Wt+Ct))-(Wc+Cc*Ct/Wt)*S/(Sc*(1+Ct/Wt)-1);
+			X_temp=(S-Z_temp)/(1+Ct/Wt);
+			Y_temp=Ct/Wt*X_temp;
+			cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+			throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			{
+				X=X_temp;
+				Y=Y_temp;
+				Z=Z_temp;
+				cost=cost_temp;
+				max_throughput=throughput_temp;
+			}
+			//option 3
+			X_temp=S/(1+Ct/Wt+St/Wt);
+			Y_temp=Ct/Wt*X_temp;
+			Z_temp=St/Ct*Y_temp;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 4a
+			Z_temp=S/(1+Ct/St);
+			Y_temp=Ct/St*Z_temp;
+			X_temp=0;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 4b
+			Z_temp=(K-Cc*S)/(Sc-Cc);
+			Y_temp=S-Z_temp;
+			X_temp=0;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 4c
+			Z_temp=K/(Cc*Ct/St+Sc);
+			Y_temp=Ct/St*Z_temp;
+			X_temp=0;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 5a
+			Z_temp=0;
+			X_temp=S/(1+Ct/Wt);
+			Y_temp=X_temp*Ct/Wt;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 5b (although redundant but for different constraints
+			Z_temp=0;
+			Y_temp=(K-S*Wc)/(Cc-Wc);
+			X_temp=S-Y_temp;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 5c
+			X_temp=K/(Wc+Wt*Cc/Ct);
+			Z_temp=0;
+			Y_temp=X_temp*Wt/Ct;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//** region 3 **//
+			//option 1
+			Z_temp=(K-S*Wc)/(Ct/St*(Cc-Wc)+Sc-Wc);
+			Y_temp=Ct/St*Z_temp;
+			X_temp=S-Y_temp-Z_temp;
+			cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+			throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			{
+				X=X_temp;
+				Y=Y_temp;
+				Z=Z_temp;
+				cost=cost_temp;
+				max_throughput=throughput_temp;
+			}
+			//option 2
+			Y_temp=(K-Wc*S)/(Cc+Sc*St/Ct-Wc*(1+St/Ct));
+			Z_temp=St/Ct*Y_temp;
+			X_temp=S-Y_temp-Z_temp;
+			cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+			throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			{
+				X=X_temp;
+				Y=Y_temp;
+				Z=Z_temp;
+				cost=cost_temp;
+				max_throughput=throughput_temp;
+			}
+			//option 3
+			Z_temp=S/(1+Ct/St+Wt/St);
+			Y_temp=Z_temp*Ct/St;
+			X_temp=Z_temp*Wt/St;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 4a
+			Y_temp=S/(1+St/Ct);
+			X_temp=0;
+			Z_temp=S-Z_temp;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 4b (redundant but with different constraints)
+			Z_temp=(K-Cc*S)/(Sc-Cc);
+			Y_temp=S-Z_temp;
+			X_temp=0;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 4c
+			Y_temp=K/(Cc+Sc*St/Ct);
+			X_temp=0;
+			Z_temp=St/Ct*Y_temp;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 5a
+			X_temp=S/(1+St/Wt);
+			Y_temp=0;
+			Z_temp=S-X_temp;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 5b (although redundant for different constraints)
+			Z_temp=(K-S*Wc)/(Sc-Wc);
+			Y_temp=0;
+			X_temp=S-Z_temp;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+				}
+			}
+			//option 5c
+			X_temp=K/(Wc+St*Sc/Wt);
+			Y_temp=0;
+			Z_temp=X_temp*St/Wt;
+			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
 				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
