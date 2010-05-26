@@ -599,7 +599,7 @@ public class PARANETS_application extends Application
 			throughputShared.stamp=SimClock.getTime(); //for next time
 		}
 
-		private fuzzy_parameters getFuzzyParams() {//not implemented yet
+		private fuzzy_parameters getFuzzyParams() {
 			fuzzy_parameters f=new fuzzy_parameters();
 			return f;
 		}
@@ -618,9 +618,19 @@ public class PARANETS_application extends Application
 			double low_TH=nominal_TH/5;
 			return 10*(throughput-low_TH)/(nominal_TH-low_TH)+2;
 		}
+
+		private double mapBackToThroughput(double throughput,double nominal_TH){
+			double low_TH=nominal_TH/5;
+			return (throughput-2)*(nominal_TH-low_TH)/10+low_TH;
+		}
 		private double mapTimeToFCL(double time){
 			return 6*(time-params.Tmin)/(params.Tmax-params.Tmin)+2;
 		}
+		private double mapBackToTime(double time){
+
+			return (time-2)*(params.Tmax-params.Tmin)/6+params.Tmin;
+		}
+
 
 		public double getTH_estimate()
 		{
