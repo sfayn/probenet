@@ -18,7 +18,7 @@ public class FCLInterface {
 	private String text;
     public static void main(String[] args) throws Exception {
 	FCLInterface trial=new FCLInterface();
-	FileOutputStream fout=new  FileOutputStream ("./applications/file.fcl");
+	FileOutputStream fout=new  FileOutputStream ("./applications/file2.fcl");
 	new PrintStream(fout).println (trial.text);
 	System.out.print(trial.text);
 	}

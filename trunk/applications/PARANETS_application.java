@@ -14,6 +14,7 @@ import core.Settings;
 import core.SimClock;
 import core.SimScenario;
 import core.World;
+import net.sourceforge.jFuzzyLogic.FIS;
 import report.PARANETS_AppReport;
 import routing.ParanetAdaptableFuzzySprayAndWaitRouter;
 
@@ -585,15 +586,16 @@ public class PARANETS_application extends Application
 		{
 			double time_diff=SimClock.getTime()-throughputSensed.stamp;
 			params=getFuzzyParams();
-			throughputEstimate.throughput=getNewEstimate(throughputSensed.throughput,sensed_TH,time_diff);
+			throughputEstimate.throughput=fuzzyH.getNewEstimate(throughputSensed.throughput,sensed_TH,time_diff);
 			throughputEstimate.stamp=SimClock.getTime(); //for next time
 		}
+
 		public void shared(double shared_TH)
 		{
 			double time_diff=SimClock.getTime()-throughputShared.stamp;
 
 			params=getFuzzyParams();
-			throughputEstimate.throughput=getNewEstimate(throughputEstimate.throughput,shared_TH,time_diff);
+			throughputEstimate.throughput=fuzzyH.getNewEstimate(throughputEstimate.throughput,shared_TH,time_diff);
 			throughputShared.stamp=SimClock.getTime(); //for next time
 		}
 
@@ -602,8 +604,22 @@ public class PARANETS_application extends Application
 			return f;
 		}
 
-		private double getNewEstimate(double old_estimate, double new_value, double time_diff) {//not implemented yet
-			return (old_estimate+new_value)/2;
+		private double getNewEstimate(double old_estimate, double new_value, double time_diff,double nominal_TH) {//not implemented yet
+
+
+			old_estimate=mapThroughputToFCL(old_estimate, nominal_TH);
+			new_value=mapThroughputToFCL(new_value, nominal_TH);
+			time_diff=mapTimeToFCL(time_diff);
+
+			return fuzzyH.getNewEstimate(old_estimate, new_value, time_diff);
+
+		}
+		private double mapThroughputToFCL(double throughput,double nominal_TH){
+			double low_TH=nominal_TH/5;
+			return 10*(throughput-low_TH)/(nominal_TH-low_TH)+2;
+		}
+		private double mapTimeToFCL(double time){
+			return 6*(time-params.Tmin)/(params.Tmax-params.Tmin)+2;
 		}
 
 		public double getTH_estimate()
@@ -651,6 +667,7 @@ public class PARANETS_application extends Application
 	 * 
 	 * @param s	Settings to use for initializing the application.
 	 */
+	private fuzzyHelper fuzzyH;
 	public PARANETS_application(Settings s) {
 		rng = new Random(this.seed);
 		if (s.contains(NODE_ROLE)){
@@ -716,6 +733,10 @@ public class PARANETS_application extends Application
 			satellite_nominal=nominals[2];
 		}
 		super.setAppID(APP_ID);
+
+		fuzzyH=new fuzzyHelper();
+
+
 	}
 	
 	/** 
