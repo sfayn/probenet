@@ -64,7 +64,7 @@ public class fuzzyHelper {
 	        fis.setVariable("newTH", new_value);
 			fis.setVariable("timeDiff", time_diff);
 			// Show
-			fis.chart();
+		//	fis.chart();
 
 			// Evaluate
 			fis.evaluate();
