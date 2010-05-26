@@ -71,7 +71,7 @@ public class fuzzyHelper {
 
 			// Show output variable's chart
 			//fis.getVariable("estimatedTH").defuzzify();//chartDefuzzifier(true);
-		//	fis.getVariable("estimatedTH").chartDefuzzifier(true);
+			fis.getVariable("estimatedTH").chartDefuzzifier(true);
 			// Print ruleSet
 			//System.out.println(fis);
 			

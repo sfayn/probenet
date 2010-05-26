@@ -60,156 +60,157 @@ RULEBLOCK No1
     // Use 'max' accumulation method
     ACCU : MAX;
 
-	Rule 1 : IF timeDiff IS L AND newTH IS VL AND oldTH is VL
-	THEN estimatedTH IS VL;
-	Rule 2 : IF timeDiff IS M AND newTH IS VL AND oldTH IS VL
-	THEN estimatedTH IS VL;
-	Rule 3 : IF timeDiff IS H AND newTH IS VL AND oldTH IS VL
-	THEN estimatedTH IS VL;
-	Rule 4 : IF timeDiff IS L AND newTH IS VL AND oldTH IS L
-	THEN estimatedTH IS VL;
-	Rule 5 : IF timeDiff IS M AND newTH IS VL AND oldTH IS L
-	THEN estimatedTH IS VL;
-	Rule 6 : IF timeDiff IS H AND newTH IS VL AND oldTH IS L
-	THEN estimatedTH IS VL;
-	Rule 7 : IF timeDiff IS L AND newTH IS VL AND oldTH IS M
-	THEN estimatedTH IS VL;
-	Rule 8 : IF timeDiff IS M AND newTH IS VL AND oldTH IS M
-	THEN estimatedTH IS VL;
-	Rule 9 : IF timeDiff IS H AND newTH IS VL AND oldTH IS M
-	THEN estimatedTH IS VL;
-	Rule 10 : IF timeDiff IS L AND newTH IS VL AND oldTH IS H
-	THEN estimatedTH IS VL;
-	Rule 11 : IF timeDiff IS M AND newTH IS VL AND oldTH IS H
-	THEN estimatedTH IS VL;
-	Rule 12 : IF timeDiff IS H AND newTH IS VL AND oldTH IS H
-	THEN estimatedTH IS VL;
-	Rule 13 : IF timeDiff IS L AND newTH IS VL AND oldTH IS VH
-	THEN estimatedTH IS VL;
-	Rule 14 : IF timeDiff IS M AND newTH IS VL AND oldTH IS VH
-	THEN estimatedTH IS VL;
-	Rule 15 : IF timeDiff IS H AND newTH IS VL AND oldTH IS VH
-	THEN estimatedTH IS VL;
-	Rule 16 : IF timeDiff IS L AND newTH IS L AND oldTH IS VL
-	THEN estimatedTH IS L;
-	Rule 17 : IF timeDiff IS M AND newTH IS L AND oldTH IS VL
-	THEN estimatedTH IS L;
-	Rule 18 : IF timeDiff IS H AND newTH IS L AND oldTH IS VL
-	THEN estimatedTH IS L;
-	Rule 19 : IF timeDiff IS L AND newTH IS L AND oldTH IS L
-	THEN estimatedTH IS L;
-	Rule 20 : IF timeDiff IS M AND newTH IS L AND oldTH IS L
-	THEN estimatedTH IS L;
-	Rule 21 : IF timeDiff IS H AND newTH IS L AND oldTH IS L
-	THEN estimatedTH IS L;
-	Rule 22 : IF timeDiff IS L AND newTH IS L AND oldTH IS M
-	THEN estimatedTH IS L;
-	Rule 23 : IF timeDiff IS M AND newTH IS L AND oldTH IS M
-	THEN estimatedTH IS L;
-	Rule 24 : IF timeDiff IS H AND newTH IS L AND oldTH IS M
-	THEN estimatedTH IS L;
-	Rule 25 : IF timeDiff IS L AND newTH IS L AND oldTH IS H
-	THEN estimatedTH IS L;
-	Rule 26 : IF timeDiff IS M AND newTH IS L AND oldTH IS H
-	THEN estimatedTH IS L;
-	Rule 27 : IF timeDiff IS H AND newTH IS L AND oldTH IS H
-	THEN estimatedTH IS L;
-	Rule 28 : IF timeDiff IS L AND newTH IS L AND oldTH IS VH
-	THEN estimatedTH IS L;
-	Rule 29 : IF timeDiff IS M AND newTH IS L AND oldTH IS VH
-	THEN estimatedTH IS L;
-	Rule 30 : IF timeDiff IS H AND newTH IS L AND oldTH IS VH
-	THEN estimatedTH IS L;
-	Rule 31 : IF timeDiff IS L AND newTH IS M AND oldTH IS VL
-	THEN estimatedTH IS M;
-	Rule 32 : IF timeDiff IS M AND newTH IS M AND oldTH IS VL
-	THEN estimatedTH IS M;
-	Rule 33 : IF timeDiff IS H AND newTH IS M AND oldTH IS VL
-	THEN estimatedTH IS M;
-	Rule 34 : IF timeDiff IS L AND newTH IS M AND oldTH IS L
-	THEN estimatedTH IS M;
-	Rule 35 : IF timeDiff IS M AND newTH IS M AND oldTH IS L
-	THEN estimatedTH IS M;
-	Rule 36 : IF timeDiff IS H AND newTH IS M AND oldTH IS L
-	THEN estimatedTH IS M;
-	Rule 37 : IF timeDiff IS L AND newTH IS M AND oldTH IS M
-	THEN estimatedTH IS M;
-	Rule 38 : IF timeDiff IS M AND newTH IS M AND oldTH IS M
-	THEN estimatedTH IS M;
-	Rule 39 : IF timeDiff IS H AND newTH IS M AND oldTH IS M
-	THEN estimatedTH IS M;
-	Rule 40 : IF timeDiff IS L AND newTH IS M AND oldTH IS H
-	THEN estimatedTH IS M;
-	Rule 41 : IF timeDiff IS M AND newTH IS M AND oldTH IS H
-	THEN estimatedTH IS M;
-	Rule 42 : IF timeDiff IS H AND newTH IS M AND oldTH IS H
-	THEN estimatedTH IS M;
-	Rule 43 : IF timeDiff IS L AND newTH IS M AND oldTH IS VH
-	THEN estimatedTH IS M;
-	Rule 44 : IF timeDiff IS M AND newTH IS M AND oldTH IS VH
-	THEN estimatedTH IS M;
-	Rule 45 : IF timeDiff IS H AND newTH IS M AND oldTH IS VH
-	THEN estimatedTH IS M;
-	Rule 46 : IF timeDiff IS L AND newTH IS H AND oldTH IS VL
-	THEN estimatedTH IS H;
-	Rule 47 : IF timeDiff IS M AND newTH IS H AND oldTH IS VL
-	THEN estimatedTH IS H;
-	Rule 48 : IF timeDiff IS H AND newTH IS H AND oldTH IS VL
-	THEN estimatedTH IS H;
-	Rule 49 : IF timeDiff IS L AND newTH IS H AND oldTH IS L
-	THEN estimatedTH IS H;
-	Rule 50 : IF timeDiff IS M AND newTH IS H AND oldTH IS L
-	THEN estimatedTH IS H;
-	Rule 51 : IF timeDiff IS H AND newTH IS H AND oldTH IS L
-	THEN estimatedTH IS H;
-	Rule 52 : IF timeDiff IS L AND newTH IS H AND oldTH IS M
-	THEN estimatedTH IS H;
-	Rule 53 : IF timeDiff IS M AND newTH IS H AND oldTH IS M
-	THEN estimatedTH IS H;
-	Rule 54 : IF timeDiff IS H AND newTH IS H AND oldTH IS M
-	THEN estimatedTH IS H;
-	Rule 55 : IF timeDiff IS L AND newTH IS H AND oldTH IS H
-	THEN estimatedTH IS H;
-	Rule 56 : IF timeDiff IS M AND newTH IS H AND oldTH IS H
-	THEN estimatedTH IS H;
-	Rule 57 : IF timeDiff IS H AND newTH IS H AND oldTH IS H
-	THEN estimatedTH IS H;
-	Rule 58 : IF timeDiff IS L AND newTH IS H AND oldTH IS VH
-	THEN estimatedTH IS H;
-	Rule 59 : IF timeDiff IS M AND newTH IS H AND oldTH IS VH
-	THEN estimatedTH IS H;
-	Rule 60 : IF timeDiff IS H AND newTH IS H AND oldTH IS VH
-	THEN estimatedTH IS H;
-	Rule 61 : IF timeDiff IS L AND newTH IS VH AND oldTH IS VL
-	THEN estimatedTH IS VH;
-	Rule 62 : IF timeDiff IS M AND newTH IS VH AND oldTH IS VL
-	THEN estimatedTH IS VH;
-	Rule 63 : IF timeDiff IS H AND newTH IS VH AND oldTH IS VL
-	THEN estimatedTH IS VH;
-	Rule 64 : IF timeDiff IS L AND newTH IS VH AND oldTH IS L
-	THEN estimatedTH IS VH;
-	Rule 65 : IF timeDiff IS M AND newTH IS VH AND oldTH IS L
-	THEN estimatedTH IS VH;
-	Rule 66 : IF timeDiff IS H AND newTH IS VH AND oldTH IS L
-	THEN estimatedTH IS VH;
-	Rule 67 : IF timeDiff IS L AND newTH IS VH AND oldTH IS M
-	THEN estimatedTH IS VH;
-	Rule 68 : IF timeDiff IS M AND newTH IS VH AND oldTH IS M
-	THEN estimatedTH IS VH;
-	Rule 69 : IF timeDiff IS H AND newTH IS VH AND oldTH IS M
-	THEN estimatedTH IS VH;
-	Rule 70 : IF timeDiff IS L AND newTH IS VH AND oldTH IS H
-	THEN estimatedTH IS VH;
-	Rule 71 : IF timeDiff IS M AND newTH IS VH AND oldTH IS H
-	THEN estimatedTH IS VH;
-	Rule 72 : IF timeDiff IS H AND newTH IS VH AND oldTH IS H
-	THEN estimatedTH IS VH;
-	Rule 73 : IF timeDiff IS L AND newTH IS VH AND oldTH IS VH
-	THEN estimatedTH IS VH;
-	Rule 74 : IF timeDiff IS M AND newTH IS VH AND oldTH IS VH
-	THEN estimatedTH IS VH;
-	Rule 75 : IF timeDiff IS H AND newTH IS VH AND oldTH IS VH
-	THEN estimatedTH IS VH;
+Rule 1 : IF timeDiff IS L AND newTH is VL AND oldTH is VL
+THEN estimatedTH is VL;
+Rule 2 : IF timeDiff IS M AND newTH is VL AND oldTH is VL
+THEN estimatedTH is VL;
+Rule 3 : IF timeDiff IS H AND newTH is VL AND oldTH is VL
+THEN estimatedTH is VL;
+Rule 4 : IF timeDiff IS L AND newTH is VL AND oldTH is L
+THEN estimatedTH is L;
+Rule 5 : IF timeDiff IS M AND newTH is VL AND oldTH is L
+THEN estimatedTH is L;
+Rule 6 : IF timeDiff IS H AND newTH is VL AND oldTH is L
+THEN estimatedTH is VL;
+Rule 7 : IF timeDiff IS L AND newTH is VL AND oldTH is M
+THEN estimatedTH is M;
+Rule 8 : IF timeDiff IS M AND newTH is VL AND oldTH is M
+THEN estimatedTH is L;
+Rule 9 : IF timeDiff IS H AND newTH is VL AND oldTH is M
+THEN estimatedTH is L;
+Rule 10 : IF timeDiff IS L AND newTH is VL AND oldTH is H
+THEN estimatedTH is M;
+Rule 11 : IF timeDiff IS M AND newTH is VL AND oldTH is H
+THEN estimatedTH is M;
+Rule 12 : IF timeDiff IS H AND newTH is VL AND oldTH is H
+THEN estimatedTH is L;
+Rule 13 : IF timeDiff IS L AND newTH is VL AND oldTH is VH
+THEN estimatedTH is H;
+Rule 14 : IF timeDiff IS M AND newTH is VL AND oldTH is VH
+THEN estimatedTH is M;
+Rule 15 : IF timeDiff IS H AND newTH is VL AND oldTH is VH
+THEN estimatedTH is L;
+Rule 16 : IF timeDiff IS L AND newTH is L AND oldTH is VL
+THEN estimatedTH is VL;
+Rule 17 : IF timeDiff IS M AND newTH is L AND oldTH is VL
+THEN estimatedTH is L;
+Rule 18 : IF timeDiff IS H AND newTH is L AND oldTH is VL
+THEN estimatedTH is L;
+Rule 19 : IF timeDiff IS L AND newTH is L AND oldTH is L
+THEN estimatedTH is L;
+Rule 20 : IF timeDiff IS M AND newTH is L AND oldTH is L
+THEN estimatedTH is L;
+Rule 21 : IF timeDiff IS H AND newTH is L AND oldTH is L
+THEN estimatedTH is L;
+Rule 22 : IF timeDiff IS L AND newTH is L AND oldTH is M
+THEN estimatedTH is M;
+Rule 23 : IF timeDiff IS M AND newTH is L AND oldTH is M
+THEN estimatedTH is M;
+Rule 24 : IF timeDiff IS H AND newTH is L AND oldTH is M
+THEN estimatedTH is L;
+Rule 25 : IF timeDiff IS L AND newTH is L AND oldTH is H
+THEN estimatedTH is H;
+Rule 26 : IF timeDiff IS M AND newTH is L AND oldTH is H
+THEN estimatedTH is M;
+Rule 27 : IF timeDiff IS H AND newTH is L AND oldTH is H
+THEN estimatedTH is M;
+Rule 28 : IF timeDiff IS L AND newTH is L AND oldTH is VH
+THEN estimatedTH is H;
+Rule 29 : IF timeDiff IS M AND newTH is L AND oldTH is VH
+THEN estimatedTH is H;
+Rule 30 : IF timeDiff IS H AND newTH is L AND oldTH is VH
+THEN estimatedTH is M;
+Rule 31 : IF timeDiff IS L AND newTH is M AND oldTH is VL
+THEN estimatedTH is L;
+Rule 32 : IF timeDiff IS M AND newTH is M AND oldTH is VL
+THEN estimatedTH is L;
+Rule 33 : IF timeDiff IS H AND newTH is M AND oldTH is VL
+THEN estimatedTH is M;
+Rule 34 : IF timeDiff IS L AND newTH is M AND oldTH is L
+THEN estimatedTH is L;
+Rule 35 : IF timeDiff IS M AND newTH is M AND oldTH is L
+THEN estimatedTH is M;
+Rule 36 : IF timeDiff IS H AND newTH is M AND oldTH is L
+THEN estimatedTH is M;
+Rule 37 : IF timeDiff IS L AND newTH is M AND oldTH is M
+THEN estimatedTH is M;
+Rule 38 : IF timeDiff IS M AND newTH is M AND oldTH is M
+THEN estimatedTH is M;
+Rule 39 : IF timeDiff IS H AND newTH is M AND oldTH is M
+THEN estimatedTH is M;
+Rule 40 : IF timeDiff IS L AND newTH is M AND oldTH is H
+THEN estimatedTH is H;
+Rule 41 : IF timeDiff IS M AND newTH is M AND oldTH is H
+THEN estimatedTH is H;
+Rule 42 : IF timeDiff IS H AND newTH is M AND oldTH is H
+THEN estimatedTH is M;
+Rule 43 : IF timeDiff IS L AND newTH is M AND oldTH is VH
+THEN estimatedTH is VH;
+Rule 44 : IF timeDiff IS M AND newTH is M AND oldTH is VH
+THEN estimatedTH is H;
+Rule 45 : IF timeDiff IS H AND newTH is M AND oldTH is VH
+THEN estimatedTH is H;
+Rule 46 : IF timeDiff IS L AND newTH is H AND oldTH is VL
+THEN estimatedTH is L;
+Rule 47 : IF timeDiff IS M AND newTH is H AND oldTH is VL
+THEN estimatedTH is M;
+Rule 48 : IF timeDiff IS H AND newTH is H AND oldTH is VL
+THEN estimatedTH is M;
+Rule 49 : IF timeDiff IS L AND newTH is H AND oldTH is L
+THEN estimatedTH is M;
+Rule 50 : IF timeDiff IS M AND newTH is H AND oldTH is L
+THEN estimatedTH is M;
+Rule 51 : IF timeDiff IS H AND newTH is H AND oldTH is L
+THEN estimatedTH is H;
+Rule 52 : IF timeDiff IS L AND newTH is H AND oldTH is M
+THEN estimatedTH is M;
+Rule 53 : IF timeDiff IS M AND newTH is H AND oldTH is M
+THEN estimatedTH is H;
+Rule 54 : IF timeDiff IS H AND newTH is H AND oldTH is M
+THEN estimatedTH is H;
+Rule 55 : IF timeDiff IS L AND newTH is H AND oldTH is H
+THEN estimatedTH is H;
+Rule 56 : IF timeDiff IS M AND newTH is H AND oldTH is H
+THEN estimatedTH is H;
+Rule 57 : IF timeDiff IS H AND newTH is H AND oldTH is H
+THEN estimatedTH is H;
+Rule 58 : IF timeDiff IS L AND newTH is H AND oldTH is VH
+THEN estimatedTH is VH;
+Rule 59 : IF timeDiff IS M AND newTH is H AND oldTH is VH
+THEN estimatedTH is VH;
+Rule 60 : IF timeDiff IS H AND newTH is H AND oldTH is VH
+THEN estimatedTH is H;
+Rule 61 : IF timeDiff IS L AND newTH is VH AND oldTH is VL
+THEN estimatedTH is L;
+Rule 62 : IF timeDiff IS M AND newTH is VH AND oldTH is VL
+THEN estimatedTH is M;
+Rule 63 : IF timeDiff IS H AND newTH is VH AND oldTH is VL
+THEN estimatedTH is H;
+Rule 64 : IF timeDiff IS L AND newTH is VH AND oldTH is L
+THEN estimatedTH is M;
+Rule 65 : IF timeDiff IS M AND newTH is VH AND oldTH is L
+THEN estimatedTH is H;
+Rule 66 : IF timeDiff IS H AND newTH is VH AND oldTH is L
+THEN estimatedTH is H;
+Rule 67 : IF timeDiff IS L AND newTH is VH AND oldTH is M
+THEN estimatedTH is H;
+Rule 68 : IF timeDiff IS M AND newTH is VH AND oldTH is M
+THEN estimatedTH is H;
+Rule 69 : IF timeDiff IS H AND newTH is VH AND oldTH is M
+THEN estimatedTH is VH;
+Rule 70 : IF timeDiff IS L AND newTH is VH AND oldTH is H
+THEN estimatedTH is H;
+Rule 71 : IF timeDiff IS M AND newTH is VH AND oldTH is H
+THEN estimatedTH is VH;
+Rule 72 : IF timeDiff IS H AND newTH is VH AND oldTH is H
+THEN estimatedTH is VH;
+Rule 73 : IF timeDiff IS L AND newTH is VH AND oldTH is VH
+THEN estimatedTH is VH;
+Rule 74 : IF timeDiff IS M AND newTH is VH AND oldTH is VH
+THEN estimatedTH is VH;
+Rule 75 : IF timeDiff IS H AND newTH is VH AND oldTH is VH
+THEN estimatedTH is VH;
+
 
 
 
