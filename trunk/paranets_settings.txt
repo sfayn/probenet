@@ -15,14 +15,14 @@ wlan.transmitRange = 30
 # must be changed later to an interface which adapts to contention but not to interference
 cellular.type = ParanetsInterface
 #InterferenceLimitedInterface
-cellular.transmitSpeed = 10M
+cellular.transmitSpeed = 1200k
 cellular.transmitRange = 10000
 #1000
 
 # must be changed later to an interface which adapts to contention but not to interference
 satellite.type = ParanetsInterface
 #InterferenceLimitedInterface
-satellite.transmitSpeed = 8M
+satellite.transmitSpeed = 1M
 satellite.transmitRange = 10000
 
 Scenario.nrofHostGroups = 2
@@ -104,25 +104,28 @@ FuzzyComprehensiveReport.output =reports/paranets.txt
 MA_app.type = PARANETS_application
 MA_app.interval = 300,600
 MA_app.role=MA
+MA_app.MessageSizeRanges = 10k,100k
 MA_app.SA_Address=0
 MA_app.requestSize = 5
 MA_app.seed=0
-MA_app.CostsPerTechnology=0,0.5,1
-MA_app.NominalThroughput=1M,10M,8M
-MA_app.MaxCost=1,5
+MA_app.CostsPerTechnology=0,0.000005,0.00001
+MA_app.NominalThroughput=10k,1200k,1M
+MA_app.MaxCost=0.1,0.5
 MA_app.lagrange=false
 MA_app.num_minibundles=10
+MA_app.wlan_msg_size=10k
 
 SA_app.type = PARANETS_application
 SA_app.role=SA
 SA_app.SA_Address=0
 SA_app.MessageSizeRanges = 10k,100k
 SA_app.seed=0
-SA_app.CostsPerTechnology=0,0.5,1
-SA_app.NominalThroughput=1M,10M,8M
-SA_app.MaxCost=1,5
+SA_app.CostsPerTechnology=0,0.000005,0.00001
+SA_app.NominalThroughput=10k,1200k,1M
+SA_app.MaxCost=0.1,0.5
 SA_app.lagrange=false
 SA_app.num_minibundles=10
+SA_app.wlan_msg_size=10k
 
 Group.nrofApplications = 1
 Group1.application1 = SA_app

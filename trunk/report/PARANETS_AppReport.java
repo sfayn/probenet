@@ -50,6 +50,11 @@ public class PARANETS_AppReport extends Report implements ApplicationListener
 			int error=2;
 			return (reached_size()+error>=data_size && reached_size()-error<=data_size);
 		}
+		@Override
+		public String toString()
+		{
+			return "s:"+start_time+ " r:"+request_reached_time+ " S:"+data_sent_time+"R:"+data_reached_time[0]+","+data_reached_time[1]+","+data_reached_time[2];
+		}
 
 	}
 	public static double getCost(int size, String interface_)
@@ -72,7 +77,6 @@ public class PARANETS_AppReport extends Report implements ApplicationListener
 			DTNHost host) {
 		// Check that the event is sent by correct application type
 		if (!(app instanceof PARANETS_application)) return;
-		//write(event+ ":"+params+" >> "+host);
 		// Increment the counters based on the event type
 		Message msg=(Message)params;
 		if (event.equalsIgnoreCase("GotRequest")) {
@@ -90,6 +94,7 @@ public class PARANETS_AppReport extends Report implements ApplicationListener
 			stats.put(id, current);
 		}
 		else if (event.equalsIgnoreCase("GotData")) {
+			//write(event+ ":"+params+" >> "+host);
 			String id=msg.getId().split("-")[0];
 			Request current=stats.get(id);
 			String inter=(String)msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_PROPERTY);
@@ -105,8 +110,8 @@ public class PARANETS_AppReport extends Report implements ApplicationListener
 			current.data_interface[index]=inter;
 			current.data_reached_time[index]=SimClock.getTime();
 			current.reached_size[index]=msg.getSize();
-			current.cost_for_delivery=getCost(msg.getSize(), inter);
-			((PARANETS_application)app).conditions[index].sensed(msg.getSize()/(current.data_reached_time[index]-current.data_sent_time));
+			current.cost_for_delivery+=getCost(msg.getSize(), inter);
+			((PARANETS_application)app).conditions[index].sensed(msg.getSize()/(current.data_reached_time[index]-current.data_sent_time),inter);
 			//if (current.reached())
 				last_delivered[index]=id;
 			stats.put(id, current);
@@ -127,7 +132,7 @@ public class PARANETS_AppReport extends Report implements ApplicationListener
 		int total_delay=0;
 		int total_reached=0;
 		int total_sent=0;
-		int total_cost=0;
+		double total_cost=0;
 
 		for (Request r: stats.values())
 		{
@@ -141,7 +146,7 @@ public class PARANETS_AppReport extends Report implements ApplicationListener
 		}
 
 		write( "probability_of_total_delivery\t" + (double)total_reached/total_sent);
-		write( "average_cost_for_delivered\t" + (double)total_cost/total_reached);
+		write( "average_cost_for_delivered\t" + total_cost/total_reached);
 		write( "average_delay_for_delivered\t" + (double)total_delay/total_reached); 
 		super.done();
 	}
