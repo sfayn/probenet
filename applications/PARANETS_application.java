@@ -14,7 +14,7 @@ import core.Settings;
 import core.SimClock;
 import core.SimScenario;
 import core.World;
-import net.sourceforge.jFuzzyLogic.FIS;
+import java.util.LinkedList;
 import report.PARANETS_AppReport;
 import routing.ParanetAdaptableFuzzySprayAndWaitRouter;
 
@@ -55,6 +55,7 @@ public class PARANETS_application extends Application
 	public static final String TYPE_PROPERTY = "PARANET_type";
 	public static final String TYPE_REQUEST = "request";
 	public static final String TYPE_DATA = "data";
+	public static final String WLAN_MSG_SIZE = "wlan_msg_size";
 	
 	/** Application ID */
 	public static final String APP_ID = "jh.PARANETS_Application";
@@ -64,7 +65,7 @@ public class PARANETS_application extends Application
 		public double wlan,cellular, satellite;
 	}
 
-	public message_divisions solve_optimization_problem()
+	public message_divisions solve_optimization_problem(double data_size)
 	{
 		message_divisions d=new message_divisions();
 		if (!lagrange)	//i.e. LARA's method
@@ -74,64 +75,54 @@ public class PARANETS_application extends Application
 				for (int j=0;j<=num_minibundles-i;j++)
 				{
 					if (max_throuput<=(new_throuput=i*conditions[0].getTH_estimate()+j*conditions[1].getTH_estimate()+(num_minibundles-i-j)*conditions[2].getTH_estimate())
-							&& max_cost>=(new_cost=i*wlan_cost+j*cellular_cost+(num_minibundles-i-j)*satellite_cost))
+							&& max_cost>=(new_cost=(i*wlan_cost+j*cellular_cost+(num_minibundles-i-j)*satellite_cost)/num_minibundles*data_size))
 					{
 						if (new_cost>current_cost && max_throuput==new_throuput)
 							continue;
 						else
 						{
-							current_cost=new_cost;
-							max_throuput=new_throuput;
-							d.wlan=(double)i/num_minibundles;
-							d.satellite=(double)j/num_minibundles;
-							d.cellular=(double)(num_minibundles-i-j)/num_minibundles;
+							if ( new_cost<=max_cost)
+							{
+								current_cost=new_cost;
+								max_throuput=new_throuput;
+								d.wlan=(double)i/num_minibundles*data_size;
+								d.satellite=(double)j/num_minibundles*data_size;
+								d.cellular=(double)(num_minibundles-i-j)/num_minibundles*data_size;
+							}
 						}
 					}
 				}
-			System.out.println("divison: "+d.wlan+","+d.cellular+","+d.satellite+ " cost:"+current_cost);
+			//System.out.println("divison: "+d.wlan+","+d.cellular+","+d.satellite+ " cost:"+current_cost);
 			return d;
 		}
 		else			//i.e. LAGRANGE's method
 		{
-			double K=max_cost,S=1,Sc=satellite_cost,Wc=wlan_cost,Cc=cellular_cost,Ct=conditions[1].getTH_estimate(),Wt=conditions[0].getTH_estimate(),St=conditions[2].getTH_estimate();
-			double Y_temp, X_temp,Z_temp,X,Y,Z,cost=0,max_throughput=0,cost_temp,throughput_temp;
+			double K=max_cost,S=data_size,Sc=satellite_cost,Wc=wlan_cost,Cc=cellular_cost,Ct=conditions[1].getTH_estimate(),Wt=conditions[0].getTH_estimate(),St=conditions[2].getTH_estimate();
+			double Y_temp, X_temp,Z_temp,X=0,Y=0,Z=0,cost=0,max_throughput=0,cost_temp,throughput_temp;
 			//** region 1 **//
 			//option 2
 			X_temp=(K-S*Sc)/(Wc+Ct/Wt*Cc-Sc-Ct/Wt*Sc);
 			Y_temp=Ct/Wt*X_temp;
 			Z_temp=S-X_temp-Y_temp;
 			cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-			throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St)
+			throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St&&
 			{
 				X=X_temp;
 				Y=Y_temp;
 				Z=Z_temp;
 				cost=cost_temp;
 				max_throughput=throughput_temp;
+				System.out.print("1");
 			}
 			//option 3
 			X_temp=S/(1+Ct/Wt+St/Wt);
 			Y_temp=Ct/Wt*X_temp;
 			Z_temp=St/Wt*X_temp;
-			cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-			throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St)
-			{
-				X=X_temp;
-				Y=Y_temp;
-				Z=Z_temp;
-				cost=cost_temp;
-				max_throughput=throughput_temp;
-			}
-			//option 4c
-			Z_temp=(S*Wc-K)/(Wc-Sc);
-			Y_temp=0;
-			X_temp=(K-Z_temp*Sc)/Wc;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -139,16 +130,35 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("2");
+				}
+			}
+			//option 4c
+			Z_temp=(S*Wc-K)/(Wc-Sc);
+			Y_temp=0;
+			X_temp=(K-Z_temp*Sc)/Wc;
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) // && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+					System.out.print("3");
 				}
 			}
 			//option 4b
 			Z_temp=S/(1+Wt/St);
 			Y_temp=0;
 			X_temp=S-Z_temp;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -156,16 +166,17 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("4");
 				}
 			}
 			//option 5a
 			Z_temp=0;
 			Y_temp=S/(1+Wt/Ct);
 			X_temp=S-Y_temp;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -173,16 +184,17 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("5");
 				}
 			}
 			//option 5b
 			Z_temp=0;
 			Y_temp=(K-S*Cc)/(Cc-Wc);
 			X_temp=S-Y_temp;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) // && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -190,33 +202,35 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("6");
 				}
 			}
 			//option 1
 			Z_temp=(K-S*Wc)/(Sc+Wc);
 			Y_temp=S-Z_temp*(1+Wt/St);
 			X_temp=Z_temp*Wt/St;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St &&
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
-				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp) )
 				{
 					X=X_temp;
 					Y=Y_temp;
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("7");
 				}
 			}
 			//option 4d
 			X_temp=K/(Wc+St*Sc/Wt);
 			Y_temp=0;
 			Z_temp=X_temp*St/Wt;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -224,16 +238,17 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("8");
 				}
 			}
 			//option 5d
 			X_temp=K/(Wc+Ct*Cc/Wt);
 			Z_temp=0;
 			Y_temp=X_temp*Ct/Wt;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S && X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& X_temp/Wt>=Y_temp/Ct && X_temp/Wt>=Z_temp/St
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -241,6 +256,7 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("9");
 				}
 			}
 			//** region 2 **//
@@ -248,38 +264,10 @@ public class PARANETS_application extends Application
 			Z_temp=(K-S*Wc)/(Sc-Wc+Ct/St*(Cc-Wc));
 			Y_temp=Ct/St*Z_temp;
 			X_temp=S-Z_temp-Y_temp;
-			cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-			throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
-			{
-				X=X_temp;
-				Y=Y_temp;
-				Z=Z_temp;
-				cost=cost_temp;
-				max_throughput=throughput_temp;
-			}
-			//option 2
-			Z_temp=K/(Sc-Wt/(Wt+Ct))-(Wc+Cc*Ct/Wt)*S/(Sc*(1+Ct/Wt)-1);
-			X_temp=(S-Z_temp)/(1+Ct/Wt);
-			Y_temp=Ct/Wt*X_temp;
-			cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-			throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
-			{
-				X=X_temp;
-				Y=Y_temp;
-				Z=Z_temp;
-				cost=cost_temp;
-				max_throughput=throughput_temp;
-			}
-			//option 3
-			X_temp=S/(1+Ct/Wt+St/Wt);
-			Y_temp=Ct/Wt*X_temp;
-			Z_temp=St/Ct*Y_temp;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S && X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -287,16 +275,53 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("A");
+				}
+			}
+			//option 2
+			Z_temp=K/(Sc-Wt/(Wt+Ct))-(Wc+Cc*Ct/Wt)*S/(Sc*(1+Ct/Wt)-1);
+			X_temp=(S-Z_temp)/(1+Ct/Wt);
+			Y_temp=Ct/Wt*X_temp;
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S && X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+					System.out.print("B");
+				}
+			}
+			//option 3
+			X_temp=S/(1+Ct/Wt+St/Wt);
+			Y_temp=Ct/Wt*X_temp;
+			Z_temp=St/Ct*Y_temp;
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S && X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+					System.out.print("C");
 				}
 			}
 			//option 4a
 			Z_temp=S/(1+Ct/St);
 			Y_temp=Ct/St*Z_temp;
 			X_temp=0;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S && X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -304,16 +329,17 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("D");
 				}
 			}
 			//option 4b
 			Z_temp=(K-Cc*S)/(Sc-Cc);
 			Y_temp=S-Z_temp;
 			X_temp=0;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S && X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -321,16 +347,17 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("E");
 				}
 			}
 			//option 4c
 			Z_temp=K/(Cc*Ct/St+Sc);
 			Y_temp=Ct/St*Z_temp;
 			X_temp=0;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S && X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -338,16 +365,17 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("F");
 				}
 			}
 			//option 5a
 			Z_temp=0;
 			X_temp=S/(1+Ct/Wt);
 			Y_temp=X_temp*Ct/Wt;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -355,16 +383,17 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("G");
 				}
 			}
 			//option 5b (although redundant but for different constraints
 			Z_temp=0;
 			Y_temp=(K-S*Wc)/(Cc-Wc);
 			X_temp=S-Y_temp;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S && X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -372,16 +401,17 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("H");
 				}
 			}
 			//option 5c
 			X_temp=K/(Wc+Wt*Cc/Ct);
 			Z_temp=0;
 			Y_temp=X_temp*Wt/Ct;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Y_temp/Ct>=X_temp/Wt && Y_temp/Ct>=Z_temp/St
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -389,6 +419,7 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("I");
 				}
 			}
 			//** region 3 **//
@@ -396,38 +427,10 @@ public class PARANETS_application extends Application
 			Z_temp=(K-S*Wc)/(Ct/St*(Cc-Wc)+Sc-Wc);
 			Y_temp=Ct/St*Z_temp;
 			X_temp=S-Y_temp-Z_temp;
-			cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-			throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
-			{
-				X=X_temp;
-				Y=Y_temp;
-				Z=Z_temp;
-				cost=cost_temp;
-				max_throughput=throughput_temp;
-			}
-			//option 2
-			Y_temp=(K-Wc*S)/(Cc+Sc*St/Ct-Wc*(1+St/Ct));
-			Z_temp=St/Ct*Y_temp;
-			X_temp=S-Y_temp-Z_temp;
-			cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-			throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
-			{
-				X=X_temp;
-				Y=Y_temp;
-				Z=Z_temp;
-				cost=cost_temp;
-				max_throughput=throughput_temp;
-			}
-			//option 3
-			Z_temp=S/(1+Ct/St+Wt/St);
-			Y_temp=Z_temp*Ct/St;
-			X_temp=Z_temp*Wt/St;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -435,16 +438,53 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("J");
+				}
+			}
+			//option 2
+			Y_temp=(K-Wc*S)/(Cc+Sc*St/Ct-Wc*(1+St/Ct));
+			Z_temp=St/Ct*Y_temp;
+			X_temp=S-Y_temp-Z_temp;
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+					System.out.print("K");
+				}
+			}
+			//option 3
+			Z_temp=S/(1+Ct/St+Wt/St);
+			Y_temp=Z_temp*Ct/St;
+			X_temp=Z_temp*Wt/St;
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+					System.out.print("L");
 				}
 			}
 			//option 4a
 			Y_temp=S/(1+St/Ct);
 			X_temp=0;
 			Z_temp=S-Z_temp;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -452,16 +492,17 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("M");
 				}
 			}
 			//option 4b (redundant but with different constraints)
 			Z_temp=(K-Cc*S)/(Sc-Cc);
 			Y_temp=S-Z_temp;
 			X_temp=0;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -469,16 +510,17 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("N");
 				}
 			}
 			//option 4c
 			Y_temp=K/(Cc+Sc*St/Ct);
 			X_temp=0;
 			Z_temp=St/Ct*Y_temp;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -486,16 +528,17 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("O");
 				}
 			}
 			//option 5a
 			X_temp=S/(1+St/Wt);
 			Y_temp=0;
 			Z_temp=S-X_temp;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -503,16 +546,17 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("P");
 				}
 			}
 			//option 5b (although redundant for different constraints)
 			Z_temp=(K-S*Wc)/(Sc-Wc);
 			Y_temp=0;
 			X_temp=S-Z_temp;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -520,16 +564,17 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("Q");
 				}
 			}
 			//option 5c
 			X_temp=K/(Wc+St*Sc/Wt);
 			Y_temp=0;
 			Z_temp=X_temp*St/Wt;
-			if (Z_temp>=0 && Y_temp>=0 && Z_temp>=0 && Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt)
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt
 			{
 				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
-				throughput_temp=X_temp*conditions[0].getTH_estimate()+Y_temp*conditions[1].getTH_estimate()+Z_temp*conditions[2].getTH_estimate();
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
 				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
 				{
 					X=X_temp;
@@ -537,9 +582,71 @@ public class PARANETS_application extends Application
 					Z=Z_temp;
 					cost=cost_temp;
 					max_throughput=throughput_temp;
+					System.out.print("R");
 				}
 			}
+			//boundary states
+			/*1*/
+			X_temp=S;
+			Y_temp=0;
+			Z_temp=0;
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+					System.out.print("S");
+				}
+			}
+			/*2*/
+			X_temp=0;
+			Y_temp=S;
+			Z_temp=0;
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+					System.out.print("T");
+				}
+			}
+			/*3*/
+			X_temp=0;
+			Y_temp=0;
+			Z_temp=S;
+			if (X_temp>=0 && Y_temp>=0 && Z_temp>=0 && X_temp<=S && Y_temp<=S && Z_temp<=S &&  X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K) //&& Z_temp/St>=Y_temp/Ct && Z_temp/St>=X_temp/Wt
+			{
+				cost_temp=X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost;
+				throughput_temp=S/(X_temp/Wt+Y_temp/Ct+Z_temp/St);
+				if (throughput_temp>max_throughput || (throughput_temp==max_throughput && cost>cost_temp))
+				{
+					X=X_temp;
+					Y=Y_temp;
+					Z=Z_temp;
+					cost=cost_temp;
+					max_throughput=throughput_temp;
+					System.out.print("U");
+				}
+			}
+			assert(X_temp<=S && Y_temp<=S && Z_temp<=S && X_temp+ Y_temp+ Z_temp<=S+0.01 && X_temp*wlan_cost+Y_temp*cellular_cost+Z_temp*satellite_cost <=K);
+			d.wlan=X;
+			d.cellular=Y;
+			d.satellite=Z;
+			System.out.println("divison: "+d.wlan+","+d.cellular+","+d.satellite+ " cost:"+cost);
 		}
+
 		return d;
 		/*
 		d.cellular=0.33;
@@ -581,44 +688,95 @@ public class PARANETS_application extends Application
 			throughputShared=new throughputMeasurements(nominal_TH);
 			params =new fuzzy_parameters();
 		}
-
-		public void sensed(double sensed_TH)
+		private double getNominal(String inter)
 		{
+			if (inter.equals(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_WLAN))
+				return wlan_nominal;
+			else if (inter.equals(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_CELLULAR))
+				return cellular_nominal;
+			else if (inter.equals(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_SATELLITE))
+				return satellite_nominal;
+			else
+				assert true: "Illigal interface type "+ inter;
+			return -1;
+		}
+		private double getNominal(int index_of_interface)
+		{
+			if (index_of_interface==0)
+				return wlan_nominal;
+			else if (index_of_interface==1)
+				return cellular_nominal;
+			else if (index_of_interface==2)
+				return satellite_nominal;
+			else
+				assert true: "Illigal interface type "+ index_of_interface;
+			return -1;
+		}
+		public void sensed(double sensed_TH, String intr)
+		{
+			System.out.println(sensed_TH+" "+intr);
+			double nominal=getNominal(intr);
 			double time_diff=SimClock.getTime()-throughputSensed.stamp;
-			params=getFuzzyParams();
-			throughputEstimate.throughput=fuzzyH.getNewEstimate(throughputSensed.throughput,sensed_TH,time_diff);
-			throughputEstimate.stamp=SimClock.getTime(); //for next time
+			params=getFuzzyParams(time_diff);
+			fuzzyHelper.Tmin=params.Tmin;
+			fuzzyHelper.Tmax=params.Tmax;
+			throughputEstimate.throughput=fuzzyH.getNewEstimateOriginal(throughputEstimate.throughput,sensed_TH,time_diff,nominal);
+			System.out.println("["+throughputEstimate.throughput+"]"+intr);
+			throughputSensed.stamp=SimClock.getTime(); //for next time
 		}
 
-		public void shared(double shared_TH)
+		public void shared(double shared_TH,int index_of_interface)
 		{
+			System.out.println(shared_TH+" "+index_of_interface);
+			double nominal=getNominal(index_of_interface);
 			double time_diff=SimClock.getTime()-throughputShared.stamp;
-
-			params=getFuzzyParams();
-			throughputEstimate.throughput=fuzzyH.getNewEstimate(throughputEstimate.throughput,shared_TH,time_diff);
+			params=getFuzzyParams(time_diff);
+			fuzzyHelper.Tmin=params.Tmin;
+			fuzzyHelper.Tmax=params.Tmax;
+			throughputEstimate.throughput=fuzzyH.getNewEstimateOriginal(throughputEstimate.throughput,shared_TH,time_diff,nominal);
+			System.out.println("["+throughputEstimate.throughput+"]"+index_of_interface);
 			throughputShared.stamp=SimClock.getTime(); //for next time
 		}
-
-		private fuzzy_parameters getFuzzyParams() {
-			fuzzy_parameters f=new fuzzy_parameters();
-			return f;
+		double standard_deviation(double average)
+		{
+			double dev=0;
+			for (int i=0;i<tdiffs.size();i++)
+					dev=dev+Math.pow((tdiffs.get(i)-average),2.0);
+			dev=dev/tdiffs.size()-1;
+			dev=Math.sqrt(dev);
+			return dev;
 		}
 
-		private double getNewEstimate(double old_estimate, double new_value, double time_diff,double nominal_TH) {//not implemented yet
-
-
+		private fuzzy_parameters getFuzzyParams(double tdiff_current)
+		{
+			tdiffs.addLast(tdiff_current);
+			if (tdiffs.size()==number_of_elements)
+				tdiffs.removeFirst();
+			double sum=0;
+			for (int i=0;i<tdiffs.size();i++)
+				sum+=tdiffs.get(i);
+			double average=sum/tdiffs.size();
+			//get standard deviation
+			fuzzy_parameters f=new fuzzy_parameters();
+			double dev=standard_deviation(average);
+			f.Tmin=average-2*dev;
+			if (f.Tmin<0)
+				f.Tmin=0;
+			f.Tmax=average+2*dev;
+			return f;
+		}
+		
+		private double getNewEstimate(double old_estimate, double new_value, double time_diff,double nominal_TH) {
 			old_estimate=mapThroughputToFCL(old_estimate, nominal_TH);
 			new_value=mapThroughputToFCL(new_value, nominal_TH);
 			time_diff=mapTimeToFCL(time_diff);
 
 			return fuzzyH.getNewEstimate(old_estimate, new_value, time_diff);
-
 		}
 		private double mapThroughputToFCL(double throughput,double nominal_TH){
 			double low_TH=nominal_TH/5;
 			return 10*(throughput-low_TH)/(nominal_TH-low_TH)+2;
 		}
-
 		private double mapBackToThroughput(double throughput,double nominal_TH){
 			double low_TH=nominal_TH/5;
 			return (throughput-2)*(nominal_TH-low_TH)/10+low_TH;
@@ -630,8 +788,6 @@ public class PARANETS_application extends Application
 
 			return (time-2)*(params.Tmax-params.Tmin)/6+params.Tmin;
 		}
-
-
 		public double getTH_estimate()
 		{
 			return throughputEstimate.throughput;
@@ -670,6 +826,10 @@ public class PARANETS_application extends Application
 	private boolean lagrange=false;
 	private int num_minibundles=10;
 	private double max_cost=1;
+	static private int wlan_msg_size=500;
+	static private int number_of_elements=15;
+
+	private LinkedList<Double> tdiffs=new LinkedList<Double>();
 
 	
 	/** 
@@ -731,6 +891,9 @@ public class PARANETS_application extends Application
 		if (s.contains(SA_ADDRESS)){
 			PARANETS_application.SA_ID = s.getInt(SA_ADDRESS);
 		}
+		if (s.contains(WLAN_MSG_SIZE)){
+			PARANETS_application.wlan_msg_size = s.getInt(WLAN_MSG_SIZE);
+		}
 		if (s.contains(NOMINAL_TH)){
 			double[] nominals = s.getCsvDoubles(NOMINAL_TH,3);
 			for (int i=0;i<this.conditions.length;i++)
@@ -778,7 +941,8 @@ public class PARANETS_application extends Application
 		this.conditions[0].setInitially(wlan_nominal);
 		this.conditions[1].setInitially(cellular_nominal);
 		this.conditions[2].setInitially(satellite_nominal);
-		rng = new Random(this.seed);
+		rng = new Random(this.hashCode());
+		fuzzyH=new fuzzyHelper();
 	}
 	
 	/** 
@@ -796,11 +960,12 @@ public class PARANETS_application extends Application
 		if (msg.getTo()==host && type.equalsIgnoreCase(TYPE_REQUEST))
 		{
 			assert (SA);
-			int size=random_in_range(minSize,maxSize);
+			
 			//String interf=(String)msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_PROPERTY);
-			double wlan_size = size*(Double)msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_WLAN);
-			double cellular_size = size*(Double)msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_CELLULAR);
-			double satellite_size = size*(Double)msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_SATELLITE);
+			double wlan_size = (Double)msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_WLAN);
+			double cellular_size = (Double)msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_CELLULAR);
+			double satellite_size = (Double)msg.getProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_SATELLITE);
+			int size=(int)(wlan_size+cellular_size+satellite_size);
 			//assert (wlan_size!=null && cellular_size !=null && satellite_size !=null);
 			String id = msg.getId()+"-data";
 			if ((int)wlan_size+(int)cellular_size+(int)satellite_size!=size)
@@ -813,13 +978,29 @@ public class PARANETS_application extends Application
 			//int size=0;
 			for (int i=0;i<sizes.length;i++)
 			{
-				Message m = new Message(host, msg.getFrom(), id+"-"+interfaces[i], sizes[i]);
-				m.addProperty(TYPE_PROPERTY, TYPE_DATA);
-				m.addProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_PROPERTY, interfaces[i]);
-				m.setAppID(APP_ID);
-				host.createNewMessage(m);
-				super.sendEventToListeners("SentData", m, msg.getFrom());
-				//size+=sizes[i];
+				int curr_size=sizes[i];
+				if (curr_size==0)
+					continue;
+				int number=1;
+				if (interfaces[i].equals(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_WLAN))
+						number=(int) (wlan_size / wlan_msg_size);
+				for (int n=0;n<number;n++)
+				{
+					if (interfaces[i].equals(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_WLAN))
+					{
+						if (n==number-1)
+							curr_size=(int)wlan_size - (int) ((number-1)*(int)(wlan_size/number));
+						else
+							curr_size=(int)(wlan_size/number);
+					}
+					Message m = new Message(host, msg.getFrom(), id+"-"+interfaces[i]+"."+n,curr_size );
+					m.addProperty(TYPE_PROPERTY, TYPE_DATA);
+					m.addProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_PROPERTY, interfaces[i]);
+					m.setAppID(APP_ID);
+					host.createNewMessage(m);
+					super.sendEventToListeners("SentData", m, msg.getFrom());
+					//size+=sizes[i];
+				}
 			}
 			//super.sendEventToListeners("SentData", ""+size, msg.getFrom());
 		}
@@ -901,7 +1082,10 @@ public class PARANETS_application extends Application
 			Message m = new Message(host, randomHost(SA_ID,SA_ID), host.getAddress()+"."+msg_count,	requestSize);
 			m.addProperty(TYPE_PROPERTY, TYPE_REQUEST);
 			m.addProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_PROPERTY, ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_CELLULAR); //can be changed later (means that request sent on the cellualar channel)
-			message_divisions d=solve_optimization_problem();
+			
+			int data_size=random_in_range(minSize, maxSize);
+			m.addProperty("data-size", data_size );
+			message_divisions d=solve_optimization_problem(data_size);
 			m.addProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_WLAN, d.wlan);
 			m.addProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_CELLULAR,d.cellular);
 			m.addProperty(ParanetAdaptableFuzzySprayAndWaitRouter.INTERFACE_SATELLITE, d.satellite);

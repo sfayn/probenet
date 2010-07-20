@@ -14,8 +14,8 @@ import net.sourceforge.jFuzzyLogic.FIS;
 public class fuzzyHelper {
 	
 	private FIS fis;
-	private static double Tmin=0;
-	private static double Tmax=100;
+	public static double Tmin=0;
+	public static double Tmax=100;
 	public fuzzyHelper(){
 		String fileName = "applications\\file.fcl";
 		 fis = new FIS();
@@ -54,8 +54,15 @@ public class fuzzyHelper {
 			old_estimate=mapThroughputToFCL(old_estimate, nominal_TH);
 			new_value=mapThroughputToFCL(new_value, nominal_TH);
 			time_diff=mapTimeToFCL(time_diff);
-
-			return getNewEstimate(old_estimate, new_value, time_diff);
+			fis.setVariable("oldTH", old_estimate);
+	        fis.setVariable("newTH", new_value);
+			fis.setVariable("timeDiff", time_diff);
+			fis.evaluate();
+			double fuzzyVal=fis.getVariable("estimatedTH").defuzzify();
+			//System.out.println(fuzzyVal);
+			double x=mapBackToThroughput( fuzzyVal,nominal_TH);
+			//System.out.println(x);
+			return x;
 
 	}
 	double getNewEstimate(double old_estimate, double new_value, double time_diff) {
@@ -76,9 +83,9 @@ public class fuzzyHelper {
 			//System.out.println(fis);
 			
 			double fuzzyVal=fis.getVariable("estimatedTH").defuzzify();
-			System.out.println(fuzzyVal);
+			//System.out.println(fuzzyVal);
 			double x=mapBackToThroughput( fuzzyVal,100);
-			System.out.println(x);
+			//System.out.println(x);
 			return x;
 		}
 
